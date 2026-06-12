@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  APPROVED
+  SHIPPING
+  RECEIVED
+  CANCELLED
+}
+
+enum ShipmentStatus {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+  DELAYED
+}
+
+enum InventoryMovementType {
+  INBOUND
+  OUTBOUND
+  ADJUSTMENT
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         UserRole @default(STAFF)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  inventoryMovements InventoryMovement[]
+
+  @@map("users")
+}
+
+model Supplier {
+  id        String         @id @default(uuid()) @db.Uuid
+  name      String
+  country   String
+  email     String?
+  phone     String?
+  status    SupplierStatus @default(ACTIVE)
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  products         Product[]
+  halalCertificates HalalCertificate[]
+  purchaseOrders   PurchaseOrder[]
+
+  @@map("suppliers")
+}
+
+model HalalCertificate {
+  id                String   @id @default(uuid()) @db.Uuid
+  supplierId        String   @map("supplier_id") @db.Uuid
+  certificateNumber String   @map("certificate_number")
+  issuedBy          String   @map("issued_by")
+  issueDate         DateTime @map("issue_date") @db.Date
+  expiryDate        DateTime @map("expiry_date") @db.Date
+  fileUrl           String?  @map("file_url")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([expiryDate])
+  @@map("halal_certificates")
+}
+
+model Product {
+  id         String   @id @default(uuid()) @db.Uuid
+  supplierId String   @map("supplier_id") @db.Uuid
+  name       String
+  sku        String   @unique
+  category   String
+  unit       String
+  unitPrice  Decimal  @default(0) @map("unit_price") @db.Decimal(12, 2)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  supplier           Supplier            @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  inventory          Inventory[]
+  inventoryMovements InventoryMovement[]
+
+  @@index([supplierId])
+  @@map("products")
+}
+
+model Warehouse {
+  id       String @id @default(uuid()) @db.Uuid
+  name     String
+  location String
+
+  inventory          Inventory[]
+  inventoryMovements InventoryMovement[]
+
+  @@map("warehouses")
+}
+
+model Inventory {
+  id           String   @id @default(uuid()) @db.Uuid
+  productId    String   @map("product_id") @db.Uuid
+  warehouseId  String   @map("warehouse_id") @db.Uuid
+  quantity     Int      @default(0)
+  reorderLevel Int      @default(10) @map("reorder_level")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, warehouseId])
+  @@map("inventory")
+}
+
+model InventoryMovement {
+  id          String                @id @default(uuid()) @db.Uuid
+  productId   String                @map("product_id") @db.Uuid
+  warehouseId String                @map("warehouse_id") @db.Uuid
+  type        InventoryMovementType
+  quantity    Int
+  note        String?
+  performedBy String?               @map("performed_by") @db.Uuid
+  createdAt   DateTime              @default(now()) @map("created_at")
+
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [performedBy], references: [id], onDelete: SetNull)
+
+  @@index([productId, warehouseId])
+  @@index([createdAt])
+  @@map("inventory_movements")
+}
+
+model PurchaseOrder {
+  id          String              @id @default(uuid()) @db.Uuid
+  supplierId  String              @map("supplier_id") @db.Uuid
+  poNumber    String              @unique @map("po_number")
+  status      PurchaseOrderStatus @default(DRAFT)
+  totalAmount Decimal             @default(0) @map("total_amount") @db.Decimal(14, 2)
+  createdAt   DateTime            @default(now()) @map("created_at")
+
+  supplier Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  shipments Shipment[]
+
+  @@index([supplierId])
+  @@index([status])
+  @@map("purchase_orders")
+}
+
+model Shipment {
+  id              String         @id @default(uuid()) @db.Uuid
+  purchaseOrderId String         @map("purchase_order_id") @db.Uuid
+  trackingNumber  String         @map("tracking_number")
+  origin          String
+  destination     String
+  status          ShipmentStatus @default(PENDING)
+  estimatedArrival DateTime?     @map("estimated_arrival")
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  @@index([purchaseOrderId])
+  @@index([status])
+  @@map("shipments")
+}

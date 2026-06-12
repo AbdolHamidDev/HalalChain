@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: halalchain-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: halalchain
+      POSTGRES_PASSWORD: halalchain_dev
+      POSTGRES_DB: halalchain
+    volumes:
+      - halalchain_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U halalchain -d halalchain"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  halalchain_pgdata:
