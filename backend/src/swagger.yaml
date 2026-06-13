@@ -1,0 +1,3089 @@
+openapi: "3.0.3"
+
+info:
+  title: HalalChain V2 API
+  description: Enterprise Halal Supply Chain Platform — REST API
+  version: "2.0.0"
+  contact:
+    name: HalalChain Team
+
+servers:
+  - url: http://localhost:4000
+    description: Local development server
+  - url: https://api.halalchain.app
+    description: Production server
+
+# ─────────────────────────────────────────────────────────────
+# Security
+# ─────────────────────────────────────────────────────────────
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+
+  # ─────────────────────────────────────────────────────────────
+  # Schemas
+  # ─────────────────────────────────────────────────────────────
+  schemas:
+
+    # ── User ──────────────────────────────────────────────────
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - role
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          example: "Ahmad Zainal"
+        email:
+          type: string
+          format: email
+          example: "ahmad@halalchain.app"
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - MANAGER
+            - STAFF
+          example: "STAFF"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T08:00:00.000Z"
+
+    # ── Supplier ───────────────────────────────────────────────
+    Supplier:
+      type: object
+      required:
+        - id
+        - name
+        - country
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "660e8400-e29b-41d4-a716-446655440001"
+        name:
+          type: string
+          example: "Al-Barakah Foods Sdn Bhd"
+        country:
+          type: string
+          example: "Malaysia"
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: "contact@albarakah.com"
+        phone:
+          type: string
+          nullable: true
+          example: "+60123456789"
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+          example: "ACTIVE"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-10T06:00:00.000Z"
+
+    # ── Product ────────────────────────────────────────────────
+    Product:
+      type: object
+      required:
+        - id
+        - supplierId
+        - name
+        - sku
+        - category
+        - unit
+        - unitPrice
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "770e8400-e29b-41d4-a716-446655440002"
+        supplierId:
+          type: string
+          format: uuid
+          example: "660e8400-e29b-41d4-a716-446655440001"
+        name:
+          type: string
+          example: "Halal Chicken Breast"
+        sku:
+          type: string
+          example: "HCB-001"
+        category:
+          type: string
+          example: "Poultry"
+        unit:
+          type: string
+          example: "kg"
+        unitPrice:
+          type: number
+          format: float
+          example: 12.50
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-12T09:00:00.000Z"
+        supplier:
+          $ref: "#/components/schemas/Supplier"
+        qrCodeUrl:
+          type: string
+          description: Base64-encoded PNG data URL for the product QR code
+          example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+
+    # ── HalalCertificate ───────────────────────────────────────
+    HalalCertificate:
+      type: object
+      required:
+        - id
+        - supplierId
+        - certificateNumber
+        - issuedBy
+        - issueDate
+        - expiryDate
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "880e8400-e29b-41d4-a716-446655440003"
+        supplierId:
+          type: string
+          format: uuid
+          example: "660e8400-e29b-41d4-a716-446655440001"
+        certificateNumber:
+          type: string
+          example: "JAKIM/HPC/2024/001234"
+        issuedBy:
+          type: string
+          example: "JAKIM"
+        issueDate:
+          type: string
+          format: date
+          example: "2024-01-01"
+        expiryDate:
+          type: string
+          format: date
+          example: "2025-12-31"
+        fileUrl:
+          type: string
+          nullable: true
+          example: "https://storage.halalchain.app/certs/cert-001.pdf"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-02T07:00:00.000Z"
+
+    # ── Inventory ──────────────────────────────────────────────
+    Inventory:
+      type: object
+      required:
+        - id
+        - productId
+        - warehouseId
+        - quantity
+        - reorderLevel
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "990e8400-e29b-41d4-a716-446655440004"
+        productId:
+          type: string
+          format: uuid
+          example: "770e8400-e29b-41d4-a716-446655440002"
+        warehouseId:
+          type: string
+          format: uuid
+          example: "aa0e8400-e29b-41d4-a716-446655440005"
+        quantity:
+          type: integer
+          example: 250
+        reorderLevel:
+          type: integer
+          example: 50
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-06-01T10:00:00.000Z"
+
+    # ── InventoryMovement ──────────────────────────────────────
+    InventoryMovement:
+      type: object
+      required:
+        - id
+        - productId
+        - warehouseId
+        - type
+        - quantity
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "bb0e8400-e29b-41d4-a716-446655440006"
+        productId:
+          type: string
+          format: uuid
+          example: "770e8400-e29b-41d4-a716-446655440002"
+        warehouseId:
+          type: string
+          format: uuid
+          example: "aa0e8400-e29b-41d4-a716-446655440005"
+        type:
+          type: string
+          enum:
+            - INBOUND
+            - OUTBOUND
+            - ADJUSTMENT
+          example: "INBOUND"
+        quantity:
+          type: integer
+          example: 100
+        note:
+          type: string
+          nullable: true
+          example: "Received from supplier PO-2024-001"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-06-01T08:30:00.000Z"
+
+    # ── PurchaseOrder ──────────────────────────────────────────
+    PurchaseOrder:
+      type: object
+      required:
+        - id
+        - supplierId
+        - poNumber
+        - status
+        - totalAmount
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "cc0e8400-e29b-41d4-a716-446655440007"
+        supplierId:
+          type: string
+          format: uuid
+          example: "660e8400-e29b-41d4-a716-446655440001"
+        poNumber:
+          type: string
+          example: "PO-2024-00042"
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - APPROVED
+            - SHIPPING
+            - RECEIVED
+            - CANCELLED
+            - PARTIAL
+          example: "APPROVED"
+        totalAmount:
+          type: number
+          format: float
+          example: 3750.00
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-05-20T11:00:00.000Z"
+        itemCount:
+          type: integer
+          description: Number of line items in the purchase order (optional — present in list responses)
+          example: 4
+
+    # ── PurchaseOrderItem ──────────────────────────────────────
+    PurchaseOrderItem:
+      type: object
+      required:
+        - id
+        - purchaseOrderId
+        - productId
+        - quantity
+        - unitPrice
+        - subtotal
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "dd0e8400-e29b-41d4-a716-446655440008"
+        purchaseOrderId:
+          type: string
+          format: uuid
+          example: "cc0e8400-e29b-41d4-a716-446655440007"
+        productId:
+          type: string
+          format: uuid
+          example: "770e8400-e29b-41d4-a716-446655440002"
+        quantity:
+          type: integer
+          minimum: 1
+          example: 300
+        unitPrice:
+          type: number
+          format: float
+          minimum: 0.01
+          example: 12.50
+        subtotal:
+          type: number
+          format: float
+          example: 3750.00
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-05-20T11:00:00.000Z"
+
+    # ── Shipment ───────────────────────────────────────────────
+    Shipment:
+      type: object
+      required:
+        - id
+        - purchaseOrderId
+        - trackingNumber
+        - origin
+        - destination
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "ee0e8400-e29b-41d4-a716-446655440009"
+        purchaseOrderId:
+          type: string
+          format: uuid
+          example: "cc0e8400-e29b-41d4-a716-446655440007"
+        trackingNumber:
+          type: string
+          example: "TRK-2024-98765"
+        origin:
+          type: string
+          example: "Kuala Lumpur, Malaysia"
+        destination:
+          type: string
+          example: "Jakarta, Indonesia"
+        status:
+          type: string
+          enum:
+            - PENDING
+            - IN_TRANSIT
+            - DELIVERED
+            - DELAYED
+          example: "IN_TRANSIT"
+        estimatedArrival:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-06-10T14:00:00.000Z"
+        shippedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-06-02T06:00:00.000Z"
+
+    # ── AuditLog ───────────────────────────────────────────────
+    AuditLog:
+      type: object
+      required:
+        - id
+        - action
+        - entityType
+        - entityId
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "ff0e8400-e29b-41d4-a716-446655440010"
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        action:
+          type: string
+          enum:
+            - CREATE
+            - UPDATE
+            - DELETE
+            - STATUS_CHANGE
+          example: "CREATE"
+        entityType:
+          type: string
+          example: "Supplier"
+        entityId:
+          type: string
+          example: "660e8400-e29b-41d4-a716-446655440001"
+        oldData:
+          type: object
+          nullable: true
+          additionalProperties: true
+          example: null
+        newData:
+          type: object
+          nullable: true
+          additionalProperties: true
+          example: { "name": "Al-Barakah Foods Sdn Bhd", "status": "ACTIVE" }
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-06-01T07:45:00.000Z"
+
+    # ── Notification ───────────────────────────────────────────
+    Notification:
+      type: object
+      required:
+        - id
+        - title
+        - message
+        - type
+        - isRead
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "aa1e8400-e29b-41d4-a716-446655440011"
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        title:
+          type: string
+          example: "Low Stock Alert"
+        message:
+          type: string
+          example: "Product Halal Chicken Breast (SKU: HCB-001) in Warehouse A is below reorder level. Current: 10, Reorder level: 50."
+        type:
+          type: string
+          enum:
+            - LOW_STOCK
+            - CERTIFICATE_EXPIRING
+            - SHIPMENT_DELAYED
+            - SYSTEM
+          example: "LOW_STOCK"
+        isRead:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-06-01T08:00:00.000Z"
+
+    # ── PaginatedResponse ──────────────────────────────────────
+    PaginatedResponse:
+      type: object
+      required:
+        - data
+        - page
+        - limit
+        - total
+        - totalPages
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+          description: Array of result items for the current page
+        page:
+          type: integer
+          minimum: 1
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          example: 20
+        total:
+          type: integer
+          minimum: 0
+          example: 85
+        totalPages:
+          type: integer
+          minimum: 0
+          example: 5
+
+    # ── ErrorResponse ──────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: "Resource not found"
+
+# ─────────────────────────────────────────────────────────────
+# Paths
+# ─────────────────────────────────────────────────────────────
+paths:
+
+  # ══════════════════════════════════════════════════════════
+  # Auth
+  # ══════════════════════════════════════════════════════════
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login with email and password
+      description: Authenticates the user and sets an HttpOnly JWT cookie on success. Rate-limited to 5 requests per 60 seconds per IP.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "admin@halalchain.app"
+                password:
+                  type: string
+                  minLength: 1
+                  example: "Admin@1234"
+            example:
+              email: "admin@halalchain.app"
+              password: "Admin@1234"
+      responses:
+        "200":
+          description: Login successful — JWT cookie is set in the response
+          headers:
+            Set-Cookie:
+              description: HttpOnly JWT cookie named `token`; valid for 7 days
+              schema:
+                type: string
+                example: "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+              example:
+                user:
+                  id: "550e8400-e29b-41d4-a716-446655440000"
+                  name: "Ahmad Zainal"
+                  email: "admin@halalchain.app"
+                  role: "ADMIN"
+                  createdAt: "2024-01-15T08:00:00.000Z"
+        "400":
+          description: Validation error — missing or malformed fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Invalid email or password"
+        "429":
+          description: Rate limit exceeded — more than 5 requests from this IP within 60 seconds
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Too many requests, please try again later."
+
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user account
+      description: Creates a new user with role STAFF regardless of any `role` field in the request body. Rate-limited to 5 requests per 60 seconds per IP.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: "Siti Aminah"
+                email:
+                  type: string
+                  format: email
+                  example: "siti@halalchain.app"
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+                  example: "SecurePass@99"
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Email already registered"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/auth/users/{id}/role:
+    patch:
+      tags:
+        - Auth
+      summary: Update a user's role (ADMIN only)
+      description: Changes the role of an existing user. Requires ADMIN role.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the user to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
+                  enum:
+                    - ADMIN
+                    - MANAGER
+                    - STAFF
+                  example: "MANAGER"
+      responses:
+        "200":
+          description: Role updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid role value
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Invalid role"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have ADMIN role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "User not found"
+
+  # ══════════════════════════════════════════════════════════
+  # Suppliers
+  # ══════════════════════════════════════════════════════════
+
+  /api/suppliers:
+    get:
+      tags:
+        - Suppliers
+      summary: List suppliers (paginated, filterable)
+      description: Returns a paginated list of suppliers. Supports filtering by name, country, and status. Requires ADMIN or MANAGER role.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number (default 1, minimum 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            example: 1
+        - name: limit
+          in: query
+          description: Items per page (default 20, maximum 100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+            example: 20
+        - name: name
+          in: query
+          description: Filter by supplier name (case-insensitive, partial match)
+          schema:
+            type: string
+            example: "Al-Barakah"
+        - name: country
+          in: query
+          description: Filter by country (case-insensitive, exact match)
+          schema:
+            type: string
+            example: "Malaysia"
+        - name: status
+          in: query
+          description: Filter by supplier status
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - INACTIVE
+            example: "ACTIVE"
+      responses:
+        "200":
+          description: Paginated list of suppliers
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Supplier"
+              example:
+                data:
+                  - id: "660e8400-e29b-41d4-a716-446655440001"
+                    name: "Al-Barakah Foods Sdn Bhd"
+                    country: "Malaysia"
+                    email: "contact@albarakah.com"
+                    phone: "+60123456789"
+                    status: "ACTIVE"
+                    createdAt: "2024-01-10T06:00:00.000Z"
+                  - id: "661e8400-e29b-41d4-a716-446655440002"
+                    name: "Halal Fresh Indonesia"
+                    country: "Indonesia"
+                    email: "info@halalfresh.id"
+                    phone: "+62217654321"
+                    status: "ACTIVE"
+                    createdAt: "2024-02-15T09:30:00.000Z"
+                page: 1
+                limit: 20
+                total: 2
+                totalPages: 1
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags:
+        - Suppliers
+      summary: Create a new supplier (ADMIN only)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - country
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 200
+                  example: "Halal Fresh Indonesia"
+                country:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: "Indonesia"
+                email:
+                  type: string
+                  format: email
+                  example: "info@halalfresh.id"
+                phone:
+                  type: string
+                  maxLength: 30
+                  example: "+62217654321"
+                status:
+                  type: string
+                  enum:
+                    - ACTIVE
+                    - INACTIVE
+                  example: "ACTIVE"
+      responses:
+        "201":
+          description: Supplier created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  supplier:
+                    $ref: "#/components/schemas/Supplier"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/suppliers/{id}:
+    get:
+      tags:
+        - Suppliers
+      summary: Get a single supplier by ID
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Supplier details including products and certificates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  supplier:
+                    $ref: "#/components/schemas/Supplier"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Supplier not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Supplier not found"
+
+    patch:
+      tags:
+        - Suppliers
+      summary: Update a supplier (ADMIN only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 200
+                country:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  maxLength: 30
+                status:
+                  type: string
+                  enum:
+                    - ACTIVE
+                    - INACTIVE
+      responses:
+        "200":
+          description: Supplier updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  supplier:
+                    $ref: "#/components/schemas/Supplier"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Supplier not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      tags:
+        - Suppliers
+      summary: Delete a supplier (ADMIN only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Supplier deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Supplier deleted"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Supplier not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ══════════════════════════════════════════════════════════
+  # Products
+  # ══════════════════════════════════════════════════════════
+
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: List products (paginated, filterable)
+      description: Returns a paginated list of products. Supports filtering by name and SKU. Requires ADMIN or MANAGER role.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: name
+          in: query
+          description: Filter by product name (case-insensitive, partial match)
+          schema:
+            type: string
+            example: "Chicken"
+        - name: sku
+          in: query
+          description: Filter by SKU (case-insensitive, partial match)
+          schema:
+            type: string
+            example: "HCB"
+      responses:
+        "200":
+          description: Paginated list of products
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Product"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags:
+        - Products
+      summary: Create a new product (ADMIN only)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - supplierId
+                - name
+                - sku
+                - category
+                - unit
+              properties:
+                supplierId:
+                  type: string
+                  format: uuid
+                  example: "660e8400-e29b-41d4-a716-446655440001"
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 200
+                  example: "Halal Chicken Breast"
+                sku:
+                  type: string
+                  minLength: 2
+                  maxLength: 50
+                  example: "HCB-001"
+                category:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: "Poultry"
+                unit:
+                  type: string
+                  minLength: 1
+                  maxLength: 30
+                  example: "kg"
+                unitPrice:
+                  type: number
+                  minimum: 0
+                  example: 12.50
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product:
+                    $ref: "#/components/schemas/Product"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Supplier not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: SKU already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "SKU already exists"
+
+  /api/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get a single product by ID (includes QR code URL)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Product details including qrCodeUrl
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product:
+                    $ref: "#/components/schemas/Product"
+                  qrCodeUrl:
+                    type: string
+                    description: Base64-encoded PNG data URL of the product QR code
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      tags:
+        - Products
+      summary: Update a product (ADMIN only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 200
+                sku:
+                  type: string
+                  minLength: 2
+                  maxLength: 50
+                category:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                unit:
+                  type: string
+                  minLength: 1
+                  maxLength: 30
+                unitPrice:
+                  type: number
+                  minimum: 0
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product:
+                    $ref: "#/components/schemas/Product"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      tags:
+        - Products
+      summary: Delete a product (ADMIN only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Product deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Product deleted"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/products/{id}/traceability:
+    get:
+      tags:
+        - Products
+      summary: Get full supply chain traceability timeline for a product
+      description: Returns the product details and a chronological timeline of all supply chain events — supplier, halal certificates, purchase orders, shipments, and inventory movements. Requires ADMIN or MANAGER role.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the product
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Traceability timeline with all supply chain events
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - product
+                  - timeline
+                properties:
+                  product:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      name:
+                        type: string
+                      sku:
+                        type: string
+                  timeline:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - type
+                        - date
+                        - title
+                        - description
+                        - metadata
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                            - SUPPLIER
+                            - CERTIFICATE
+                            - PRODUCT
+                            - PURCHASE_ORDER
+                            - SHIPMENT
+                            - INVENTORY
+                        date:
+                          type: string
+                          format: date-time
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        metadata:
+                          type: object
+                          additionalProperties: true
+              example:
+                product:
+                  id: "770e8400-e29b-41d4-a716-446655440002"
+                  name: "Halal Chicken Breast"
+                  sku: "HCB-001"
+                timeline:
+                  - type: "SUPPLIER"
+                    date: "2024-01-10T06:00:00.000Z"
+                    title: "Supplier: Al-Barakah Foods Sdn Bhd"
+                    description: "Malaysia · ACTIVE"
+                    metadata:
+                      supplierId: "660e8400-e29b-41d4-a716-446655440001"
+                      supplierName: "Al-Barakah Foods Sdn Bhd"
+                      country: "Malaysia"
+                      status: "ACTIVE"
+                  - type: "CERTIFICATE"
+                    date: "2024-01-01T00:00:00.000Z"
+                    title: "Certificate: JAKIM/HPC/2024/001234"
+                    description: "Issued by JAKIM · Expires 2025-12-31"
+                    metadata:
+                      certificateId: "880e8400-e29b-41d4-a716-446655440003"
+                      certificateNumber: "JAKIM/HPC/2024/001234"
+                      issuedDate: "2024-01-01T00:00:00.000Z"
+                      expiryDate: "2025-12-31T00:00:00.000Z"
+                      issuingBody: "JAKIM"
+                  - type: "PRODUCT"
+                    date: "2024-01-12T09:00:00.000Z"
+                    title: "Product: Halal Chicken Breast"
+                    description: "SKU: HCB-001"
+                    metadata:
+                      productId: "770e8400-e29b-41d4-a716-446655440002"
+                      name: "Halal Chicken Breast"
+                      sku: "HCB-001"
+                  - type: "PURCHASE_ORDER"
+                    date: "2024-05-20T11:00:00.000Z"
+                    title: "Purchase Order: PO-2024-00042"
+                    description: "Status: APPROVED · Total: 3750.00"
+                    metadata:
+                      poId: "cc0e8400-e29b-41d4-a716-446655440007"
+                      poNumber: "PO-2024-00042"
+                      status: "APPROVED"
+                      totalAmount: "3750.00"
+                  - type: "SHIPMENT"
+                    date: "2024-06-02T06:00:00.000Z"
+                    title: "Shipment: TRK-2024-98765"
+                    description: "Kuala Lumpur, Malaysia → Jakarta, Indonesia · IN_TRANSIT"
+                    metadata:
+                      shipmentId: "ee0e8400-e29b-41d4-a716-446655440009"
+                      trackingNumber: "TRK-2024-98765"
+                      status: "IN_TRANSIT"
+                      origin: "Kuala Lumpur, Malaysia"
+                      destination: "Jakarta, Indonesia"
+                  - type: "INVENTORY"
+                    date: "2024-06-05T08:30:00.000Z"
+                    title: "Inventory INBOUND: 300 units"
+                    description: "Warehouse: Warehouse A"
+                    metadata:
+                      movementId: "bb0e8400-e29b-41d4-a716-446655440006"
+                      type: "INBOUND"
+                      quantity: 300
+                      warehouseName: "Warehouse A"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role — ADMIN or MANAGER required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Product not found"
+
+  # ══════════════════════════════════════════════════════════
+  # Certificates
+  # ══════════════════════════════════════════════════════════
+
+  /api/certificates:
+    get:
+      tags:
+        - Certificates
+      summary: List halal certificates (paginated, filterable)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: certificateNumber
+          in: query
+          description: Filter by certificate number (case-insensitive, partial match)
+          schema:
+            type: string
+            example: "JAKIM"
+        - name: expiryBefore
+          in: query
+          description: Return certificates expiring on or before this date (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+            example: "2025-12-31"
+        - name: expiryAfter
+          in: query
+          description: Return certificates expiring on or after this date (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+            example: "2024-01-01"
+      responses:
+        "200":
+          description: Paginated list of halal certificates
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/HalalCertificate"
+        "400":
+          description: Invalid date format for expiryBefore or expiryAfter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Invalid date format. Expected YYYY-MM-DD."
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags:
+        - Certificates
+      summary: Create a new halal certificate (ADMIN only)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - supplierId
+                - certificateNumber
+                - issuedBy
+                - issueDate
+                - expiryDate
+              properties:
+                supplierId:
+                  type: string
+                  format: uuid
+                  example: "660e8400-e29b-41d4-a716-446655440001"
+                certificateNumber:
+                  type: string
+                  minLength: 3
+                  maxLength: 100
+                  example: "JAKIM/HPC/2024/001234"
+                issuedBy:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: "JAKIM"
+                issueDate:
+                  type: string
+                  format: date
+                  example: "2024-01-01"
+                expiryDate:
+                  type: string
+                  format: date
+                  example: "2025-12-31"
+                fileUrl:
+                  type: string
+                  format: uri
+                  example: "https://storage.halalchain.app/certs/cert-001.pdf"
+      responses:
+        "201":
+          description: Certificate created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  certificate:
+                    $ref: "#/components/schemas/HalalCertificate"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Supplier not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/certificates/{id}:
+    get:
+      tags:
+        - Certificates
+      summary: Get a single certificate by ID
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Certificate details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  certificate:
+                    $ref: "#/components/schemas/HalalCertificate"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Certificate not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      tags:
+        - Certificates
+      summary: Update a certificate (ADMIN only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                certificateNumber:
+                  type: string
+                  minLength: 3
+                  maxLength: 100
+                issuedBy:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                issueDate:
+                  type: string
+                  format: date
+                expiryDate:
+                  type: string
+                  format: date
+                fileUrl:
+                  type: string
+                  format: uri
+      responses:
+        "200":
+          description: Certificate updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  certificate:
+                    $ref: "#/components/schemas/HalalCertificate"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Certificate not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      tags:
+        - Certificates
+      summary: Delete a certificate (ADMIN only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Certificate deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Certificate deleted"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Certificate not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ══════════════════════════════════════════════════════════
+  # Inventory
+  # ══════════════════════════════════════════════════════════
+
+  /api/inventory:
+    get:
+      tags:
+        - Inventory
+      summary: List all inventory records
+      description: Returns all inventory records (not paginated). Requires ADMIN, MANAGER, or STAFF role.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: List of inventory records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inventory:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Inventory"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/inventory/inbound:
+    post:
+      tags:
+        - Inventory
+      summary: Record an inbound inventory movement (ADMIN or STAFF)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - warehouseId
+                - quantity
+              properties:
+                productId:
+                  type: string
+                  format: uuid
+                  example: "770e8400-e29b-41d4-a716-446655440002"
+                warehouseId:
+                  type: string
+                  format: uuid
+                  example: "aa0e8400-e29b-41d4-a716-446655440005"
+                quantity:
+                  type: integer
+                  minimum: 1
+                  example: 100
+                note:
+                  type: string
+                  maxLength: 500
+                  example: "Received from supplier PO-2024-001"
+      responses:
+        "201":
+          description: Inbound movement recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inventory:
+                    $ref: "#/components/schemas/Inventory"
+                  movement:
+                    $ref: "#/components/schemas/InventoryMovement"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product or warehouse not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/inventory/outbound:
+    post:
+      tags:
+        - Inventory
+      summary: Record an outbound inventory movement (ADMIN or STAFF)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - warehouseId
+                - quantity
+              properties:
+                productId:
+                  type: string
+                  format: uuid
+                  example: "770e8400-e29b-41d4-a716-446655440002"
+                warehouseId:
+                  type: string
+                  format: uuid
+                  example: "aa0e8400-e29b-41d4-a716-446655440005"
+                quantity:
+                  type: integer
+                  minimum: 1
+                  example: 50
+                note:
+                  type: string
+                  maxLength: 500
+                  example: "Outbound for customer order #9982"
+      responses:
+        "201":
+          description: Outbound movement recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inventory:
+                    $ref: "#/components/schemas/Inventory"
+                  movement:
+                    $ref: "#/components/schemas/InventoryMovement"
+        "400":
+          description: Validation error or insufficient stock
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Insufficient stock for outbound"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product or warehouse not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/inventory/movements:
+    get:
+      tags:
+        - Inventory
+      summary: List inventory movements (paginated)
+      description: Returns a paginated list of inventory movements. Requires ADMIN, MANAGER, or STAFF role.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Paginated list of inventory movements
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/InventoryMovement"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ══════════════════════════════════════════════════════════
+  # Purchase Orders
+  # ══════════════════════════════════════════════════════════
+
+  /api/purchase-orders:
+    get:
+      tags:
+        - Purchase Orders
+      summary: List purchase orders (paginated, filterable)
+      description: Returns a paginated list of purchase orders. Supports filtering by status and supplierId. Requires ADMIN or MANAGER role.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by PO status
+          schema:
+            type: string
+            enum:
+              - DRAFT
+              - APPROVED
+              - SHIPPING
+              - RECEIVED
+              - CANCELLED
+              - PARTIAL
+            example: "APPROVED"
+        - name: supplierId
+          in: query
+          description: Filter by supplier UUID; returns empty list if supplier does not exist
+          schema:
+            type: string
+            format: uuid
+            example: "660e8400-e29b-41d4-a716-446655440001"
+      responses:
+        "200":
+          description: Paginated list of purchase orders (each includes `itemCount`)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/PurchaseOrder"
+        "400":
+          description: Invalid status value
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Invalid status value."
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags:
+        - Purchase Orders
+      summary: Create a new purchase order (ADMIN only)
+      description: Creates a PO with one or more line items. Server computes `subtotal` per item and `totalAmount`. A `poNumber` is auto-generated if not provided.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - supplierId
+                - items
+              properties:
+                supplierId:
+                  type: string
+                  format: uuid
+                  example: "660e8400-e29b-41d4-a716-446655440001"
+                poNumber:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                  description: Optional; auto-generated as PO-YYYY-NNNN if omitted
+                  example: "PO-2024-00042"
+                items:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                      - productId
+                      - quantity
+                      - unitPrice
+                    properties:
+                      productId:
+                        type: string
+                        format: uuid
+                        example: "770e8400-e29b-41d4-a716-446655440002"
+                      quantity:
+                        type: integer
+                        minimum: 1
+                        example: 300
+                      unitPrice:
+                        type: number
+                        minimum: 0.01
+                        example: 12.50
+            example:
+              supplierId: "660e8400-e29b-41d4-a716-446655440001"
+              items:
+                - productId: "770e8400-e29b-41d4-a716-446655440002"
+                  quantity: 300
+                  unitPrice: 12.50
+                - productId: "771e8400-e29b-41d4-a716-446655440003"
+                  quantity: 50
+                  unitPrice: 8.00
+      responses:
+        "201":
+          description: Purchase order created with all line items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  purchaseOrder:
+                    allOf:
+                      - $ref: "#/components/schemas/PurchaseOrder"
+                      - type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/PurchaseOrderItem"
+              example:
+                purchaseOrder:
+                  id: "cc0e8400-e29b-41d4-a716-446655440007"
+                  supplierId: "660e8400-e29b-41d4-a716-446655440001"
+                  poNumber: "PO-2024-00042"
+                  status: "DRAFT"
+                  totalAmount: 4150.00
+                  createdAt: "2024-05-20T11:00:00.000Z"
+                  supplier:
+                    name: "Al-Barakah Foods Sdn Bhd"
+                    country: "Malaysia"
+                  items:
+                    - id: "dd0e8400-e29b-41d4-a716-446655440008"
+                      purchaseOrderId: "cc0e8400-e29b-41d4-a716-446655440007"
+                      productId: "770e8400-e29b-41d4-a716-446655440002"
+                      quantity: 300
+                      unitPrice: 12.50
+                      subtotal: 3750.00
+                      createdAt: "2024-05-20T11:00:00.000Z"
+                    - id: "dd1e8400-e29b-41d4-a716-446655440009"
+                      purchaseOrderId: "cc0e8400-e29b-41d4-a716-446655440007"
+                      productId: "771e8400-e29b-41d4-a716-446655440003"
+                      quantity: 50
+                      unitPrice: 8.00
+                      subtotal: 400.00
+                      createdAt: "2024-05-20T11:00:00.000Z"
+        "400":
+          description: Validation error — missing or invalid items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Invalid items"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Supplier or product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Product not found"
+
+  /api/purchase-orders/{id}:
+    get:
+      tags:
+        - Purchase Orders
+      summary: Get a single purchase order by ID (includes items)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Purchase order with full item details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  purchaseOrder:
+                    allOf:
+                      - $ref: "#/components/schemas/PurchaseOrder"
+                      - type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/PurchaseOrderItem"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Purchase order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      tags:
+        - Purchase Orders
+      summary: Delete a purchase order (ADMIN only, DRAFT status only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Purchase order deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Purchase order deleted"
+        "400":
+          description: Cannot delete — not in DRAFT status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Purchase order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/purchase-orders/{id}/status:
+    patch:
+      tags:
+        - Purchase Orders
+      summary: Update purchase order status (ADMIN only)
+      description: Transitions the PO status following allowed progression — DRAFT→APPROVED→SHIPPING→RECEIVED.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - DRAFT
+                    - APPROVED
+                    - SHIPPING
+                    - RECEIVED
+                    - CANCELLED
+                    - PARTIAL
+                  example: "APPROVED"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  purchaseOrder:
+                    $ref: "#/components/schemas/PurchaseOrder"
+        "400":
+          description: Invalid status transition or validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Purchase order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ══════════════════════════════════════════════════════════
+  # Shipments
+  # ══════════════════════════════════════════════════════════
+
+  /api/shipments:
+    get:
+      tags:
+        - Shipments
+      summary: List shipments (paginated)
+      description: Returns a paginated list of shipments. Requires ADMIN or MANAGER role.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Paginated list of shipments
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Shipment"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/shipments/{id}:
+    get:
+      tags:
+        - Shipments
+      summary: Get a single shipment by ID
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Shipment details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shipment:
+                    $ref: "#/components/schemas/Shipment"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Shipment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/shipments/{id}/status:
+    patch:
+      tags:
+        - Shipments
+      summary: Update shipment status or details (ADMIN only)
+      description: Updates shipment fields including status. When status is changed to DELAYED, a notification is sent to all ADMIN and MANAGER users.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trackingNumber:
+                  type: string
+                  minLength: 3
+                  maxLength: 100
+                origin:
+                  type: string
+                  minLength: 2
+                  maxLength: 200
+                destination:
+                  type: string
+                  minLength: 2
+                  maxLength: 200
+                status:
+                  type: string
+                  enum:
+                    - PENDING
+                    - IN_TRANSIT
+                    - DELIVERED
+                    - DELAYED
+                  example: "IN_TRANSIT"
+                estimatedArrival:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        "200":
+          description: Shipment updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shipment:
+                    $ref: "#/components/schemas/Shipment"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Shipment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ══════════════════════════════════════════════════════════
+  # Audit Logs
+  # ══════════════════════════════════════════════════════════
+
+  /api/audit-logs:
+    get:
+      tags:
+        - Audit Logs
+      summary: List audit logs (ADMIN only, paginated)
+      description: Returns a paginated list of audit log records ordered by createdAt descending. Default page size is 50, maximum 100. Requires ADMIN role.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Page size (default 50, maximum 100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: entityType
+          in: query
+          description: Filter by entity type (e.g. Supplier, Product, Shipment)
+          schema:
+            type: string
+            example: "Supplier"
+        - name: entityId
+          in: query
+          description: Filter by specific entity UUID
+          schema:
+            type: string
+            format: uuid
+            example: "660e8400-e29b-41d4-a716-446655440001"
+      responses:
+        "200":
+          description: Paginated list of audit log entries
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/AuditLog"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: ADMIN role required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ══════════════════════════════════════════════════════════
+  # Notifications
+  # ══════════════════════════════════════════════════════════
+
+  /api/notifications:
+    get:
+      tags:
+        - Notifications
+      summary: List notifications for the authenticated user (paginated)
+      description: Returns the calling user's notifications ordered by createdAt descending. Default page size is 20.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Paginated list of notifications
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Notification"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/notifications/read-all:
+    patch:
+      tags:
+        - Notifications
+      summary: Mark all notifications as read
+      description: Sets isRead=true for all unread notifications belonging to the calling user.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Count of notifications marked as read
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updated:
+                    type: integer
+                    example: 5
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/notifications/{id}/read:
+    patch:
+      tags:
+        - Notifications
+      summary: Mark a single notification as read
+      description: Sets isRead=true for a specific notification. Only the owning user can mark their own notification as read.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Notification marked as read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Notification not found or belongs to a different user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Notification not found"
+
+  # ══════════════════════════════════════════════════════════
+  # Dashboard
+  # ══════════════════════════════════════════════════════════
+
+  /api/dashboard/stats:
+    get:
+      tags:
+        - Dashboard
+      summary: Get dashboard KPIs and chart data (ADMIN or MANAGER)
+      description: Returns real-time KPI counts and analytics charts including inventory trend, purchase orders per month, shipment status distribution, and certificate expiry trend.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  kpis:
+                    type: object
+                    properties:
+                      totalSuppliers:
+                        type: integer
+                        example: 24
+                      activeCertificates:
+                        type: integer
+                        example: 18
+                      expiringSoonCertificates:
+                        type: integer
+                        example: 3
+                      inventoryValue:
+                        type: number
+                        format: float
+                        example: 142500.00
+                      pendingShipments:
+                        type: integer
+                        example: 7
+                  charts:
+                    type: object
+                    properties:
+                      inventoryTrend:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            month:
+                              type: string
+                              example: "2024-06"
+                            quantity:
+                              type: integer
+                              example: 350
+                      purchaseOrdersPerMonth:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            month:
+                              type: string
+                              example: "2024-06"
+                            orders:
+                              type: integer
+                              example: 12
+                      shipmentStatusDistribution:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                              example: "IN_TRANSIT"
+                            count:
+                              type: integer
+                              example: 5
+                      certificateExpiryTimeline:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            quarter:
+                              type: string
+                              example: "2024-Q3"
+                            count:
+                              type: integer
+                              example: 4
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Database query failed — partial data not returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Failed to compute dashboard analytics"
+
+  /api/dashboard/activity:
+    get:
+      tags:
+        - Dashboard
+      summary: Get the 20 most recent activity feed entries (ADMIN or MANAGER)
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Recent audit log activity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  activities:
+                    type: array
+                    maxItems: 20
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        userName:
+                          type: string
+                          description: Name of the user who performed the action, or "System" if system-initiated
+                          example: "Ahmad Zainal"
+                        action:
+                          type: string
+                          enum:
+                            - CREATE
+                            - UPDATE
+                            - DELETE
+                            - STATUS_CHANGE
+                        entityType:
+                          type: string
+                          example: "Supplier"
+                        entityId:
+                          type: string
+                          format: uuid
+                        createdAt:
+                          type: string
+                          format: date-time
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ══════════════════════════════════════════════════════════
+  # Public (no authentication required)
+  # ══════════════════════════════════════════════════════════
+
+  /api/public/products/{id}/traceability:
+    get:
+      tags:
+        - Public
+      summary: Get public traceability data for a product (no auth required)
+      description: Public endpoint — no JWT cookie required. Returns product info, supplier details, halal certificates, shipments, and the traceability timeline. Used by the consumer-facing QR scan page.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the product
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Public traceability data
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - product
+                  - supplier
+                  - certificates
+                  - shipments
+                  - timeline
+                properties:
+                  product:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      name:
+                        type: string
+                      sku:
+                        type: string
+                  supplier:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      country:
+                        type: string
+                  certificates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        certificateNumber:
+                          type: string
+                        expiryDate:
+                          type: string
+                          format: date
+                        issuedBy:
+                          type: string
+                  shipments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        trackingNumber:
+                          type: string
+                        status:
+                          type: string
+                  timeline:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        date:
+                          type: string
+                          format: date-time
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        metadata:
+                          type: object
+                          additionalProperties: true
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "Product not found"

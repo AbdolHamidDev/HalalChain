@@ -1,10 +1,12 @@
 import { Router, Response } from "express";
 import { z } from "zod";
-import { UserRole } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { parseBody, sendNotFound, sendValidationError } from "../lib/validate";
 import { paramId } from "../lib/params";
-import { authenticate, authorize } from "../middleware/auth";
+import { AuthRequest, authenticate, authorize } from "../middleware/auth";
+import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
+import { logAudit } from "../lib/auditLog";
 
 const router = Router();
 
@@ -19,18 +21,58 @@ const createSchema = z.object({
 
 const updateSchema = createSchema.partial().omit({ supplierId: true });
 
+const YYYY_MM_DD = /^\d{4}-\d{2}-\d{2}$/;
+
 router.get(
   "/",
   authenticate,
   authorize(UserRole.ADMIN, UserRole.MANAGER),
-  async (_req, res: Response) => {
-    const certificates = await prisma.halalCertificate.findMany({
-      orderBy: { expiryDate: "asc" },
-      include: {
-        supplier: { select: { id: true, name: true, country: true } },
-      },
-    });
-    res.json({ certificates });
+  async (req, res: Response) => {
+    const params = parsePaginationParams(req.query as Record<string, unknown>);
+    const { page, limit } = params;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.HalalCertificateWhereInput = {};
+
+    if (req.query.certificateNumber) {
+      where.certificateNumber = {
+        contains: String(req.query.certificateNumber),
+        mode: "insensitive",
+      };
+    }
+
+    if (req.query.expiryBefore) {
+      const val = String(req.query.expiryBefore);
+      if (!YYYY_MM_DD.test(val) || isNaN(Date.parse(val))) {
+        res.status(400).json({ error: "Invalid date format. Expected YYYY-MM-DD." });
+        return;
+      }
+      where.expiryDate = { ...(where.expiryDate as object), lte: new Date(val) };
+    }
+
+    if (req.query.expiryAfter) {
+      const val = String(req.query.expiryAfter);
+      if (!YYYY_MM_DD.test(val) || isNaN(Date.parse(val))) {
+        res.status(400).json({ error: "Invalid date format. Expected YYYY-MM-DD." });
+        return;
+      }
+      where.expiryDate = { ...(where.expiryDate as object), gte: new Date(val) };
+    }
+
+    const [total, certificates] = await Promise.all([
+      prisma.halalCertificate.count({ where }),
+      prisma.halalCertificate.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { expiryDate: "asc" },
+        include: {
+          supplier: { select: { id: true, name: true, country: true } },
+        },
+      }),
+    ]);
+
+    res.json(buildPaginatedResponse(certificates, total, params));
   }
 );
 
@@ -55,7 +97,7 @@ router.post(
   "/",
   authenticate,
   authorize(UserRole.ADMIN),
-  async (req, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const parsed = parseBody(createSchema, req.body);
     if (!parsed.success) {
       sendValidationError(res, parsed.message);
@@ -76,9 +118,22 @@ router.post(
     }
 
     const { fileUrl, ...rest } = parsed.data;
-    const certificate = await prisma.halalCertificate.create({
-      data: { ...rest, fileUrl: fileUrl || null },
+    const userId = req.user?.sub ?? null;
+
+    const certificate = await prisma.$transaction(async (tx) => {
+      const created = await tx.halalCertificate.create({
+        data: { ...rest, fileUrl: fileUrl || null },
+      });
+      await logAudit(tx, {
+        userId,
+        action: "CREATE",
+        entityType: "HalalCertificate",
+        entityId: created.id,
+        newData: created as unknown as Record<string, unknown>,
+      });
+      return created;
     });
+
     res.status(201).json({ certificate });
   }
 );
@@ -87,7 +142,7 @@ router.patch(
   "/:id",
   authenticate,
   authorize(UserRole.ADMIN),
-  async (req, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const parsed = parseBody(updateSchema, req.body);
     if (!parsed.success) {
       sendValidationError(res, parsed.message);
@@ -103,13 +158,28 @@ router.patch(
     }
 
     const { fileUrl, ...rest } = parsed.data;
-    const certificate = await prisma.halalCertificate.update({
-      where: { id: paramId(req.params.id) },
-      data: {
-        ...rest,
-        ...(fileUrl !== undefined ? { fileUrl: fileUrl || null } : {}),
-      },
+    const userId = req.user?.sub ?? null;
+    const id = paramId(req.params.id);
+
+    const certificate = await prisma.$transaction(async (tx) => {
+      const updated = await tx.halalCertificate.update({
+        where: { id },
+        data: {
+          ...rest,
+          ...(fileUrl !== undefined ? { fileUrl: fileUrl || null } : {}),
+        },
+      });
+      await logAudit(tx, {
+        userId,
+        action: "UPDATE",
+        entityType: "HalalCertificate",
+        entityId: updated.id,
+        oldData: existing as unknown as Record<string, unknown>,
+        newData: updated as unknown as Record<string, unknown>,
+      });
+      return updated;
     });
+
     res.json({ certificate });
   }
 );
@@ -118,7 +188,7 @@ router.delete(
   "/:id",
   authenticate,
   authorize(UserRole.ADMIN),
-  async (req, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const existing = await prisma.halalCertificate.findUnique({
       where: { id: paramId(req.params.id) },
     });
@@ -127,7 +197,20 @@ router.delete(
       return;
     }
 
-    await prisma.halalCertificate.delete({ where: { id: paramId(req.params.id) } });
+    const userId = req.user?.sub ?? null;
+    const id = paramId(req.params.id);
+
+    await prisma.$transaction(async (tx) => {
+      await tx.halalCertificate.delete({ where: { id } });
+      await logAudit(tx, {
+        userId,
+        action: "DELETE",
+        entityType: "HalalCertificate",
+        entityId: existing.id,
+        oldData: existing as unknown as Record<string, unknown>,
+      });
+    });
+
     res.json({ message: "Certificate deleted" });
   }
 );

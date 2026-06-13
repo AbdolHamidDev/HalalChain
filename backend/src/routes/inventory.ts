@@ -4,6 +4,9 @@ import { InventoryMovementType, UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { parseBody, sendNotFound, sendValidationError } from "../lib/validate";
 import { AuthRequest, authenticate, authorize } from "../middleware/auth";
+import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
+import { logAudit } from "../lib/auditLog";
+import { notifyLowStock } from "../lib/notificationService";
 
 const router = Router();
 
@@ -44,17 +47,25 @@ router.get(
   authenticate,
   authorize(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF),
   async (req, res: Response) => {
-    const limit = Math.min(Number(req.query.limit) || 50, 100);
-    const movements = await prisma.inventoryMovement.findMany({
-      take: limit,
-      orderBy: { createdAt: "desc" },
-      include: {
-        product: { select: { name: true, sku: true } },
-        warehouse: { select: { name: true } },
-        user: { select: { name: true } },
-      },
-    });
-    res.json({ movements });
+    const params = parsePaginationParams(req.query as Record<string, unknown>);
+    const { page, limit } = params;
+    const skip = (page - 1) * limit;
+
+    const [total, movements] = await Promise.all([
+      prisma.inventoryMovement.count(),
+      prisma.inventoryMovement.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          product: { select: { name: true, sku: true } },
+          warehouse: { select: { name: true } },
+          user: { select: { name: true } },
+        },
+      }),
+    ]);
+
+    res.json(buildPaginatedResponse(movements, total, params));
   }
 );
 
@@ -73,7 +84,8 @@ router.get(
 async function executeMovement(
   type: InventoryMovementType,
   data: z.infer<typeof movementSchema>,
-  userId: string
+  userId: string,
+  auditUserId: string | null
 ) {
   const [product, warehouse] = await Promise.all([
     prisma.product.findUnique({ where: { id: data.productId } }),
@@ -142,6 +154,42 @@ async function executeMovement(
       },
     });
 
+    await logAudit(tx, {
+      userId: auditUserId,
+      action: "CREATE",
+      entityType: "InventoryMovement",
+      entityId: movement.id,
+      newData: {
+        id: movement.id,
+        productId: data.productId,
+        warehouseId: data.warehouseId,
+        type,
+        quantity: data.quantity,
+        note: data.note ?? null,
+        performedBy: userId,
+        inventoryQuantity: inventory.quantity,
+      },
+    });
+
+    // Notify low stock after INBOUND, OUTBOUND, or ADJUSTMENT movements
+    if (
+      type === InventoryMovementType.INBOUND ||
+      type === InventoryMovementType.OUTBOUND ||
+      type === InventoryMovementType.ADJUSTMENT
+    ) {
+      const reorderLevel = existing?.reorderLevel ?? 10;
+      if (inventory.quantity <= reorderLevel) {
+        await notifyLowStock(tx, {
+          inventoryId: inventory.id,
+          productName: product.name,
+          sku: product.sku,
+          warehouseName: warehouse.name,
+          quantity: inventory.quantity,
+          reorderLevel,
+        });
+      }
+    }
+
     return { inventory, movement };
   });
 }
@@ -161,7 +209,8 @@ router.post(
       const result = await executeMovement(
         InventoryMovementType.INBOUND,
         parsed.data,
-        req.user!.sub
+        req.user!.sub,
+        req.user?.sub ?? null
       );
       res.status(201).json(result);
     } catch (e) {
@@ -188,7 +237,8 @@ router.post(
       const result = await executeMovement(
         InventoryMovementType.OUTBOUND,
         parsed.data,
-        req.user!.sub
+        req.user!.sub,
+        req.user?.sub ?? null
       );
       res.status(201).json(result);
     } catch (e) {

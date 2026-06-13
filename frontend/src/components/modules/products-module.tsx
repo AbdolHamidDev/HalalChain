@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, GitBranch, QrCode, Download } from "lucide-react";
+import Link from "next/link";
 import { api, Product } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
@@ -34,14 +35,26 @@ const empty: FormData = {
   unitPrice: "0",
 };
 
+function downloadQrCode(qrCodeUrl: string, productId: string) {
+  const a = document.createElement("a");
+  a.href = qrCodeUrl;
+  a.download = `qr-${productId}.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
 export function ProductsModule() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const isAdmin = user?.role === "ADMIN";
+  const canViewTraceability = user?.role === "ADMIN" || user?.role === "MANAGER";
+  const canViewQr = user?.role === "ADMIN" || user?.role === "MANAGER";
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState<FormData>(empty);
   const [error, setError] = useState<string | null>(null);
+  const [qrProductId, setQrProductId] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["products"],
@@ -52,6 +65,12 @@ export function ProductsModule() {
     queryKey: ["suppliers"],
     queryFn: () => api.getSuppliers(),
     enabled: isAdmin,
+  });
+
+  const { data: productDetail, isLoading: isLoadingQr } = useQuery({
+    queryKey: ["product", qrProductId],
+    queryFn: () => api.getProduct(qrProductId!),
+    enabled: qrProductId !== null,
   });
 
   const saveMutation = useMutation({
@@ -122,9 +141,9 @@ export function ProductsModule() {
 
       {isLoading && <LoadingState />}
       {isError && <ErrorState message="Failed to load products" />}
-      {data?.products.length === 0 && <EmptyState message="No products yet" />}
+      {!isLoading && !isError && (data?.products ?? []).length === 0 && <EmptyState message="No products yet" />}
 
-      {data && data.products.length > 0 && (
+      {(data?.products ?? []).length > 0 && (
         <Table>
           <TableHeader>
             <TableRow>
@@ -135,11 +154,13 @@ export function ProductsModule() {
               <TableHead>Unit</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Stock</TableHead>
+              {(isAdmin || canViewTraceability) && <TableHead>Traceability</TableHead>}
+              {canViewQr && <TableHead>QR Code</TableHead>}
               {isAdmin && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.products.map((p) => (
+            {(data?.products ?? []).map((p) => (
               <TableRow key={p.id}>
                 <TableCell className="font-mono text-xs">{p.sku}</TableCell>
                 <TableCell className="font-medium">{p.name}</TableCell>
@@ -148,6 +169,32 @@ export function ProductsModule() {
                 <TableCell>{p.unit}</TableCell>
                 <TableCell>${Number(p.unitPrice).toFixed(2)}</TableCell>
                 <TableCell>{stockTotal(p)}</TableCell>
+                {canViewTraceability && (
+                  <TableCell>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link
+                        href={`/dashboard/products/${p.id}/traceability`}
+                        aria-label={`View traceability for ${p.name}`}
+                      >
+                        <GitBranch className="h-3.5 w-3.5" />
+                        <span className="ml-1 hidden sm:inline">Traceability</span>
+                      </Link>
+                    </Button>
+                  </TableCell>
+                )}
+                {canViewQr && (
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      aria-label={`View QR code for ${p.name}`}
+                      onClick={() => setQrProductId(p.id)}
+                    >
+                      <QrCode className="h-3.5 w-3.5" />
+                      <span className="ml-1 hidden sm:inline">QR</span>
+                    </Button>
+                  </TableCell>
+                )}
                 {isAdmin && (
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
@@ -172,6 +219,34 @@ export function ProductsModule() {
         </Table>
       )}
 
+      {/* QR Code Dialog */}
+      <Dialog
+        open={qrProductId !== null}
+        onClose={() => setQrProductId(null)}
+        title="QR Code"
+      >
+        <div className="flex flex-col items-center gap-4 py-2">
+          {isLoadingQr && <LoadingState />}
+          {productDetail && (
+            <>
+              <img
+                src={productDetail.qrCodeUrl}
+                alt={`QR Code for ${productDetail.product.name}`}
+                width={256}
+                height={256}
+              />
+              <p className="text-sm text-center font-medium">{productDetail.product.name}</p>
+              <Button
+                onClick={() => downloadQrCode(productDetail.qrCodeUrl, productDetail.product.id)}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download QR
+              </Button>
+            </>
+          )}
+        </div>
+      </Dialog>
+
       <Dialog open={open} onClose={() => setOpen(false)} title={editing ? "Edit Product" : "New Product"}>
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(); }}>
           {!editing && (
@@ -179,7 +254,7 @@ export function ProductsModule() {
               <Label>Supplier</Label>
               <Select required value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}>
                 <option value="">Select supplier</option>
-                {suppliersData?.suppliers.map((s) => (
+                {(suppliersData?.suppliers ?? []).map((s) => (
                   <option key={s.id} value={s.id}>{s.name} ({s.country})</option>
                 ))}
               </Select>

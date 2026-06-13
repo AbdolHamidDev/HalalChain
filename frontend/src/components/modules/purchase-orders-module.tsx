@@ -89,9 +89,9 @@ export function PurchaseOrdersModule() {
 
       {isLoading && <LoadingState />}
       {isError && <ErrorState message="Failed to load purchase orders" />}
-      {data?.purchaseOrders.length === 0 && <EmptyState message="No purchase orders yet" />}
+      {!isLoading && !isError && (data?.purchaseOrders ?? []).length === 0 && <EmptyState message="No purchase orders yet" />}
 
-      {data && data.purchaseOrders.length > 0 && (
+      {(data?.purchaseOrders ?? []).length > 0 && (
         <Table>
           <TableHeader>
             <TableRow>
@@ -105,7 +105,7 @@ export function PurchaseOrdersModule() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.purchaseOrders.map((po: PurchaseOrder) => {
+            {(data?.purchaseOrders ?? []).map((po: PurchaseOrder) => {
               const next = NEXT_STATUS[po.status];
               return (
                 <TableRow key={po.id}>
@@ -155,7 +155,7 @@ export function PurchaseOrdersModule() {
             <Label>Supplier</Label>
             <Select required value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}>
               <option value="">Select supplier</option>
-              {suppliersData?.suppliers.map((s) => (
+              {(suppliersData?.suppliers ?? []).map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </Select>

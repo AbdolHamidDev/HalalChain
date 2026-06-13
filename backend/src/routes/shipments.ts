@@ -4,7 +4,10 @@ import { ShipmentStatus, UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { parseBody, sendNotFound, sendValidationError } from "../lib/validate";
 import { paramId } from "../lib/params";
-import { authenticate, authorize } from "../middleware/auth";
+import { AuthRequest, authenticate, authorize } from "../middleware/auth";
+import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
+import { logAudit } from "../lib/auditLog";
+import { notifyShipmentDelayed } from "../lib/notificationService";
 
 const router = Router();
 
@@ -20,20 +23,30 @@ router.get(
   "/",
   authenticate,
   authorize(UserRole.ADMIN, UserRole.MANAGER),
-  async (_req, res: Response) => {
-    const shipments = await prisma.shipment.findMany({
-      orderBy: { estimatedArrival: "asc" },
-      include: {
-        purchaseOrder: {
-          select: {
-            poNumber: true,
-            status: true,
-            supplier: { select: { name: true, country: true } },
+  async (req, res: Response) => {
+    const params = parsePaginationParams(req.query as Record<string, unknown>);
+    const { page, limit } = params;
+    const skip = (page - 1) * limit;
+
+    const [total, shipments] = await Promise.all([
+      prisma.shipment.count(),
+      prisma.shipment.findMany({
+        skip,
+        take: limit,
+        orderBy: { estimatedArrival: "asc" },
+        include: {
+          purchaseOrder: {
+            select: {
+              poNumber: true,
+              status: true,
+              supplier: { select: { name: true, country: true } },
+            },
           },
         },
-      },
-    });
-    res.json({ shipments });
+      }),
+    ]);
+
+    res.json(buildPaginatedResponse(shipments, total, params));
   }
 );
 
@@ -60,7 +73,7 @@ router.patch(
   "/:id",
   authenticate,
   authorize(UserRole.ADMIN),
-  async (req, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const parsed = parseBody(updateSchema, req.body);
     if (!parsed.success) {
       sendValidationError(res, parsed.message);
@@ -75,18 +88,67 @@ router.patch(
       return;
     }
 
-    const shipment = await prisma.shipment.update({
-      where: { id: paramId(req.params.id) },
-      data: parsed.data,
-      include: {
-        purchaseOrder: {
-          select: {
-            poNumber: true,
-            supplier: { select: { name: true, country: true } },
+    const userId = req.user?.sub ?? null;
+    const id = paramId(req.params.id);
+    const previousStatus = existing.status;
+    const newStatus = parsed.data.status;
+    const statusChanged = newStatus !== undefined && newStatus !== previousStatus;
+
+    const shipment = await prisma.$transaction(async (tx) => {
+      const updated = await tx.shipment.update({
+        where: { id },
+        data: parsed.data,
+        include: {
+          purchaseOrder: {
+            select: {
+              poNumber: true,
+              supplier: { select: { name: true, country: true } },
+            },
           },
         },
-      },
+      });
+
+      // UPDATE audit log
+      await logAudit(tx, {
+        userId,
+        action: "UPDATE",
+        entityType: "Shipment",
+        entityId: id,
+        oldData: existing as unknown as Record<string, unknown>,
+        newData: {
+          id: updated.id,
+          purchaseOrderId: updated.purchaseOrderId,
+          trackingNumber: updated.trackingNumber,
+          origin: updated.origin,
+          destination: updated.destination,
+          status: updated.status,
+          estimatedArrival: updated.estimatedArrival,
+          shippedAt: updated.shippedAt,
+        },
+      });
+
+      // STATUS_CHANGE audit log (only when status actually changes)
+      if (statusChanged) {
+        await logAudit(tx, {
+          userId,
+          action: "STATUS_CHANGE",
+          entityType: "Shipment",
+          entityId: id,
+          oldData: { status: previousStatus },
+          newData: { status: newStatus },
+        });
+
+        if (newStatus === ShipmentStatus.DELAYED) {
+          await notifyShipmentDelayed(tx, {
+            trackingNumber: updated.trackingNumber,
+            poNumber: updated.purchaseOrder.poNumber,
+          });
+        }
+      }
+
+      return updated;
     });
+
     res.json({ shipment });
   }
 );

@@ -1,11 +1,17 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { navItems } from "@/lib/navigation";
+import {
+  type Notification,
+  fetchNotifications,
+} from "@/components/layout/notification-bell";
+import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
 function useBreadcrumb() {
   const pathname = usePathname();
@@ -27,6 +33,15 @@ export function DashboardHeader() {
   const { user } = useAuth();
   const pageTitle = useBreadcrumb();
 
+  const { data } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: fetchNotifications,
+    refetchInterval: 30_000,
+  });
+
+  const notifications: Notification[] = data?.notifications ?? [];
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
   return (
     <header className="sticky top-0 z-10 -mx-8 -mt-8 mb-6 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center gap-4 px-8">
@@ -43,6 +58,10 @@ export function DashboardHeader() {
               {user.role}
             </Badge>
           )}
+          <NotificationDropdown
+            notifications={notifications}
+            unreadCount={unreadCount}
+          />
           <ThemeToggle />
         </div>
       </div>

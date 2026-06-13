@@ -123,9 +123,48 @@ export interface DashboardStats {
   charts: {
     inventoryTrend: { month: string; quantity: number }[];
     purchaseOrdersPerMonth: { month: string; orders: number }[];
-    supplierDistribution: { name: string; value: number; color: string }[];
-    certificateExpiryTimeline: { month: string; expiring: number }[];
+    shipmentStatusDistribution: { status: string; count: number }[];
+    certificateExpiryTimeline: { quarter: string; count: number }[];
   };
+}
+
+export interface Notification {
+  id: string;
+  userId: string | null;
+  title: string;
+  message: string;
+  type: "LOW_STOCK" | "CERTIFICATE_EXPIRING" | "SHIPMENT_DELAYED" | "SYSTEM";
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface AuditLog {
+  id: string;
+  userId: string | null;
+  action: "CREATE" | "UPDATE" | "DELETE" | "STATUS_CHANGE";
+  entityType: string;
+  entityId: string;
+  oldData: Record<string, unknown> | null;
+  newData: Record<string, unknown> | null;
+  createdAt: string;
+  user?: { name: string } | null;
+}
+
+export interface ActivityItem {
+  id: string;
+  userName: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  createdAt: string;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 export interface ReportSummary {
@@ -209,7 +248,10 @@ export const api = {
   dashboardStats: () => request<DashboardStats>("/api/dashboard/stats"),
 
   // Suppliers
-  getSuppliers: () => request<{ suppliers: Supplier[] }>("/api/suppliers"),
+  getSuppliers: () =>
+    request<PaginatedResponse<Supplier>>("/api/suppliers").then((r) => ({
+      suppliers: r.data,
+    })),
   createSupplier: (data: {
     name: string;
     country: string;
@@ -230,7 +272,12 @@ export const api = {
     request<{ message: string }>(`/api/suppliers/${id}`, { method: "DELETE" }),
 
   // Products
-  getProducts: () => request<{ products: Product[] }>("/api/products"),
+  getProducts: () =>
+    request<PaginatedResponse<Product>>("/api/products").then((r) => ({
+      products: r.data,
+    })),
+  getProduct: (id: string) =>
+    request<{ product: Product; qrCodeUrl: string }>(`/api/products/${id}`),
   createProduct: (data: {
     supplierId: string;
     name: string;
@@ -256,7 +303,9 @@ export const api = {
 
   // Certificates
   getCertificates: () =>
-    request<{ certificates: HalalCertificate[] }>("/api/certificates"),
+    request<PaginatedResponse<HalalCertificate>>("/api/certificates").then((r) => ({
+      certificates: r.data,
+    })),
   createCertificate: (data: {
     supplierId: string;
     certificateNumber: string;
@@ -281,9 +330,13 @@ export const api = {
 
   // Inventory
   getInventory: () =>
-    request<{ inventory: InventoryRow[] }>("/api/inventory"),
+    request<PaginatedResponse<InventoryRow>>("/api/inventory").then((r) => ({
+      inventory: r.data,
+    })),
   getInventoryMovements: () =>
-    request<{ movements: InventoryMovement[] }>("/api/inventory/movements"),
+    request<PaginatedResponse<InventoryMovement>>("/api/inventory/movements").then((r) => ({
+      movements: r.data,
+    })),
   getWarehouses: () =>
     request<{ warehouses: Warehouse[] }>("/api/inventory/warehouses"),
   inbound: (data: {
@@ -309,7 +362,9 @@ export const api = {
 
   // Purchase Orders
   getPurchaseOrders: () =>
-    request<{ purchaseOrders: PurchaseOrder[] }>("/api/purchase-orders"),
+    request<PaginatedResponse<PurchaseOrder>>("/api/purchase-orders").then((r) => ({
+      purchaseOrders: r.data,
+    })),
   createPurchaseOrder: (data: {
     supplierId: string;
     totalAmount: number;
@@ -330,7 +385,10 @@ export const api = {
     }),
 
   // Shipments
-  getShipments: () => request<{ shipments: Shipment[] }>("/api/shipments"),
+  getShipments: () =>
+    request<PaginatedResponse<Shipment>>("/api/shipments").then((r) => ({
+      shipments: r.data,
+    })),
   updateShipment: (
     id: string,
     data: Partial<{
@@ -354,4 +412,54 @@ export const api = {
     fetch(`${API_BASE}/api/reports/export/inventory`, {
       credentials: "include",
     }),
+
+  // Notifications
+  getNotifications: (page?: number) => {
+    const params = page !== undefined ? `?page=${page}` : "";
+    return request<PaginatedResponse<Notification>>(
+      `/api/notifications${params}`
+    ).then((r) => ({
+      notifications: r.data,
+      page: r.page,
+      limit: r.limit,
+      total: r.total,
+      totalPages: r.totalPages,
+    }));
+  },
+  markNotificationRead: (id: string) =>
+    request<{ notification: Notification }>(`/api/notifications/${id}/read`, {
+      method: "PATCH",
+    }),
+  markAllNotificationsRead: () =>
+    request<{ updated: number }>("/api/notifications/read-all", {
+      method: "PATCH",
+    }),
+
+  // Audit Logs
+  getAuditLogs: (params?: {
+    entityType?: string;
+    entityId?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const query = new URLSearchParams();
+    if (params?.entityType) query.set("entityType", params.entityType);
+    if (params?.entityId) query.set("entityId", params.entityId);
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<PaginatedResponse<AuditLog>>(
+      `/api/audit-logs${qs ? `?${qs}` : ""}`
+    ).then((r) => ({
+      auditLogs: r.data,
+      page: r.page,
+      limit: r.limit,
+      total: r.total,
+      totalPages: r.totalPages,
+    }));
+  },
+
+  // Dashboard activity
+  getDashboardActivity: () =>
+    request<{ activities: ActivityItem[] }>("/api/dashboard/activity"),
 };

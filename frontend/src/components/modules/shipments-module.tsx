@@ -61,9 +61,9 @@ export function ShipmentsModule() {
 
       {isLoading && <LoadingState />}
       {isError && <ErrorState message="Failed to load shipments" />}
-      {data?.shipments.length === 0 && <EmptyState message="No shipments yet" />}
+      {!isLoading && !isError && (data?.shipments ?? []).length === 0 && <EmptyState message="No shipments yet" />}
 
-      {data && data.shipments.length > 0 && (
+      {(data?.shipments ?? []).length > 0 && (
         <Table>
           <TableHeader>
             <TableRow>
@@ -77,7 +77,7 @@ export function ShipmentsModule() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.shipments.map((s) => (
+            {(data?.shipments ?? []).map((s) => (
               <TableRow key={s.id}>
                 <TableCell className="font-mono text-xs">{s.trackingNumber}</TableCell>
                 <TableCell>{s.purchaseOrder?.poNumber}</TableCell>

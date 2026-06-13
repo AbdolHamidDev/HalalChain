@@ -24,6 +24,7 @@ enum PurchaseOrderStatus {
   SHIPPING
   RECEIVED
   CANCELLED
+  PARTIAL
 }
 
 enum ShipmentStatus {
@@ -39,6 +40,20 @@ enum InventoryMovementType {
   ADJUSTMENT
 }
 
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  STATUS_CHANGE
+}
+
+enum NotificationType {
+  LOW_STOCK
+  CERTIFICATE_EXPIRING
+  SHIPMENT_DELAYED
+  SYSTEM
+}
+
 model User {
   id           String   @id @default(uuid()) @db.Uuid
   name         String
@@ -48,6 +63,8 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
 
   inventoryMovements InventoryMovement[]
+  auditLogs          AuditLog[]
+  notifications      Notification[]
 
   @@map("users")
 }
@@ -98,6 +115,7 @@ model Product {
   supplier           Supplier            @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   inventory          Inventory[]
   inventoryMovements InventoryMovement[]
+  purchaseOrderItems PurchaseOrderItem[]
 
   @@index([supplierId])
   @@map("products")
@@ -158,6 +176,7 @@ model PurchaseOrder {
 
   supplier Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   shipments Shipment[]
+  items     PurchaseOrderItem[]
 
   @@index([supplierId])
   @@index([status])
@@ -172,10 +191,60 @@ model Shipment {
   destination     String
   status          ShipmentStatus @default(PENDING)
   estimatedArrival DateTime?     @map("estimated_arrival")
+  shippedAt        DateTime?     @map("shipped_at")
 
   purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
 
   @@index([purchaseOrderId])
   @@index([status])
   @@map("shipments")
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid()) @db.Uuid
+  purchaseOrderId String        @map("purchase_order_id") @db.Uuid
+  productId       String        @map("product_id") @db.Uuid
+  quantity        Int
+  unitPrice       Decimal       @map("unit_price") @db.Decimal(12, 2)
+  subtotal        Decimal       @db.Decimal(14, 2)
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  product       Product       @relation(fields: [productId], references: [id])
+
+  @@index([purchaseOrderId])
+  @@map("purchase_order_items")
+}
+
+model AuditLog {
+  id         String      @id @default(uuid()) @db.Uuid
+  userId     String?     @map("user_id") @db.Uuid
+  action     AuditAction
+  entityType String      @map("entity_type")
+  entityId   String      @map("entity_id")
+  oldData    Json?       @map("old_data")
+  newData    Json?       @map("new_data")
+  createdAt  DateTime    @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String?          @map("user_id") @db.Uuid
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
 }

@@ -104,9 +104,9 @@ export function SuppliersModule() {
 
       {isLoading && <LoadingState />}
       {isError && <ErrorState message="Failed to load suppliers" />}
-      {data?.suppliers.length === 0 && <EmptyState message="No suppliers yet" />}
+      {!isLoading && !isError && (data?.suppliers ?? []).length === 0 && <EmptyState message="No suppliers yet" />}
 
-      {data && data.suppliers.length > 0 && (
+      {(data?.suppliers ?? []).length > 0 && (
         <Table>
           <TableHeader>
             <TableRow>
@@ -120,7 +120,7 @@ export function SuppliersModule() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.suppliers.map((s) => (
+            {(data?.suppliers ?? []).map((s) => (
               <TableRow key={s.id}>
                 <TableCell className="font-medium">{s.name}</TableCell>
                 <TableCell>{s.country}</TableCell>

@@ -40,9 +40,16 @@ export function DashboardCharts() {
   const {
     inventoryTrend,
     purchaseOrdersPerMonth,
-    supplierDistribution,
+    shipmentStatusDistribution,
     certificateExpiryTimeline,
   } = data.charts;
+
+  const SHIPMENT_STATUS_COLORS: Record<string, string> = {
+    PENDING: "#6b7280",
+    IN_TRANSIT: "#3b82f6",
+    DELIVERED: "#22c55e",
+    DELAYED: "#ef4444",
+  };
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -88,22 +95,25 @@ export function DashboardCharts() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Supplier Distribution</CardTitle>
+          <CardTitle>Shipment Status Distribution</CardTitle>
         </CardHeader>
         <CardContent className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={supplierDistribution}
-                dataKey="value"
-                nameKey="name"
+                data={shipmentStatusDistribution}
+                dataKey="count"
+                nameKey="status"
                 cx="50%"
                 cy="50%"
                 outerRadius={90}
                 label
               >
-                {supplierDistribution.map((entry) => (
-                  <Cell key={entry.name} fill={entry.color} />
+                {shipmentStatusDistribution.map((entry) => (
+                  <Cell
+                    key={entry.status}
+                    fill={SHIPMENT_STATUS_COLORS[entry.status] ?? "#6b7280"}
+                  />
                 ))}
               </Pie>
               <Tooltip />
@@ -114,16 +124,16 @@ export function DashboardCharts() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Certificate Expiry Timeline</CardTitle>
+          <CardTitle>Certificate Expiry by Quarter</CardTitle>
         </CardHeader>
         <CardContent className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={certificateExpiryTimeline}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="month" />
+              <XAxis dataKey="quarter" />
               <YAxis allowDecimals={false} />
               <Tooltip />
-              <Bar dataKey="expiring" fill="#d97706" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="#d97706" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

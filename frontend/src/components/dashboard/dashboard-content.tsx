@@ -3,14 +3,18 @@
 import { useAuth } from "@/components/providers/auth-provider";
 import { DashboardCharts } from "@/components/dashboard/charts";
 import { KpiCards } from "@/components/dashboard/kpi-cards";
+import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { PageHeader } from "@/components/layout/page-header";
 import Link from "next/link";
 import { ArrowRight, Warehouse } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function DashboardContent() {
   const { user } = useAuth();
+
+  const canViewActivity =
+    user?.role === "ADMIN" || user?.role === "MANAGER";
 
   if (user?.role === "STAFF") {
     return (
@@ -51,6 +55,16 @@ export function DashboardContent() {
       />
       <KpiCards />
       <DashboardCharts />
+      {canViewActivity && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ActivityFeed />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

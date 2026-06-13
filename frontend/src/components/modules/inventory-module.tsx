@@ -109,9 +109,9 @@ export function InventoryModule() {
 
       {isLoading && <LoadingState />}
       {isError && <ErrorState message="Failed to load inventory" />}
-      {data?.inventory.length === 0 && <EmptyState message="No inventory records" />}
+      {!isLoading && !isError && (data?.inventory ?? []).length === 0 && <EmptyState message="No inventory records" />}
 
-      {data && data.inventory.length > 0 && (
+      {(data?.inventory ?? []).length > 0 && (
         <Table>
           <TableHeader>
             <TableRow>
@@ -125,7 +125,7 @@ export function InventoryModule() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.inventory.map((row) => {
+            {(data?.inventory ?? []).map((row) => {
               const low = row.quantity <= row.reorderLevel;
               const value = row.quantity * Number(row.product.unitPrice);
               return (
@@ -150,10 +150,10 @@ export function InventoryModule() {
 
       <div>
         <h2 className="mb-4 text-lg font-semibold">Recent Movements</h2>
-        {movementsData?.movements.length === 0 && (
+        {(movementsData?.movements ?? []).length === 0 && (
           <EmptyState message="No movements recorded yet" />
         )}
-        {movementsData && movementsData.movements.length > 0 && (
+        {(movementsData?.movements ?? []).length > 0 && (
           <Table>
             <TableHeader>
               <TableRow>
@@ -166,7 +166,7 @@ export function InventoryModule() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {movementsData.movements.map((m) => (
+              {(movementsData?.movements ?? []).map((m) => (
                 <TableRow key={m.id}>
                   <TableCell>{new Date(m.createdAt).toLocaleString()}</TableCell>
                   <TableCell>
@@ -195,7 +195,7 @@ export function InventoryModule() {
             <Label>Product</Label>
             <Select required value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })}>
               <option value="">Select product</option>
-              {productsData?.products.map((p) => (
+              {(productsData?.products ?? []).map((p) => (
                 <option key={p.id} value={p.id}>{p.sku} — {p.name}</option>
               ))}
             </Select>
@@ -204,7 +204,7 @@ export function InventoryModule() {
             <Label>Warehouse</Label>
             <Select required value={form.warehouseId} onChange={(e) => setForm({ ...form, warehouseId: e.target.value })}>
               <option value="">Select warehouse</option>
-              {warehousesData?.warehouses.map((w) => (
+              {(warehousesData?.warehouses ?? []).map((w) => (
                 <option key={w.id} value={w.id}>{w.name} ({w.location})</option>
               ))}
             </Select>

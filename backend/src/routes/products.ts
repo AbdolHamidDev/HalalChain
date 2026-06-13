@@ -1,10 +1,14 @@
 import { Router, Response } from "express";
 import { z } from "zod";
-import { UserRole } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { parseBody, sendNotFound, sendValidationError } from "../lib/validate";
 import { paramId } from "../lib/params";
-import { authenticate, authorize } from "../middleware/auth";
+import { AuthRequest, authenticate, authorize } from "../middleware/auth";
+import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
+import { logAudit } from "../lib/auditLog";
+import { buildTraceabilityTimeline } from "../lib/traceabilityEngine";
+import { generateProductQrCode } from "../lib/qrService";
 
 const router = Router();
 
@@ -23,15 +27,48 @@ router.get(
   "/",
   authenticate,
   authorize(UserRole.ADMIN, UserRole.MANAGER),
-  async (_req, res: Response) => {
-    const products = await prisma.product.findMany({
-      orderBy: { createdAt: "desc" },
-      include: {
-        supplier: { select: { id: true, name: true, country: true } },
-        inventory: { select: { quantity: true } },
-      },
-    });
-    res.json({ products });
+  async (req, res: Response) => {
+    const params = parsePaginationParams(req.query as Record<string, unknown>);
+    const { page, limit } = params;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.ProductWhereInput = {};
+    if (req.query.name) where.name = { contains: String(req.query.name), mode: "insensitive" };
+    if (req.query.sku) where.sku = { contains: String(req.query.sku), mode: "insensitive" };
+
+    const [total, products] = await Promise.all([
+      prisma.product.count({ where }),
+      prisma.product.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          supplier: { select: { id: true, name: true, country: true } },
+          inventory: { select: { quantity: true } },
+        },
+      }),
+    ]);
+
+    res.json(buildPaginatedResponse(products, total, params));
+  }
+);
+
+router.get(
+  "/:id/traceability",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MANAGER),
+  async (req, res: Response) => {
+    try {
+      const result = await buildTraceabilityTimeline(String(req.params.id));
+      res.json(result);
+    } catch (err) {
+      if (err instanceof Error && err.message === "PRODUCT_NOT_FOUND") {
+        res.status(404).json({ error: "Product not found" });
+        return;
+      }
+      throw err;
+    }
   }
 );
 
@@ -51,7 +88,11 @@ router.get(
       sendNotFound(res, "Product");
       return;
     }
-    res.json({ product });
+    const qrCodeUrl = await generateProductQrCode(
+      product.id,
+      process.env.FRONTEND_URL ?? "http://localhost:3000"
+    );
+    res.json({ product, qrCodeUrl });
   }
 );
 
@@ -59,7 +100,7 @@ router.post(
   "/",
   authenticate,
   authorize(UserRole.ADMIN),
-  async (req, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const parsed = parseBody(createSchema, req.body);
     if (!parsed.success) {
       sendValidationError(res, parsed.message);
@@ -74,8 +115,20 @@ router.post(
       return;
     }
 
+    const userId = req.user?.sub ?? null;
+
     try {
-      const product = await prisma.product.create({ data: parsed.data });
+      const product = await prisma.$transaction(async (tx) => {
+        const created = await tx.product.create({ data: parsed.data });
+        await logAudit(tx, {
+          userId,
+          action: "CREATE",
+          entityType: "Product",
+          entityId: created.id,
+          newData: created as unknown as Record<string, unknown>,
+        });
+        return created;
+      });
       res.status(201).json({ product });
     } catch {
       res.status(409).json({ error: "SKU already exists" });
@@ -87,7 +140,7 @@ router.patch(
   "/:id",
   authenticate,
   authorize(UserRole.ADMIN),
-  async (req, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const parsed = parseBody(updateSchema, req.body);
     if (!parsed.success) {
       sendValidationError(res, parsed.message);
@@ -102,10 +155,24 @@ router.patch(
       return;
     }
 
+    const userId = req.user?.sub ?? null;
+    const id = paramId(req.params.id);
+
     try {
-      const product = await prisma.product.update({
-        where: { id: paramId(req.params.id) },
-        data: parsed.data,
+      const product = await prisma.$transaction(async (tx) => {
+        const updated = await tx.product.update({
+          where: { id },
+          data: parsed.data,
+        });
+        await logAudit(tx, {
+          userId,
+          action: "UPDATE",
+          entityType: "Product",
+          entityId: updated.id,
+          oldData: existing as unknown as Record<string, unknown>,
+          newData: updated as unknown as Record<string, unknown>,
+        });
+        return updated;
       });
       res.json({ product });
     } catch {
@@ -118,7 +185,7 @@ router.delete(
   "/:id",
   authenticate,
   authorize(UserRole.ADMIN),
-  async (req, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const existing = await prisma.product.findUnique({
       where: { id: paramId(req.params.id) },
     });
@@ -127,7 +194,20 @@ router.delete(
       return;
     }
 
-    await prisma.product.delete({ where: { id: paramId(req.params.id) } });
+    const userId = req.user?.sub ?? null;
+    const id = paramId(req.params.id);
+
+    await prisma.$transaction(async (tx) => {
+      await tx.product.delete({ where: { id } });
+      await logAudit(tx, {
+        userId,
+        action: "DELETE",
+        entityType: "Product",
+        entityId: existing.id,
+        oldData: existing as unknown as Record<string, unknown>,
+      });
+    });
+
     res.json({ message: "Product deleted" });
   }
 );

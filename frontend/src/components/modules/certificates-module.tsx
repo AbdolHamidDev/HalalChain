@@ -127,9 +127,9 @@ export function CertificatesModule() {
 
       {isLoading && <LoadingState />}
       {isError && <ErrorState message="Failed to load certificates" />}
-      {data?.certificates.length === 0 && <EmptyState message="No certificates yet" />}
+      {!isLoading && !isError && (data?.certificates ?? []).length === 0 && <EmptyState message="No certificates yet" />}
 
-      {data && data.certificates.length > 0 && (
+      {(data?.certificates ?? []).length > 0 && (
         <Table>
           <TableHeader>
             <TableRow>
@@ -143,7 +143,7 @@ export function CertificatesModule() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.certificates.map((c) => {
+            {(data?.certificates ?? []).map((c) => {
               const st = certStatus(c.expiryDate);
               return (
                 <TableRow key={c.id}>
@@ -181,7 +181,7 @@ export function CertificatesModule() {
               <Label>Supplier</Label>
               <Select required value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}>
                 <option value="">Select supplier</option>
-                {suppliersData?.suppliers.map((s) => (
+                {(suppliersData?.suppliers ?? []).map((s) => (
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
               </Select>

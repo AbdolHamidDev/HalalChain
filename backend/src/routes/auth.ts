@@ -4,7 +4,7 @@ import { z } from "zod";
 import { UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { AUTH_COOKIE_NAME, signToken } from "../lib/jwt";
-import { AuthRequest, authenticate } from "../middleware/auth";
+import { AuthRequest, authenticate, authorize } from "../middleware/auth";
 
 const router = Router();
 
@@ -12,7 +12,10 @@ const registerSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
   password: z.string().min(8).max(128),
-  role: z.nativeEnum(UserRole).optional(),
+});
+
+const updateRoleSchema = z.object({
+  role: z.nativeEnum(UserRole),
 });
 
 const loginSchema = z.object({
@@ -51,7 +54,7 @@ router.post("/register", async (req: AuthRequest, res: Response) => {
     return;
   }
 
-  const { name, email, password, role } = parsed.data;
+  const { name, email, password } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -66,7 +69,7 @@ router.post("/register", async (req: AuthRequest, res: Response) => {
       name,
       email,
       passwordHash,
-      role: role ?? UserRole.STAFF,
+      role: UserRole.STAFF,
     },
   });
 
@@ -137,5 +140,41 @@ router.get("/me", authenticate, async (req: AuthRequest, res: Response) => {
 
   res.json({ user });
 });
+
+router.patch(
+  "/users/:id/role",
+  authenticate,
+  authorize(UserRole.ADMIN),
+  async (req: AuthRequest, res: Response) => {
+    const parsed = updateRoleSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid role" });
+      return;
+    }
+
+    const id = req.params.id as string;
+    const { role } = parsed.data;
+
+    const existing = await prisma.user.findUnique({ where: { id } });
+    if (!existing) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { role },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    res.json({ user: updatedUser });
+  }
+);
 
 export default router;
