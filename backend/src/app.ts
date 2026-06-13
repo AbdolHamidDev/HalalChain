@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";
+import fs from "fs";
 import { authRateLimiter } from "./lib/rateLimiter";
 import authRoutes from "./routes/auth";
 import dashboardRoutes from "./routes/dashboard";
@@ -18,6 +19,11 @@ import reportRoutes from "./routes/reports";
 import auditLogRoutes from "./routes/audit-logs";
 import notificationRoutes from "./routes/notifications";
 import publicRoutes from "./routes/public";
+import profileRoutes from "./routes/profile";
+import adminUserRoutes from "./routes/admin-users";
+
+// Ensure the avatar upload directory exists before the app starts handling requests
+fs.mkdirSync(path.join(process.cwd(), "uploads", "avatars"), { recursive: true });
 
 let swaggerDocument: object;
 try {
@@ -50,7 +56,7 @@ app.use(
 );
 
 // Custom CSP middleware: /api/docs gets relaxed policy for Swagger UI,
-// all other paths get strict default-src 'self'
+// all other paths get strict policy with img-src 'self' to allow avatar images
 app.use((req, res, next) => {
   if (req.path.startsWith("/api/docs")) {
     res.setHeader(
@@ -58,7 +64,7 @@ app.use((req, res, next) => {
       "script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
     );
   } else {
-    res.setHeader("Content-Security-Policy", "default-src 'self'");
+    res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self'");
   }
   next();
 });
@@ -94,6 +100,9 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/audit-logs", auditLogRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/admin/users", adminUserRoutes);
+app.use("/uploads/avatars", express.static(path.join(process.cwd(), "uploads", "avatars")));
 
 app.use(
   (

@@ -3,8 +3,6 @@
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Menu } from "lucide-react";
-import { useAuth } from "@/components/providers/auth-provider";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -15,6 +13,7 @@ import {
   fetchNotifications,
 } from "@/components/layout/notification-bell";
 import { NotificationDropdown } from "@/components/layout/notification-dropdown";
+import { UserMenu } from "@/components/layout/user-menu";
 
 function useBreadcrumb() {
   const pathname = usePathname();
@@ -26,14 +25,7 @@ function useBreadcrumb() {
   return current?.label ?? "Dashboard";
 }
 
-const roleColors: Record<string, "success" | "info" | "secondary"> = {
-  ADMIN: "success",
-  MANAGER: "info",
-  STAFF: "secondary",
-};
-
 export function DashboardHeader() {
-  const { user } = useAuth();
   const pageTitle = useBreadcrumb();
   const { toggle } = useMobileNav();
 
@@ -74,19 +66,12 @@ export function DashboardHeader() {
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
-          {user && (
-            <Badge
-              variant={roleColors[user.role] ?? "secondary"}
-              className="hidden sm:inline-flex"
-            >
-              {user.role}
-            </Badge>
-          )}
           <NotificationDropdown
             notifications={notifications}
             unreadCount={unreadCount}
           />
           <ThemeToggle />
+          <UserMenu />
         </div>
       </div>
     </header>

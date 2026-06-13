@@ -14,6 +14,7 @@ export interface User {
   email: string;
   role: UserRole;
   createdAt: string;
+  avatarUrl?: string | null;
 }
 
 export interface Supplier {
@@ -462,4 +463,68 @@ export const api = {
   // Dashboard activity
   getDashboardActivity: () =>
     request<{ activities: ActivityItem[] }>("/api/dashboard/activity"),
+
+  // Profile self-service
+  getProfile: () => request<{ user: User }>("/api/profile"),
+  updateProfile: (data: { name: string }) =>
+    request<{ user: User }>("/api/profile", {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  uploadAvatar: (file: File) => {
+    const form = new FormData();
+    form.append("avatar", file);
+    return fetch(`${API_BASE}/api/profile/avatar`, {
+      method: "POST",
+      credentials: "include",
+      body: form,
+    }).then(async (r) => {
+      const data = await r.json();
+      if (!r.ok)
+        throw new Error(
+          typeof data.error === "string" ? data.error : "Upload failed"
+        );
+      return data as { user: User };
+    });
+  },
+  deleteAvatar: () =>
+    request<{ user: User }>("/api/profile/avatar", { method: "DELETE" }),
+  changePassword: (data: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) =>
+    request<{ message: string }>("/api/profile/password", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  // Admin user management
+  adminGetUser: (id: string) => request<{ user: User }>(`/api/admin/users/${id}`),
+  adminUpdateUser: (id: string, data: { name: string }) =>
+    request<{ user: User }>(`/api/admin/users/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  adminUploadAvatar: (id: string, file: File) => {
+    const form = new FormData();
+    form.append("avatar", file);
+    return fetch(`${API_BASE}/api/admin/users/${id}/avatar`, {
+      method: "POST",
+      credentials: "include",
+      body: form,
+    }).then(async (r) => {
+      const data = await r.json();
+      if (!r.ok)
+        throw new Error(
+          typeof data.error === "string" ? data.error : "Upload failed"
+        );
+      return data as { user: User };
+    });
+  },
+  adminResetPassword: (id: string, data: { newPassword: string }) =>
+    request<{ message: string }>(`/api/admin/users/${id}/reset-password`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };

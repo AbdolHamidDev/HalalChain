@@ -37,6 +37,7 @@ function sanitizeUser(user: {
   email: string;
   role: UserRole;
   createdAt: Date;
+  avatarUrl?: string | null;
 }) {
   return {
     id: user.id,
@@ -44,6 +45,7 @@ function sanitizeUser(user: {
     email: user.email,
     role: user.role,
     createdAt: user.createdAt,
+    avatarUrl: user.avatarUrl ?? null,
   };
 }
 
@@ -130,6 +132,7 @@ router.get("/me", authenticate, async (req: AuthRequest, res: Response) => {
       email: true,
       role: true,
       createdAt: true,
+      avatarUrl: true,
     },
   });
 
