@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { api, HalalCertificate } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
+import { Sheet } from "@/components/ui/sheet";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -15,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { EmptyState, ErrorState, LoadingState } from "@/components/shared/state-blocks";
+import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/state-blocks";
 
 function certStatus(expiry: string) {
   const days = (new Date(expiry).getTime() - Date.now()) / 86400000;
@@ -46,12 +48,13 @@ export function CertificatesModule() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const isAdmin = user?.role === "ADMIN";
-  const [open, setOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [editing, setEditing] = useState<HalalCertificate | null>(null);
   const [form, setForm] = useState<FormData>(empty);
-  const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<HalalCertificate | null>(null);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["certificates"],
     queryFn: () => api.getCertificates(),
   });
@@ -77,24 +80,39 @@ export function CertificatesModule() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["certificates"] });
-      setOpen(false);
+      setSheetOpen(false);
       setEditing(null);
       setForm(empty);
-      setError(null);
+      setFormError(null);
+      toast.success(editing ? "Certificate updated" : "Certificate added", {
+        description: editing
+          ? `Certificate ${form.certificateNumber} has been updated.`
+          : `Certificate ${form.certificateNumber} issued by ${form.issuedBy} has been added.`,
+      });
     },
-    onError: (e: Error) => setError(e.message),
+    onError: (e: Error) => setFormError(e.message),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteCertificate(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["certificates"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["certificates"] });
+      toast.success("Certificate deleted", {
+        description: `Certificate ${deleteTarget?.certificateNumber} has been removed.`,
+      });
+      setDeleteTarget(null);
+    },
+    onError: (e: Error) => {
+      toast.error("Failed to delete certificate", { description: e.message });
+      setDeleteTarget(null);
+    },
   });
 
   function openCreate() {
     setEditing(null);
     setForm(empty);
-    setError(null);
-    setOpen(true);
+    setFormError(null);
+    setSheetOpen(true);
   }
 
   function openEdit(c: HalalCertificate) {
@@ -107,9 +125,113 @@ export function CertificatesModule() {
       expiryDate: c.expiryDate.slice(0, 10),
       fileUrl: c.fileUrl ?? "",
     });
-    setError(null);
-    setOpen(true);
+    setFormError(null);
+    setSheetOpen(true);
   }
+
+  const certificates = data?.certificates ?? [];
+
+  const formContent = (
+    <form
+      id="certificate-form"
+      className="space-y-5"
+      onSubmit={(e) => {
+        e.preventDefault();
+        saveMutation.mutate();
+      }}
+    >
+      {!editing && (
+        <div className="space-y-2">
+          <Label htmlFor="cert-supplier">
+            Supplier <span className="text-destructive" aria-hidden="true">*</span>
+          </Label>
+          <Select
+            id="cert-supplier"
+            required
+            value={form.supplierId}
+            onChange={(e) => setForm({ ...form, supplierId: e.target.value })}
+          >
+            <option value="">Select supplier</option>
+            {(suppliersData?.suppliers ?? []).map((s) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </Select>
+        </div>
+      )}
+      <div className="space-y-2">
+        <Label htmlFor="cert-number">
+          Certificate Number <span className="text-destructive" aria-hidden="true">*</span>
+        </Label>
+        <Input
+          id="cert-number"
+          required
+          value={form.certificateNumber}
+          onChange={(e) => setForm({ ...form, certificateNumber: e.target.value })}
+          placeholder="e.g. JAKIM/2024/001234"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="cert-issuer">
+          Issuing Authority <span className="text-destructive" aria-hidden="true">*</span>
+        </Label>
+        <Select
+          id="cert-issuer"
+          value={form.issuedBy}
+          onChange={(e) => setForm({ ...form, issuedBy: e.target.value })}
+        >
+          <option value="JAKIM">JAKIM (Malaysia)</option>
+          <option value="MUI">MUI (Indonesia)</option>
+          <option value="CICOT">CICOT (Thailand)</option>
+          <option value="Other">Other</option>
+        </Select>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="cert-issue-date">
+            Issue Date <span className="text-destructive" aria-hidden="true">*</span>
+          </Label>
+          <Input
+            id="cert-issue-date"
+            type="date"
+            required
+            value={form.issueDate}
+            onChange={(e) => setForm({ ...form, issueDate: e.target.value })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="cert-expiry-date">
+            Expiry Date <span className="text-destructive" aria-hidden="true">*</span>
+          </Label>
+          <Input
+            id="cert-expiry-date"
+            type="date"
+            required
+            value={form.expiryDate}
+            onChange={(e) => setForm({ ...form, expiryDate: e.target.value })}
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="cert-file-url">
+          Document URL{" "}
+          <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+        </Label>
+        <Input
+          id="cert-file-url"
+          type="url"
+          value={form.fileUrl}
+          onChange={(e) => setForm({ ...form, fileUrl: e.target.value })}
+          placeholder="https://..."
+        />
+        <p className="text-xs text-muted-foreground">
+          Link to the official certificate document (PDF or image)
+        </p>
+      </div>
+      {formError && (
+        <p className="text-sm text-destructive" role="alert">{formError}</p>
+      )}
+    </form>
+  );
 
   return (
     <div className="space-y-6">
@@ -125,102 +247,156 @@ export function CertificatesModule() {
         }
       />
 
-      {isLoading && <LoadingState />}
-      {isError && <ErrorState message="Failed to load certificates" />}
-      {!isLoading && !isError && (data?.certificates ?? []).length === 0 && <EmptyState message="No certificates yet" />}
-
-      {(data?.certificates ?? []).length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Number</TableHead>
-              <TableHead>Issued By</TableHead>
-              <TableHead>Supplier</TableHead>
-              <TableHead>Issue Date</TableHead>
-              <TableHead>Expiry</TableHead>
-              <TableHead>Status</TableHead>
-              {isAdmin && <TableHead className="text-right">Actions</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(data?.certificates ?? []).map((c) => {
-              const st = certStatus(c.expiryDate);
-              return (
-                <TableRow key={c.id}>
-                  <TableCell className="font-mono text-xs">{c.certificateNumber}</TableCell>
-                  <TableCell>{c.issuedBy}</TableCell>
-                  <TableCell>{c.supplier?.name}</TableCell>
-                  <TableCell>{new Date(c.issueDate).toLocaleDateString()}</TableCell>
-                  <TableCell>{new Date(c.expiryDate).toLocaleDateString()}</TableCell>
-                  <TableCell><Badge variant={st.variant}>{st.label}</Badge></TableCell>
-                  {isAdmin && (
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button size="sm" variant="outline" onClick={() => openEdit(c)}>
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button size="sm" variant="destructive" onClick={() => {
-                          if (confirm("Delete certificate?")) deleteMutation.mutate(c.id);
-                        }}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  )}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+      {isLoading && <TableSkeleton columns={isAdmin ? 7 : 6} rows={5} />}
+      {isError && (
+        <ErrorState
+          message="Failed to load certificates"
+          onRetry={() => refetch()}
+        />
       )}
 
-      <Dialog open={open} onClose={() => setOpen(false)} title={editing ? "Edit Certificate" : "New Certificate"}>
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(); }}>
-          {!editing && (
-            <div className="space-y-2">
-              <Label>Supplier</Label>
-              <Select required value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}>
-                <option value="">Select supplier</option>
-                {(suppliersData?.suppliers ?? []).map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </Select>
-            </div>
-          )}
-          <div className="space-y-2">
-            <Label>Certificate Number</Label>
-            <Input required value={form.certificateNumber} onChange={(e) => setForm({ ...form, certificateNumber: e.target.value })} />
+      {!isLoading && !isError && certificates.length === 0 && (
+        <EmptyState
+          variant="certificates"
+          onAction={isAdmin ? openCreate : undefined}
+        />
+      )}
+
+      {certificates.length > 0 && (
+        <>
+          {/* Mobile card view */}
+          <div className="grid gap-3 sm:hidden">
+            {certificates.map((c) => {
+              const st = certStatus(c.expiryDate);
+              return (
+                <div key={c.id} className="rounded-xl border bg-card p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-mono text-xs text-muted-foreground">{c.certificateNumber}</p>
+                      <p className="font-medium truncate">{c.supplier?.name}</p>
+                    </div>
+                    <Badge variant={st.variant} className="shrink-0">{st.label}</Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <span>Issued by: <span className="font-medium text-foreground">{c.issuedBy}</span></span>
+                    <span>Issued: <span className="font-medium text-foreground">{new Date(c.issueDate).toLocaleDateString()}</span></span>
+                    <span>Expires: <span className="font-medium text-foreground">{new Date(c.expiryDate).toLocaleDateString()}</span></span>
+                  </div>
+                  {isAdmin && (
+                    <div className="flex gap-2 pt-1 border-t">
+                      <Button size="sm" variant="outline" className="flex-1" onClick={() => openEdit(c)}>
+                        <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="flex-1"
+                        aria-label={`Delete certificate ${c.certificateNumber}`}
+                        onClick={() => setDeleteTarget(c)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-          <div className="space-y-2">
-            <Label>Issued By</Label>
-            <Select value={form.issuedBy} onChange={(e) => setForm({ ...form, issuedBy: e.target.value })}>
-              <option value="JAKIM">JAKIM (Malaysia)</option>
-              <option value="MUI">MUI (Indonesia)</option>
-              <option value="CICOT">CICOT (Thailand)</option>
-              <option value="Other">Other</option>
-            </Select>
+
+          {/* Desktop table view */}
+          <div className="hidden sm:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Number</TableHead>
+                  <TableHead>Issued By</TableHead>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>Issue Date</TableHead>
+                  <TableHead>Expiry</TableHead>
+                  <TableHead>Status</TableHead>
+                  {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {certificates.map((c) => {
+                  const st = certStatus(c.expiryDate);
+                  return (
+                    <TableRow key={c.id}>
+                      <TableCell className="font-mono text-xs">{c.certificateNumber}</TableCell>
+                      <TableCell>{c.issuedBy}</TableCell>
+                      <TableCell>{c.supplier?.name}</TableCell>
+                      <TableCell>{new Date(c.issueDate).toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(c.expiryDate).toLocaleDateString()}</TableCell>
+                      <TableCell><Badge variant={st.variant}>{st.label}</Badge></TableCell>
+                      {isAdmin && (
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              aria-label={`Edit certificate ${c.certificateNumber}`}
+                              onClick={() => openEdit(c)}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              aria-label={`Delete certificate ${c.certificateNumber}`}
+                              onClick={() => setDeleteTarget(c)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Issue Date</Label>
-              <Input type="date" required value={form.issueDate} onChange={(e) => setForm({ ...form, issueDate: e.target.value })} />
-            </div>
-            <div className="space-y-2">
-              <Label>Expiry Date</Label>
-              <Input type="date" required value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Document URL (optional)</Label>
-            <Input type="url" value={form.fileUrl} onChange={(e) => setForm({ ...form, fileUrl: e.target.value })} />
-          </div>
-          {error && <p className="text-sm text-[var(--color-destructive)]">{error}</p>}
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" disabled={saveMutation.isPending}>Save</Button>
-          </div>
-        </form>
-      </Dialog>
+        </>
+      )}
+
+      {/* Create / Edit Sheet */}
+      <Sheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        title={editing ? "Edit Certificate" : "New Halal Certificate"}
+        description={
+          editing
+            ? "Update certificate details and expiry information."
+            : "Add a new halal certification to track compliance."
+        }
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => setSheetOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="certificate-form"
+              disabled={saveMutation.isPending}
+            >
+              {saveMutation.isPending ? "Saving…" : editing ? "Save Changes" : "Add Certificate"}
+            </Button>
+          </>
+        }
+      >
+        {formContent}
+      </Sheet>
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        isPending={deleteMutation.isPending}
+        title="Delete certificate?"
+        description={`This will permanently remove certificate "${deleteTarget?.certificateNumber}". Compliance records for this supplier may be affected.`}
+        confirmLabel="Delete Certificate"
+      />
     </div>
   );
 }

@@ -24,19 +24,19 @@ export function DashboardContent() {
           description="Quick access to inbound and outbound stock movements"
         />
         <Card>
-          <CardContent className="flex items-center justify-between pt-6">
+          <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                 <Warehouse className="h-5 w-5 text-primary" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-semibold">Warehouse Operations</p>
                 <p className="text-sm text-muted-foreground">
                   Process inbound receipts and outbound dispatch orders
                 </p>
               </div>
             </div>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
               <Link href="/dashboard/inventory">
                 Go to Inventory <ArrowRight className="h-3.5 w-3.5" />
               </Link>

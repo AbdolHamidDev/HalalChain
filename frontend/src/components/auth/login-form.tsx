@@ -12,8 +12,8 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/components/providers/auth-provider";
 
 const schema = z.object({
-  email: z.string().email("Email không hợp lệ"),
-  password: z.string().min(1, "Vui lòng nhập mật khẩu"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -29,7 +29,6 @@ export function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { email: "admin@halalchain.com", password: "Admin@123" },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -38,44 +37,58 @@ export function LoginForm() {
       await login(data.email, data.password);
       router.push("/dashboard");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Đăng nhập thất bại");
+      setError(e instanceof Error ? e.message : "Sign in failed. Please check your credentials.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" {...register("email")} />
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          aria-describedby={errors.email ? "email-error" : undefined}
+          aria-invalid={!!errors.email}
+          {...register("email")}
+        />
         {errors.email && (
-          <p className="text-xs text-[var(--color-destructive)]">
+          <p id="email-error" className="text-xs text-destructive" role="alert">
             {errors.email.message}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Mật khẩu</Label>
-        <Input id="password" type="password" {...register("password")} />
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
+          type="password"
+          autoComplete="current-password"
+          aria-describedby={errors.password ? "password-error" : undefined}
+          aria-invalid={!!errors.password}
+          {...register("password")}
+        />
         {errors.password && (
-          <p className="text-xs text-[var(--color-destructive)]">
+          <p id="password-error" className="text-xs text-destructive" role="alert">
             {errors.password.message}
           </p>
         )}
       </div>
 
       {error && (
-        <p className="text-sm text-[var(--color-destructive)]">{error}</p>
+        <p className="text-sm text-destructive" role="alert">{error}</p>
       )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+        {isSubmitting ? "Signing in…" : "Sign In"}
       </Button>
 
-      <p className="text-center text-sm text-[var(--color-muted-foreground)]">
-        Chưa có tài khoản?{" "}
-        <Link href="/register" className="font-medium text-[var(--color-primary)]">
-          Đăng ký
+      <p className="text-center text-sm text-muted-foreground">
+        Don&apos;t have an account?{" "}
+        <Link href="/register" className="font-medium text-primary hover:underline">
+          Create account
         </Link>
       </p>
     </form>

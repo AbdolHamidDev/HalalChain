@@ -2,11 +2,14 @@
 
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { Menu } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { navItems } from "@/lib/navigation";
+import { useMobileNav } from "@/components/layout/mobile-nav-provider";
 import {
   type Notification,
   fetchNotifications,
@@ -32,6 +35,7 @@ const roleColors: Record<string, "success" | "info" | "secondary"> = {
 export function DashboardHeader() {
   const { user } = useAuth();
   const pageTitle = useBreadcrumb();
+  const { toggle } = useMobileNav();
 
   const { data } = useQuery({
     queryKey: ["notifications"],
@@ -43,18 +47,38 @@ export function DashboardHeader() {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <header className="sticky top-0 z-10 -mx-8 -mt-8 mb-6 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center gap-4 px-8">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">HalalChain</span>
-          <Separator orientation="vertical" className="h-4" />
-          <span className="font-medium text-foreground">{pageTitle}</span>
+    <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md supports-[backdrop-filter]:bg-card/60">
+      <div className="mx-auto flex h-14 w-full max-w-[1280px] min-w-0 items-center gap-2 px-4 sm:gap-4 sm:px-6">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="shrink-0 lg:hidden"
+          onClick={toggle}
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+
+        <div className="flex min-w-0 flex-1 items-center gap-2 text-small">
+          <span className="hidden shrink-0 text-muted-foreground sm:inline">
+            HalalChain
+          </span>
+          <Separator
+            orientation="vertical"
+            className="hidden h-4 sm:block"
+          />
+          <span className="truncate font-medium text-foreground">
+            {pageTitle}
+          </span>
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
           {user && (
-            <Badge variant={roleColors[user.role] ?? "secondary"}>
+            <Badge
+              variant={roleColors[user.role] ?? "secondary"}
+              className="hidden sm:inline-flex"
+            >
               {user.role}
             </Badge>
           )}

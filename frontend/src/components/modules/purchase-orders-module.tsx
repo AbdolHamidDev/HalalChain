@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, ChevronRight, Trash2 } from "lucide-react";
+import { Plus, ChevronRight, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { api, PurchaseOrder, PurchaseOrderStatus } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -15,12 +17,18 @@ import { Badge, statusVariant } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { EmptyState, ErrorState, LoadingState } from "@/components/shared/state-blocks";
+import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/state-blocks";
 
 const NEXT_STATUS: Partial<Record<PurchaseOrderStatus, PurchaseOrderStatus>> = {
   DRAFT: "APPROVED",
   APPROVED: "SHIPPING",
   SHIPPING: "RECEIVED",
+};
+
+const STATUS_LABEL: Partial<Record<PurchaseOrderStatus, string>> = {
+  APPROVED: "Approve",
+  SHIPPING: "Mark Shipping",
+  RECEIVED: "Mark Received",
 };
 
 type FormData = { supplierId: string; totalAmount: string };
@@ -32,8 +40,10 @@ export function PurchaseOrdersModule() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>({ supplierId: "", totalAmount: "" });
   const [error, setError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<PurchaseOrder | null>(null);
+  const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["purchase-orders"],
     queryFn: () => api.getPurchaseOrders(),
   });
@@ -50,28 +60,54 @@ export function PurchaseOrdersModule() {
         supplierId: form.supplierId,
         totalAmount: Number(form.totalAmount),
       }),
-    onSuccess: () => {
+    onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ["purchase-orders"] });
       setOpen(false);
       setForm({ supplierId: "", totalAmount: "" });
       setError(null);
+      toast.success("Purchase order created", {
+        description: `${result.purchaseOrder.poNumber} has been created as a draft.`,
+      });
     },
     onError: (e: Error) => setError(e.message),
   });
 
   const statusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: PurchaseOrderStatus }) =>
-      api.updatePurchaseOrderStatus(id, status),
-    onSuccess: () => {
+    mutationFn: ({ id, status }: { id: string; status: PurchaseOrderStatus }) => {
+      setPendingStatusId(id);
+      return api.updatePurchaseOrderStatus(id, status);
+    },
+    onSuccess: (_, { status }) => {
       qc.invalidateQueries({ queryKey: ["purchase-orders"] });
       qc.invalidateQueries({ queryKey: ["shipments"] });
+      setPendingStatusId(null);
+      const statusLabel = status.charAt(0) + status.slice(1).toLowerCase().replace("_", " ");
+      toast.success("Status updated", {
+        description: `Purchase order has been moved to ${statusLabel}.`,
+      });
+    },
+    onError: (e: Error) => {
+      setPendingStatusId(null);
+      toast.error("Failed to update status", { description: e.message });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deletePurchaseOrder(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["purchase-orders"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["purchase-orders"] });
+      toast.success("Purchase order deleted", {
+        description: `${deleteTarget?.poNumber} has been removed.`,
+      });
+      setDeleteTarget(null);
+    },
+    onError: (e: Error) => {
+      toast.error("Failed to delete purchase order", { description: e.message });
+      setDeleteTarget(null);
+    },
   });
+
+  const purchaseOrders = data?.purchaseOrders ?? [];
 
   return (
     <div className="space-y-6">
@@ -87,73 +123,158 @@ export function PurchaseOrdersModule() {
         }
       />
 
-      {isLoading && <LoadingState />}
-      {isError && <ErrorState message="Failed to load purchase orders" />}
-      {!isLoading && !isError && (data?.purchaseOrders ?? []).length === 0 && <EmptyState message="No purchase orders yet" />}
-
-      {(data?.purchaseOrders ?? []).length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>PO Number</TableHead>
-              <TableHead>Supplier</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Shipments</TableHead>
-              <TableHead>Created</TableHead>
-              {isAdmin && <TableHead className="text-right">Actions</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(data?.purchaseOrders ?? []).map((po: PurchaseOrder) => {
-              const next = NEXT_STATUS[po.status];
-              return (
-                <TableRow key={po.id}>
-                  <TableCell className="font-mono text-xs">{po.poNumber}</TableCell>
-                  <TableCell>{po.supplier?.name}</TableCell>
-                  <TableCell>${Number(po.totalAmount).toLocaleString()}</TableCell>
-                  <TableCell><Badge variant={statusVariant(po.status)}>{po.status}</Badge></TableCell>
-                  <TableCell>{po.shipments?.length ?? 0}</TableCell>
-                  <TableCell>{new Date(po.createdAt).toLocaleDateString()}</TableCell>
-                  {isAdmin && (
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        {next && (
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => statusMutation.mutate({ id: po.id, status: next })}
-                          >
-                            <ChevronRight className="h-3.5 w-3.5" />
-                            {next}
-                          </Button>
-                        )}
-                        {po.status === "DRAFT" && (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => {
-                              if (confirm(`Delete ${po.poNumber}?`)) deleteMutation.mutate(po.id);
-                            }}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  )}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+      {isLoading && <TableSkeleton columns={isAdmin ? 7 : 6} rows={5} />}
+      {isError && (
+        <ErrorState
+          message="Failed to load purchase orders"
+          onRetry={() => refetch()}
+        />
       )}
 
+      {!isLoading && !isError && purchaseOrders.length === 0 && (
+        <EmptyState
+          variant="purchase-orders"
+          onAction={isAdmin ? () => { setOpen(true); setError(null); } : undefined}
+        />
+      )}
+
+      {purchaseOrders.length > 0 && (
+        <>
+          {/* Mobile card view */}
+          <div className="grid gap-3 sm:hidden">
+            {purchaseOrders.map((po: PurchaseOrder) => {
+              const next = NEXT_STATUS[po.status];
+              const isAdvancing = pendingStatusId === po.id && statusMutation.isPending;
+              return (
+                <div key={po.id} className="rounded-xl border bg-card p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-mono text-xs text-muted-foreground">{po.poNumber}</p>
+                      <p className="font-medium truncate">{po.supplier?.name}</p>
+                    </div>
+                    <Badge variant={statusVariant(po.status)} className="shrink-0">{po.status}</Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <span>Amount: <span className="font-medium text-foreground">${Number(po.totalAmount).toLocaleString()}</span></span>
+                    <span>Shipments: <span className="font-medium text-foreground">{po.shipments?.length ?? 0}</span></span>
+                    <span>{new Date(po.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  {isAdmin && (next || po.status === "DRAFT") && (
+                    <div className="flex gap-2 pt-1 border-t">
+                      {next && (
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="flex-1"
+                          disabled={isAdvancing}
+                          onClick={() => statusMutation.mutate({ id: po.id, status: next })}
+                        >
+                          {isAdvancing ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <ChevronRight className="h-3.5 w-3.5 mr-1" />
+                          )}
+                          {STATUS_LABEL[next] ?? next}
+                        </Button>
+                      )}
+                      {po.status === "DRAFT" && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className={next ? "" : "flex-1"}
+                          aria-label={`Delete purchase order ${po.poNumber}`}
+                          onClick={() => setDeleteTarget(po)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop table view */}
+          <div className="hidden sm:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>PO Number</TableHead>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Shipments</TableHead>
+                  <TableHead>Created</TableHead>
+                  {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {purchaseOrders.map((po: PurchaseOrder) => {
+                  const next = NEXT_STATUS[po.status];
+                  const isAdvancing = pendingStatusId === po.id && statusMutation.isPending;
+                  return (
+                    <TableRow key={po.id}>
+                      <TableCell className="font-mono text-xs">{po.poNumber}</TableCell>
+                      <TableCell>{po.supplier?.name}</TableCell>
+                      <TableCell>${Number(po.totalAmount).toLocaleString()}</TableCell>
+                      <TableCell><Badge variant={statusVariant(po.status)}>{po.status}</Badge></TableCell>
+                      <TableCell>{po.shipments?.length ?? 0}</TableCell>
+                      <TableCell>{new Date(po.createdAt).toLocaleDateString()}</TableCell>
+                      {isAdmin && (
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            {next && (
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                disabled={isAdvancing}
+                                onClick={() => statusMutation.mutate({ id: po.id, status: next })}
+                                aria-label={`${STATUS_LABEL[next] ?? next} ${po.poNumber}`}
+                              >
+                                {isAdvancing ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                  <ChevronRight className="h-3.5 w-3.5" />
+                                )}
+                                {STATUS_LABEL[next] ?? next}
+                              </Button>
+                            )}
+                            {po.status === "DRAFT" && (
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                aria-label={`Delete purchase order ${po.poNumber}`}
+                                onClick={() => setDeleteTarget(po)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </>
+      )}
+
+      {/* Create dialog */}
       <Dialog open={open} onClose={() => setOpen(false)} title="New Purchase Order">
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }}>
           <div className="space-y-2">
-            <Label>Supplier</Label>
-            <Select required value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}>
+            <Label htmlFor="po-supplier">
+              Supplier <span className="text-destructive" aria-hidden="true">*</span>
+            </Label>
+            <Select
+              id="po-supplier"
+              required
+              value={form.supplierId}
+              onChange={(e) => setForm({ ...form, supplierId: e.target.value })}
+            >
               <option value="">Select supplier</option>
               {(suppliersData?.suppliers ?? []).map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>
@@ -161,16 +282,45 @@ export function PurchaseOrdersModule() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Total Amount (USD)</Label>
-            <Input type="number" min="0" step="0.01" required value={form.totalAmount} onChange={(e) => setForm({ ...form, totalAmount: e.target.value })} />
+            <Label htmlFor="po-amount">
+              Total Amount (USD) <span className="text-destructive" aria-hidden="true">*</span>
+            </Label>
+            <Input
+              id="po-amount"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              value={form.totalAmount}
+              onChange={(e) => setForm({ ...form, totalAmount: e.target.value })}
+              placeholder="0.00"
+            />
+            <p className="text-xs text-muted-foreground">
+              A PO number will be auto-generated. The order starts in DRAFT status.
+            </p>
           </div>
-          {error && <p className="text-sm text-[var(--color-destructive)]">{error}</p>}
-          <div className="flex justify-end gap-2">
+          {error && (
+            <p className="text-sm text-destructive" role="alert">{error}</p>
+          )}
+          <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" disabled={createMutation.isPending}>Create PO</Button>
+            <Button type="submit" disabled={createMutation.isPending}>
+              {createMutation.isPending ? "Creating…" : "Create PO"}
+            </Button>
           </div>
         </form>
       </Dialog>
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        isPending={deleteMutation.isPending}
+        title="Delete purchase order?"
+        description={`This will permanently remove PO "${deleteTarget?.poNumber}". Only DRAFT orders can be deleted.`}
+        confirmLabel="Delete PO"
+      />
     </div>
   );
 }

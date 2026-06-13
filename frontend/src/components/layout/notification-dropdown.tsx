@@ -81,7 +81,7 @@ export function NotificationDropdown({
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-80">
+      <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] max-w-80 sm:w-80">
         {/* Header */}
         <div className="flex items-center justify-between px-2 py-1.5">
           <DropdownMenuLabel className="px-0 py-0">

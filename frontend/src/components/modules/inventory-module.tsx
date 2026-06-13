@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
@@ -15,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { EmptyState, ErrorState, LoadingState } from "@/components/shared/state-blocks";
+import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/state-blocks";
 
 type MovementForm = {
   productId: string;
@@ -39,12 +40,12 @@ export function InventoryModule() {
   const [form, setForm] = useState<MovementForm>(emptyMovement);
   const [error, setError] = useState<string | null>(null);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["inventory"],
     queryFn: () => api.getInventory(),
   });
 
-  const { data: movementsData } = useQuery({
+  const { data: movementsData, isLoading: isLoadingMovements } = useQuery({
     queryKey: ["inventory-movements"],
     queryFn: () => api.getInventoryMovements(),
   });
@@ -75,6 +76,15 @@ export function InventoryModule() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["inventory"] });
       qc.invalidateQueries({ queryKey: ["inventory-movements"] });
+      const product = productsData?.products.find((p) => p.id === form.productId);
+      const productName = product?.name ?? "product";
+      const action = dialogType === "inbound" ? "received" : "dispatched";
+      toast.success(
+        dialogType === "inbound" ? "Inbound movement recorded" : "Outbound movement recorded",
+        {
+          description: `${form.quantity} units of ${productName} ${action} successfully.`,
+        }
+      );
       setDialogType(null);
       setForm(emptyMovement);
       setError(null);
@@ -88,6 +98,9 @@ export function InventoryModule() {
     setError(null);
   }
 
+  const inventory = data?.inventory ?? [];
+  const movements = movementsData?.movements ?? [];
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -95,7 +108,7 @@ export function InventoryModule() {
         description="Inbound / outbound stock movements per warehouse with reorder alerts"
         action={
           canMove ? (
-            <div className="flex gap-2">
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
               <Button variant="secondary" onClick={() => openMovement("inbound")}>
                 <ArrowDownToLine className="h-4 w-4" /> Inbound
               </Button>
@@ -107,93 +120,177 @@ export function InventoryModule() {
         }
       />
 
-      {isLoading && <LoadingState />}
-      {isError && <ErrorState message="Failed to load inventory" />}
-      {!isLoading && !isError && (data?.inventory ?? []).length === 0 && <EmptyState message="No inventory records" />}
+      {/* Stock levels */}
+      {isLoading && <TableSkeleton columns={7} rows={5} />}
+      {isError && (
+        <ErrorState
+          message="Failed to load inventory"
+          onRetry={() => refetch()}
+        />
+      )}
+      {!isLoading && !isError && inventory.length === 0 && (
+        <EmptyState variant="inventory" />
+      )}
 
-      {(data?.inventory ?? []).length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>SKU</TableHead>
-              <TableHead>Warehouse</TableHead>
-              <TableHead>Quantity</TableHead>
-              <TableHead>Reorder Level</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Value</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(data?.inventory ?? []).map((row) => {
+      {inventory.length > 0 && (
+        <>
+          {/* Mobile card view */}
+          <div className="grid gap-3 sm:hidden">
+            {inventory.map((row) => {
               const low = row.quantity <= row.reorderLevel;
               const value = row.quantity * Number(row.product.unitPrice);
               return (
-                <TableRow key={row.id}>
-                  <TableCell className="font-medium">{row.product.name}</TableCell>
-                  <TableCell className="font-mono text-xs">{row.product.sku}</TableCell>
-                  <TableCell>{row.warehouse.name}</TableCell>
-                  <TableCell>{row.quantity} {row.product.unit}</TableCell>
-                  <TableCell>{row.reorderLevel}</TableCell>
-                  <TableCell>
-                    <Badge variant={low ? "warning" : "success"}>
+                <div key={row.id} className="rounded-xl border bg-card p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{row.product.name}</p>
+                      <p className="font-mono text-xs text-muted-foreground">{row.product.sku}</p>
+                    </div>
+                    <Badge variant={low ? "warning" : "success"} className="shrink-0">
                       {low ? "Low Stock" : "OK"}
                     </Badge>
-                  </TableCell>
-                  <TableCell>${value.toLocaleString()}</TableCell>
-                </TableRow>
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <span>{row.warehouse.name}</span>
+                    <span>Qty: <span className="font-medium text-foreground">{row.quantity} {row.product.unit}</span></span>
+                    <span>Reorder: <span className="font-medium text-foreground">{row.reorderLevel}</span></span>
+                    <span>Value: <span className="font-medium text-foreground">${value.toLocaleString()}</span></span>
+                  </div>
+                </div>
               );
             })}
-          </TableBody>
-        </Table>
+          </div>
+
+          {/* Desktop table view */}
+          <div className="hidden sm:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Product</TableHead>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Warehouse</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead>Reorder Level</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Value</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {inventory.map((row) => {
+                  const low = row.quantity <= row.reorderLevel;
+                  const value = row.quantity * Number(row.product.unitPrice);
+                  return (
+                    <TableRow key={row.id}>
+                      <TableCell className="font-medium">{row.product.name}</TableCell>
+                      <TableCell className="font-mono text-xs">{row.product.sku}</TableCell>
+                      <TableCell>{row.warehouse.name}</TableCell>
+                      <TableCell>{row.quantity} {row.product.unit}</TableCell>
+                      <TableCell>{row.reorderLevel}</TableCell>
+                      <TableCell>
+                        <Badge variant={low ? "warning" : "success"}>
+                          {low ? "Low Stock" : "OK"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>${value.toLocaleString()}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       )}
 
+      {/* Recent Movements */}
       <div>
         <h2 className="mb-4 text-lg font-semibold">Recent Movements</h2>
-        {(movementsData?.movements ?? []).length === 0 && (
-          <EmptyState message="No movements recorded yet" />
+
+        {isLoadingMovements && <TableSkeleton columns={6} rows={4} />}
+
+        {!isLoadingMovements && movements.length === 0 && (
+          <EmptyState variant="inventory-movements" />
         )}
-        {(movementsData?.movements ?? []).length > 0 && (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Product</TableHead>
-                <TableHead>Warehouse</TableHead>
-                <TableHead>Qty</TableHead>
-                <TableHead>By</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(movementsData?.movements ?? []).map((m) => (
-                <TableRow key={m.id}>
-                  <TableCell>{new Date(m.createdAt).toLocaleString()}</TableCell>
-                  <TableCell>
-                    <Badge variant={m.type === "INBOUND" ? "success" : "info"}>
+
+        {movements.length > 0 && (
+          <>
+            {/* Mobile card view */}
+            <div className="grid gap-3 sm:hidden">
+              {movements.map((m) => (
+                <div key={m.id} className="rounded-xl border bg-card p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-medium truncate">{m.product.name}</p>
+                    <Badge variant={m.type === "INBOUND" ? "success" : "info"} className="shrink-0">
                       {m.type}
                     </Badge>
-                  </TableCell>
-                  <TableCell>{m.product.name}</TableCell>
-                  <TableCell>{m.warehouse.name}</TableCell>
-                  <TableCell>{m.quantity}</TableCell>
-                  <TableCell>{m.user?.name ?? "—"}</TableCell>
-                </TableRow>
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <span>{m.warehouse.name}</span>
+                    <span>Qty: <span className="font-medium text-foreground">{m.quantity}</span></span>
+                    {m.user?.name && <span>By: {m.user.name}</span>}
+                    <span>{new Date(m.createdAt).toLocaleString()}</span>
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+
+            {/* Desktop table view */}
+            <div className="hidden sm:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Warehouse</TableHead>
+                    <TableHead>Qty</TableHead>
+                    <TableHead>By</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {movements.map((m) => (
+                    <TableRow key={m.id}>
+                      <TableCell>{new Date(m.createdAt).toLocaleString()}</TableCell>
+                      <TableCell>
+                        <Badge variant={m.type === "INBOUND" ? "success" : "info"}>
+                          {m.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{m.product.name}</TableCell>
+                      <TableCell>{m.warehouse.name}</TableCell>
+                      <TableCell>{m.quantity}</TableCell>
+                      <TableCell>{m.user?.name ?? "—"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
         )}
       </div>
 
+      {/* Inbound / Outbound dialog */}
       <Dialog
         open={dialogType !== null}
         onClose={() => setDialogType(null)}
-        title={dialogType === "inbound" ? "Inbound (Nhập kho)" : "Outbound (Xuất kho)"}
+        title={dialogType === "inbound" ? "Record Inbound Stock" : "Record Outbound Dispatch"}
       >
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); moveMutation.mutate(); }}>
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            moveMutation.mutate();
+          }}
+        >
           <div className="space-y-2">
-            <Label>Product</Label>
-            <Select required value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })}>
+            <Label htmlFor="move-product">
+              Product <span className="text-destructive" aria-hidden="true">*</span>
+            </Label>
+            <Select
+              id="move-product"
+              required
+              value={form.productId}
+              onChange={(e) => setForm({ ...form, productId: e.target.value })}
+            >
               <option value="">Select product</option>
               {(productsData?.products ?? []).map((p) => (
                 <option key={p.id} value={p.id}>{p.sku} — {p.name}</option>
@@ -201,8 +298,15 @@ export function InventoryModule() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Warehouse</Label>
-            <Select required value={form.warehouseId} onChange={(e) => setForm({ ...form, warehouseId: e.target.value })}>
+            <Label htmlFor="move-warehouse">
+              Warehouse <span className="text-destructive" aria-hidden="true">*</span>
+            </Label>
+            <Select
+              id="move-warehouse"
+              required
+              value={form.warehouseId}
+              onChange={(e) => setForm({ ...form, warehouseId: e.target.value })}
+            >
               <option value="">Select warehouse</option>
               {(warehousesData?.warehouses ?? []).map((w) => (
                 <option key={w.id} value={w.id}>{w.name} ({w.location})</option>
@@ -210,17 +314,45 @@ export function InventoryModule() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Quantity</Label>
-            <Input type="number" min="1" required value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
+            <Label htmlFor="move-quantity">
+              Quantity <span className="text-destructive" aria-hidden="true">*</span>
+            </Label>
+            <Input
+              id="move-quantity"
+              type="number"
+              min="1"
+              required
+              value={form.quantity}
+              onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+              placeholder="Enter quantity"
+            />
           </div>
           <div className="space-y-2">
-            <Label>Note</Label>
-            <Input value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
+            <Label htmlFor="move-note">
+              Note{" "}
+              <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+            </Label>
+            <Input
+              id="move-note"
+              value={form.note}
+              onChange={(e) => setForm({ ...form, note: e.target.value })}
+              placeholder={dialogType === "inbound" ? "e.g. Received from supplier" : "e.g. Dispatched to customer"}
+            />
           </div>
-          {error && <p className="text-sm text-[var(--color-destructive)]">{error}</p>}
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => setDialogType(null)}>Cancel</Button>
-            <Button type="submit" disabled={moveMutation.isPending}>Confirm</Button>
+          {error && (
+            <p className="text-sm text-destructive" role="alert">{error}</p>
+          )}
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="outline" onClick={() => setDialogType(null)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={moveMutation.isPending}>
+              {moveMutation.isPending
+                ? "Recording…"
+                : dialogType === "inbound"
+                  ? "Confirm Inbound"
+                  : "Confirm Outbound"}
+            </Button>
           </div>
         </form>
       </Dialog>

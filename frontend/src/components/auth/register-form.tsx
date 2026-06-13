@@ -13,13 +13,13 @@ import { useAuth } from "@/components/providers/auth-provider";
 
 const schema = z
   .object({
-    name: z.string().min(2, "Tên tối thiểu 2 ký tự"),
-    email: z.string().email("Email không hợp lệ"),
-    password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự"),
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Mật khẩu không khớp",
+    message: "Passwords do not match",
     path: ["confirmPassword"],
   });
 
@@ -44,17 +44,23 @@ export function RegisterForm() {
       await registerUser(data.name, data.email, data.password);
       router.push("/dashboard");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Đăng ký thất bại");
+      setError(e instanceof Error ? e.message : "Registration failed. Please try again.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <div className="space-y-2">
-        <Label htmlFor="name">Họ tên</Label>
-        <Input id="name" {...register("name")} />
+        <Label htmlFor="name">Full Name</Label>
+        <Input
+          id="name"
+          autoComplete="name"
+          aria-describedby={errors.name ? "name-error" : undefined}
+          aria-invalid={!!errors.name}
+          {...register("name")}
+        />
         {errors.name && (
-          <p className="text-xs text-[var(--color-destructive)]">
+          <p id="name-error" className="text-xs text-destructive" role="alert">
             {errors.name.message}
           </p>
         )}
@@ -62,50 +68,67 @@ export function RegisterForm() {
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" {...register("email")} />
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          aria-describedby={errors.email ? "email-error" : undefined}
+          aria-invalid={!!errors.email}
+          {...register("email")}
+        />
         {errors.email && (
-          <p className="text-xs text-[var(--color-destructive)]">
+          <p id="email-error" className="text-xs text-destructive" role="alert">
             {errors.email.message}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Mật khẩu</Label>
-        <Input id="password" type="password" {...register("password")} />
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
+          type="password"
+          autoComplete="new-password"
+          aria-describedby={errors.password ? "password-error" : undefined}
+          aria-invalid={!!errors.password}
+          {...register("password")}
+        />
         {errors.password && (
-          <p className="text-xs text-[var(--color-destructive)]">
+          <p id="password-error" className="text-xs text-destructive" role="alert">
             {errors.password.message}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+        <Label htmlFor="confirmPassword">Confirm Password</Label>
         <Input
           id="confirmPassword"
           type="password"
+          autoComplete="new-password"
+          aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
+          aria-invalid={!!errors.confirmPassword}
           {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
-          <p className="text-xs text-[var(--color-destructive)]">
+          <p id="confirm-password-error" className="text-xs text-destructive" role="alert">
             {errors.confirmPassword.message}
           </p>
         )}
       </div>
 
       {error && (
-        <p className="text-sm text-[var(--color-destructive)]">{error}</p>
+        <p className="text-sm text-destructive" role="alert">{error}</p>
       )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Đang đăng ký..." : "Đăng ký"}
+        {isSubmitting ? "Creating account…" : "Create Account"}
       </Button>
 
-      <p className="text-center text-sm text-[var(--color-muted-foreground)]">
-        Đã có tài khoản?{" "}
-        <Link href="/login" className="font-medium text-[var(--color-primary)]">
-          Đăng nhập
+      <p className="text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link href="/login" className="font-medium text-primary hover:underline">
+          Sign in
         </Link>
       </p>
     </form>

@@ -4,18 +4,21 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, GitBranch, QrCode, Download } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { api, Product } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import { Sheet } from "@/components/ui/sheet";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { EmptyState, ErrorState, LoadingState } from "@/components/shared/state-blocks";
+import { EmptyState, ErrorState, TableSkeleton, LoadingState } from "@/components/shared/state-blocks";
 
 type FormData = {
   supplierId: string;
@@ -50,13 +53,14 @@ export function ProductsModule() {
   const isAdmin = user?.role === "ADMIN";
   const canViewTraceability = user?.role === "ADMIN" || user?.role === "MANAGER";
   const canViewQr = user?.role === "ADMIN" || user?.role === "MANAGER";
-  const [open, setOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState<FormData>(empty);
-  const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const [qrProductId, setQrProductId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["products"],
     queryFn: () => api.getProducts(),
   });
@@ -88,24 +92,39 @@ export function ProductsModule() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["products"] });
-      setOpen(false);
+      setSheetOpen(false);
       setEditing(null);
       setForm(empty);
-      setError(null);
+      setFormError(null);
+      toast.success(editing ? "Product updated" : "Product created", {
+        description: editing
+          ? `${form.name} has been updated.`
+          : `${form.name} (${form.sku}) has been added to your catalog.`,
+      });
     },
-    onError: (e: Error) => setError(e.message),
+    onError: (e: Error) => setFormError(e.message),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteProduct(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Product deleted", {
+        description: `${deleteTarget?.name} has been removed from the catalog.`,
+      });
+      setDeleteTarget(null);
+    },
+    onError: (e: Error) => {
+      toast.error("Failed to delete product", { description: e.message });
+      setDeleteTarget(null);
+    },
   });
 
   function openCreate() {
     setEditing(null);
     setForm(empty);
-    setError(null);
-    setOpen(true);
+    setFormError(null);
+    setSheetOpen(true);
   }
 
   function openEdit(p: Product) {
@@ -118,12 +137,113 @@ export function ProductsModule() {
       unit: p.unit,
       unitPrice: String(p.unitPrice),
     });
-    setError(null);
-    setOpen(true);
+    setFormError(null);
+    setSheetOpen(true);
   }
 
   const stockTotal = (p: Product) =>
     p.inventory?.reduce((s, i) => s + i.quantity, 0) ?? 0;
+
+  const products = data?.products ?? [];
+
+  const formContent = (
+    <form
+      id="product-form"
+      className="space-y-5"
+      onSubmit={(e) => {
+        e.preventDefault();
+        saveMutation.mutate();
+      }}
+    >
+      {!editing && (
+        <div className="space-y-2">
+          <Label htmlFor="product-supplier">
+            Supplier <span className="text-destructive" aria-hidden="true">*</span>
+          </Label>
+          <Select
+            id="product-supplier"
+            required
+            value={form.supplierId}
+            onChange={(e) => setForm({ ...form, supplierId: e.target.value })}
+          >
+            <option value="">Select supplier</option>
+            {(suppliersData?.suppliers ?? []).map((s) => (
+              <option key={s.id} value={s.id}>{s.name} ({s.country})</option>
+            ))}
+          </Select>
+        </div>
+      )}
+      <div className="space-y-2">
+        <Label htmlFor="product-name">
+          Name <span className="text-destructive" aria-hidden="true">*</span>
+        </Label>
+        <Input
+          id="product-name"
+          required
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          placeholder="e.g. Halal Chicken Breast"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="product-sku">
+            SKU <span className="text-destructive" aria-hidden="true">*</span>
+          </Label>
+          <Input
+            id="product-sku"
+            required
+            value={form.sku}
+            onChange={(e) => setForm({ ...form, sku: e.target.value })}
+            placeholder="e.g. HCB-001"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="product-category">
+            Category <span className="text-destructive" aria-hidden="true">*</span>
+          </Label>
+          <Input
+            id="product-category"
+            required
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+            placeholder="e.g. Poultry"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="product-unit">
+            Unit <span className="text-destructive" aria-hidden="true">*</span>
+          </Label>
+          <Input
+            id="product-unit"
+            required
+            value={form.unit}
+            onChange={(e) => setForm({ ...form, unit: e.target.value })}
+            placeholder="e.g. kg"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="product-price">
+            Unit Price (USD) <span className="text-destructive" aria-hidden="true">*</span>
+          </Label>
+          <Input
+            id="product-price"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+            value={form.unitPrice}
+            onChange={(e) => setForm({ ...form, unitPrice: e.target.value })}
+          />
+        </div>
+      </div>
+      {formError && (
+        <p className="text-sm text-destructive" role="alert">{formError}</p>
+      )}
+    </form>
+  );
 
   return (
     <div className="space-y-6">
@@ -139,84 +259,153 @@ export function ProductsModule() {
         }
       />
 
-      {isLoading && <LoadingState />}
-      {isError && <ErrorState message="Failed to load products" />}
-      {!isLoading && !isError && (data?.products ?? []).length === 0 && <EmptyState message="No products yet" />}
+      {isLoading && <TableSkeleton columns={isAdmin ? 10 : 8} rows={5} />}
+      {isError && (
+        <ErrorState
+          message="Failed to load products"
+          onRetry={() => refetch()}
+        />
+      )}
 
-      {(data?.products ?? []).length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>SKU</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Supplier</TableHead>
-              <TableHead>Unit</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Stock</TableHead>
-              {(isAdmin || canViewTraceability) && <TableHead>Traceability</TableHead>}
-              {canViewQr && <TableHead>QR Code</TableHead>}
-              {isAdmin && <TableHead className="text-right">Actions</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(data?.products ?? []).map((p) => (
-              <TableRow key={p.id}>
-                <TableCell className="font-mono text-xs">{p.sku}</TableCell>
-                <TableCell className="font-medium">{p.name}</TableCell>
-                <TableCell>{p.category}</TableCell>
-                <TableCell>{p.supplier?.name}</TableCell>
-                <TableCell>{p.unit}</TableCell>
-                <TableCell>${Number(p.unitPrice).toFixed(2)}</TableCell>
-                <TableCell>{stockTotal(p)}</TableCell>
-                {canViewTraceability && (
-                  <TableCell>
-                    <Button size="sm" variant="outline" asChild>
-                      <Link
-                        href={`/dashboard/products/${p.id}/traceability`}
-                        aria-label={`View traceability for ${p.name}`}
-                      >
-                        <GitBranch className="h-3.5 w-3.5" />
-                        <span className="ml-1 hidden sm:inline">Traceability</span>
+      {!isLoading && !isError && products.length === 0 && (
+        <EmptyState
+          variant="products"
+          onAction={isAdmin ? openCreate : undefined}
+        />
+      )}
+
+      {products.length > 0 && (
+        <>
+          {/* Mobile card view */}
+          <div className="grid gap-3 sm:hidden">
+            {products.map((p) => (
+              <div key={p.id} className="rounded-xl border bg-card p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{p.name}</p>
+                    <p className="font-mono text-xs text-muted-foreground">{p.sku}</p>
+                  </div>
+                  <span className="shrink-0 text-sm font-semibold">${Number(p.unitPrice).toFixed(2)}</span>
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                  <span>{p.category}</span>
+                  <span>{p.supplier?.name}</span>
+                  <span>{p.unit} · <span className="font-medium text-foreground">{stockTotal(p)}</span> in stock</span>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1 border-t">
+                  {canViewTraceability && (
+                    <Button size="sm" variant="outline" className="flex-1" asChild>
+                      <Link href={`/dashboard/products/${p.id}/traceability`}>
+                        <GitBranch className="h-3.5 w-3.5 mr-1" /> Traceability
                       </Link>
                     </Button>
-                  </TableCell>
-                )}
-                {canViewQr && (
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      aria-label={`View QR code for ${p.name}`}
-                      onClick={() => setQrProductId(p.id)}
-                    >
-                      <QrCode className="h-3.5 w-3.5" />
-                      <span className="ml-1 hidden sm:inline">QR</span>
+                  )}
+                  {canViewQr && (
+                    <Button size="sm" variant="outline" className="flex-1" onClick={() => setQrProductId(p.id)}>
+                      <QrCode className="h-3.5 w-3.5 mr-1" /> QR Code
                     </Button>
-                  </TableCell>
-                )}
-                {isAdmin && (
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button size="sm" variant="outline" onClick={() => openEdit(p)}>
+                  )}
+                  {isAdmin && (
+                    <>
+                      <Button size="sm" variant="outline" aria-label={`Edit ${p.name}`} onClick={() => openEdit(p)}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
-                        onClick={() => {
-                          if (confirm(`Delete ${p.name}?`)) deleteMutation.mutate(p.id);
-                        }}
+                        aria-label={`Delete ${p.name}`}
+                        onClick={() => setDeleteTarget(p)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
-                    </div>
-                  </TableCell>
-                )}
-              </TableRow>
+                    </>
+                  )}
+                </div>
+              </div>
             ))}
-          </TableBody>
-        </Table>
+          </div>
+
+          {/* Desktop table view */}
+          <div className="hidden sm:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>Unit</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Stock</TableHead>
+                  {canViewTraceability && <TableHead>Traceability</TableHead>}
+                  {canViewQr && <TableHead>QR Code</TableHead>}
+                  {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {products.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell className="font-mono text-xs">{p.sku}</TableCell>
+                    <TableCell className="font-medium">{p.name}</TableCell>
+                    <TableCell>{p.category}</TableCell>
+                    <TableCell>{p.supplier?.name}</TableCell>
+                    <TableCell>{p.unit}</TableCell>
+                    <TableCell>${Number(p.unitPrice).toFixed(2)}</TableCell>
+                    <TableCell>{stockTotal(p)}</TableCell>
+                    {canViewTraceability && (
+                      <TableCell>
+                        <Button size="sm" variant="outline" asChild>
+                          <Link
+                            href={`/dashboard/products/${p.id}/traceability`}
+                            aria-label={`View traceability for ${p.name}`}
+                          >
+                            <GitBranch className="h-3.5 w-3.5" />
+                            <span className="ml-1 hidden sm:inline">Trace</span>
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    )}
+                    {canViewQr && (
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          aria-label={`View QR code for ${p.name}`}
+                          onClick={() => setQrProductId(p.id)}
+                        >
+                          <QrCode className="h-3.5 w-3.5" />
+                          <span className="ml-1 hidden sm:inline">QR</span>
+                        </Button>
+                      </TableCell>
+                    )}
+                    {isAdmin && (
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            aria-label={`Edit ${p.name}`}
+                            onClick={() => openEdit(p)}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            aria-label={`Delete ${p.name}`}
+                            onClick={() => setDeleteTarget(p)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       )}
 
       {/* QR Code Dialog */}
@@ -234,8 +423,12 @@ export function ProductsModule() {
                 alt={`QR Code for ${productDetail.product.name}`}
                 width={256}
                 height={256}
+                className="rounded-lg"
               />
               <p className="text-sm text-center font-medium">{productDetail.product.name}</p>
+              <p className="text-xs text-muted-foreground text-center">
+                Scan to view halal supply chain traceability
+              </p>
               <Button
                 onClick={() => downloadQrCode(productDetail.qrCodeUrl, productDetail.product.id)}
               >
@@ -247,50 +440,44 @@ export function ProductsModule() {
         </div>
       </Dialog>
 
-      <Dialog open={open} onClose={() => setOpen(false)} title={editing ? "Edit Product" : "New Product"}>
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(); }}>
-          {!editing && (
-            <div className="space-y-2">
-              <Label>Supplier</Label>
-              <Select required value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}>
-                <option value="">Select supplier</option>
-                {(suppliersData?.suppliers ?? []).map((s) => (
-                  <option key={s.id} value={s.id}>{s.name} ({s.country})</option>
-                ))}
-              </Select>
-            </div>
-          )}
-          <div className="space-y-2">
-            <Label>Name</Label>
-            <Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>SKU</Label>
-              <Input required value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} />
-            </div>
-            <div className="space-y-2">
-              <Label>Category</Label>
-              <Input required value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Unit</Label>
-              <Input required value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} />
-            </div>
-            <div className="space-y-2">
-              <Label>Unit Price (USD)</Label>
-              <Input type="number" min="0" step="0.01" required value={form.unitPrice} onChange={(e) => setForm({ ...form, unitPrice: e.target.value })} />
-            </div>
-          </div>
-          {error && <p className="text-sm text-[var(--color-destructive)]">{error}</p>}
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" disabled={saveMutation.isPending}>Save</Button>
-          </div>
-        </form>
-      </Dialog>
+      {/* Create / Edit Sheet */}
+      <Sheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        title={editing ? "Edit Product" : "New Product"}
+        description={
+          editing
+            ? "Update product details. SKU and supplier cannot be changed after creation."
+            : "Add a new halal product to your catalog."
+        }
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => setSheetOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="product-form"
+              disabled={saveMutation.isPending}
+            >
+              {saveMutation.isPending ? "Saving…" : editing ? "Save Changes" : "Add Product"}
+            </Button>
+          </>
+        }
+      >
+        {formContent}
+      </Sheet>
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        isPending={deleteMutation.isPending}
+        title="Delete product?"
+        description={`This will permanently remove "${deleteTarget?.name}" (${deleteTarget?.sku}) and all associated inventory records. This cannot be undone.`}
+        confirmLabel="Delete Product"
+      />
     </div>
   );
 }

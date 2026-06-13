@@ -16,10 +16,10 @@ export function PageHeader({ title, description, action, className }: PageHeader
       )}
     >
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <h1 className="font-display text-2xl tracking-tight sm:text-section">{title}</h1>
+        <p className="text-small text-muted-foreground">{description}</p>
       </div>
-      {action && <div className="shrink-0">{action}</div>}
+      {action && <div className="w-full shrink-0 sm:w-auto">{action}</div>}
     </div>
   );
 }
