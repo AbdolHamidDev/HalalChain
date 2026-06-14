@@ -55,24 +55,39 @@ export function UserMenu() {
 
       {/* Dropdown content — closes automatically on item selection (Radix default) */}
       <DropdownMenuContent align="end" className="w-48">
-        {/* User identity header */}
-        <div className="px-2 py-1.5">
-          <p className="truncate text-sm font-medium">{user.name}</p>
-          <p className="truncate text-xs text-muted-foreground">{user.email}</p>
-          <Badge
-            variant={
-              user.role === "ADMIN"
-                ? "success"
-                : user.role === "MANAGER"
-                ? "info"
-                : "default"
-            }
-            className="mt-1"
-          >
-            {user.role}
-          </Badge>
-        </div>
+      <div className="px-2 py-1.5">
+  {/* Name + verified */}
+  <div className="flex items-center gap-1">
+    <p className="truncate text-sm font-medium">{user.name}</p>
 
+    {user?.isVerified && (
+      <img
+        src="/verified.png"
+        alt="verified"
+        className="h-3.5 w-3.5 flex-shrink-0"
+      />
+    )}
+  </div>
+
+  {/* Email */}
+  <p className="truncate text-xs text-muted-foreground">
+    {user.email}
+  </p>
+
+  {/* Role */}
+  <Badge
+    variant={
+      user.role === "ADMIN"
+        ? "success"
+        : user.role === "MANAGER"
+        ? "info"
+        : "default"
+    }
+    className="mt-1"
+  >
+    {user.role}
+  </Badge>
+</div>
         <DropdownMenuSeparator />
 
         {/* My Profile → /settings/profile */}
