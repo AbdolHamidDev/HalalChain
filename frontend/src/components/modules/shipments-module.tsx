@@ -9,8 +9,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -181,19 +180,19 @@ export function ShipmentsModule() {
             updateMutation.mutate();
           }}
         >
-          <div className="space-y-2">
-            <Label htmlFor="ship-tracking">
+          <InputWrapper>
+            <InputLabel htmlFor="ship-tracking">
               Tracking Number <span className="text-destructive" aria-hidden="true">*</span>
-            </Label>
+            </InputLabel>
             <Input
               id="ship-tracking"
               required
               value={tracking}
               onChange={(e) => setTracking(e.target.value)}
             />
-          </div>
+          </InputWrapper>
           <div className="space-y-2">
-            <Label htmlFor="ship-status">Status</Label>
+            <InputLabel htmlFor="ship-status">Status</InputLabel>
             <Select
               value={status}
               onValueChange={(v) => setStatus(v as ShipmentStatus)}
@@ -210,7 +209,7 @@ export function ShipmentsModule() {
             </Select>
           </div>
           {error && (
-            <p className="text-sm text-destructive" role="alert">{error}</p>
+            <InputError role="alert">{error}</InputError>
           )}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setEditing(null)}>Cancel</Button>

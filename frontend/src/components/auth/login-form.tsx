@@ -7,8 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import { useAuth } from "@/components/providers/auth-provider";
 
 const schema = z.object({
@@ -43,39 +42,37 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+      <InputWrapper>
+        <InputLabel htmlFor="email">Email</InputLabel>
         <Input
           id="email"
           type="email"
           autoComplete="email"
+          error={!!errors.email}
           aria-describedby={errors.email ? "email-error" : undefined}
           aria-invalid={!!errors.email}
           {...register("email")}
         />
         {errors.email && (
-          <p id="email-error" className="text-xs text-destructive" role="alert">
-            {errors.email.message}
-          </p>
+          <InputError id="email-error" role="alert">{errors.email.message}</InputError>
         )}
-      </div>
+      </InputWrapper>
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <InputWrapper>
+        <InputLabel htmlFor="password">Password</InputLabel>
         <Input
           id="password"
           type="password"
           autoComplete="current-password"
+          error={!!errors.password}
           aria-describedby={errors.password ? "password-error" : undefined}
           aria-invalid={!!errors.password}
           {...register("password")}
         />
         {errors.password && (
-          <p id="password-error" className="text-xs text-destructive" role="alert">
-            {errors.password.message}
-          </p>
+          <InputError id="password-error" role="alert">{errors.password.message}</InputError>
         )}
-      </div>
+      </InputWrapper>
 
       {error && (
         <p className="text-sm text-destructive" role="alert">{error}</p>

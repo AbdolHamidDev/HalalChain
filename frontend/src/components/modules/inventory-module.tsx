@@ -9,8 +9,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -288,9 +287,9 @@ export function InventoryModule() {
           }}
         >
           <div className="space-y-2">
-            <Label htmlFor="move-product">
+            <InputLabel htmlFor="move-product">
               Product <span className="text-destructive" aria-hidden="true">*</span>
-            </Label>
+            </InputLabel>
             <Select
               required
               value={form.productId}
@@ -307,9 +306,9 @@ export function InventoryModule() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="move-warehouse">
+            <InputLabel htmlFor="move-warehouse">
               Warehouse <span className="text-destructive" aria-hidden="true">*</span>
-            </Label>
+            </InputLabel>
             <Select
               required
               value={form.warehouseId}
@@ -325,10 +324,10 @@ export function InventoryModule() {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="move-quantity">
+          <InputWrapper>
+            <InputLabel htmlFor="move-quantity">
               Quantity <span className="text-destructive" aria-hidden="true">*</span>
-            </Label>
+            </InputLabel>
             <Input
               id="move-quantity"
               type="number"
@@ -338,21 +337,21 @@ export function InventoryModule() {
               onChange={(e) => setForm({ ...form, quantity: e.target.value })}
               placeholder="Enter quantity"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="move-note">
+          </InputWrapper>
+          <InputWrapper>
+            <InputLabel htmlFor="move-note">
               Note{" "}
               <span className="text-xs font-normal text-muted-foreground">(optional)</span>
-            </Label>
+            </InputLabel>
             <Input
               id="move-note"
               value={form.note}
               onChange={(e) => setForm({ ...form, note: e.target.value })}
               placeholder={dialogType === "inbound" ? "e.g. Received from supplier" : "e.g. Dispatched to customer"}
             />
-          </div>
+          </InputWrapper>
           {error && (
-            <p className="text-sm text-destructive" role="alert">{error}</p>
+            <InputError role="alert">{error}</InputError>
           )}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setDialogType(null)}>

@@ -10,8 +10,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { dialog } from "@/lib/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError, InputHint } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -283,9 +282,9 @@ export function PurchaseOrdersModule() {
       <Dialog open={open} onClose={() => setOpen(false)} title="New Purchase Order">
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }}>
           <div className="space-y-2">
-            <Label htmlFor="po-supplier">
+            <InputLabel htmlFor="po-supplier">
               Supplier <span className="text-destructive" aria-hidden="true">*</span>
-            </Label>
+            </InputLabel>
             <Select
               required
               value={form.supplierId}
@@ -301,10 +300,10 @@ export function PurchaseOrdersModule() {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="po-amount">
+          <InputWrapper>
+            <InputLabel htmlFor="po-amount">
               Total Amount (USD) <span className="text-destructive" aria-hidden="true">*</span>
-            </Label>
+            </InputLabel>
             <Input
               id="po-amount"
               type="number"
@@ -315,12 +314,12 @@ export function PurchaseOrdersModule() {
               onChange={(e) => setForm({ ...form, totalAmount: e.target.value })}
               placeholder="0.00"
             />
-            <p className="text-xs text-muted-foreground">
+            <InputHint>
               A PO number will be auto-generated. The order starts in DRAFT status.
-            </p>
-          </div>
+            </InputHint>
+          </InputWrapper>
           {error && (
-            <p className="text-sm text-destructive" role="alert">{error}</p>
+            <InputError role="alert">{error}</InputError>
           )}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>

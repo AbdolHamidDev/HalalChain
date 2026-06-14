@@ -1,27 +1,125 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-const Input = React.forwardRef<
-  HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->(({ className, type, ...props }, ref) => {
+/* ───────────────── Label ───────────────── */
+const InputLabel = ({
+  className,
+  ...props
+}: React.LabelHTMLAttributes<HTMLLabelElement>) => {
   return (
-    <input
-      type={type}
+    <label
       className={cn(
-        "flex h-[38px] w-full rounded-md border border-input bg-card px-3.5 py-2.5 text-[14px]",
-        "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
-        "placeholder:text-neutral",
-        "focus-visible:border-primary focus-visible:outline-none focus-visible:shadow-focus-ring",
-        "aria-invalid:border-destructive aria-invalid:focus-visible:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]",
-        "disabled:cursor-not-allowed disabled:opacity-50",
+        "mb-1.5 block text-sm font-medium text-foreground",
         className
       )}
-      ref={ref}
       {...props}
     />
   );
-});
+};
+
+/* ───────────────── Hint / Error ───────────────── */
+const InputHint = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) => (
+  <p className={cn("mt-1 text-xs text-muted-foreground", className)} {...props} />
+);
+
+const InputError = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) => (
+  <p
+    className={cn("mt-1 text-xs text-destructive", className)}
+    {...props}
+  />
+);
+
+/* ───────────────── Root Wrapper ───────────────── */
+type InputWrapperProps = React.HTMLAttributes<HTMLDivElement> & {
+  error?: boolean;
+};
+
+const InputWrapper = React.forwardRef<HTMLDivElement, InputWrapperProps>(
+  ({ className, error, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn("w-full space-y-1.5", className)}
+        {...props}
+      />
+    );
+  }
+);
+
+InputWrapper.displayName = "InputWrapper";
+
+/* ───────────────── Input Field ───────────────── */
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  error?: boolean;
+};
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, leftIcon, rightIcon, error, ...props }, ref) => {
+    return (
+      <div
+        className={cn(
+          "group flex h-[42px] w-full items-center gap-2 rounded-lg border bg-card px-3",
+          "transition-[border-color,box-shadow,background-color] duration-150",
+
+          // base border
+          "border-input/70",
+
+          // focus within (SaaS pro ring)
+          "focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/15",
+
+          // NO hover visual shift (important)
+          "hover:border-input/70 hover:bg-card",
+
+          // error state
+          error && "border-destructive/60 focus-within:ring-destructive/20"
+        )}
+      >
+        {leftIcon && (
+          <span className="text-muted-foreground flex items-center">
+            {leftIcon}
+          </span>
+        )}
+
+        <input
+          ref={ref}
+          className={cn(
+            "h-full w-full bg-transparent text-sm text-foreground",
+            "placeholder:text-muted-foreground",
+            "outline-none",
+
+            // disabled
+            "disabled:cursor-not-allowed disabled:opacity-50",
+
+            className
+          )}
+          {...props}
+        />
+
+        {rightIcon && (
+          <span className="text-muted-foreground flex items-center">
+            {rightIcon}
+          </span>
+        )}
+      </div>
+    );
+  }
+);
+
 Input.displayName = "Input";
 
-export { Input };
+/* ───────────────── Export System ───────────────── */
+export {
+  Input,
+  InputWrapper,
+  InputLabel,
+  InputHint,
+  InputError,
+};

@@ -11,8 +11,7 @@ import { api, type User, type UserRole } from "@/lib/api";
 import { AvatarUpload } from "@/components/settings/avatar-upload";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import { dialog } from "@/lib/dialog";
 
 // ---------------------------------------------------------------------------
@@ -304,29 +303,30 @@ export default function ProfilePage() {
           className="rounded-lg border p-6 space-y-4"
         >
           {/* Display name — editable (Requirements 4.1, 13.4) */}
-          <div className="space-y-2">
-            <Label htmlFor="name">Display Name</Label>
+          <InputWrapper>
+            <InputLabel htmlFor="name">Display Name</InputLabel>
             <Input
               id="name"
               type="text"
               autoComplete="name"
+              error={!!errors.name}
               aria-invalid={!!errors.name}
               {...register("name")}
             />
             {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
+              <InputError>{errors.name.message}</InputError>
             )}
-          </div>
+          </InputWrapper>
 
           {/* Email — read-only (Requirement 3.3) */}
           <div className="space-y-2">
-            <Label>Email</Label>
+            <InputLabel>Email</InputLabel>
             <p className="text-sm text-muted-foreground">{profile.email}</p>
           </div>
 
           {/* Role — read-only Badge (Requirement 3.4) */}
           <div className="space-y-2">
-            <Label>Role</Label>
+            <InputLabel>Role</InputLabel>
             <div>
               <Badge variant={roleBadgeVariant(profile.role)}>
                 {profile.role}
@@ -336,7 +336,7 @@ export default function ProfilePage() {
 
           {/* Member since — read-only (Requirement 3.5) */}
           <div className="space-y-2">
-            <Label>Member Since</Label>
+            <InputLabel>Member Since</InputLabel>
             <p className="text-sm text-muted-foreground">{memberSince}</p>
           </div>
 

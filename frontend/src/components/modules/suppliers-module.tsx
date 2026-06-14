@@ -10,8 +10,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { dialog } from "@/lib/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -269,8 +268,8 @@ export function SuppliersModule() {
             saveMutation.mutate();
           }}
         >
-          <div className="space-y-2">
-            <Label htmlFor="supplier-name">Name <span className="text-destructive" aria-hidden="true">*</span></Label>
+          <InputWrapper>
+            <InputLabel htmlFor="supplier-name">Name <span className="text-destructive" aria-hidden="true">*</span></InputLabel>
             <Input
               id="supplier-name"
               required
@@ -278,9 +277,9 @@ export function SuppliersModule() {
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="e.g. Al-Barakah Food Co."
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="supplier-country">Country <span className="text-destructive" aria-hidden="true">*</span></Label>
+          </InputWrapper>
+          <InputWrapper>
+            <InputLabel htmlFor="supplier-country">Country <span className="text-destructive" aria-hidden="true">*</span></InputLabel>
             <Input
               id="supplier-country"
               required
@@ -288,9 +287,9 @@ export function SuppliersModule() {
               onChange={(e) => setForm({ ...form, country: e.target.value })}
               placeholder="e.g. Malaysia"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="supplier-email">Email <span className="text-xs font-normal text-muted-foreground">(optional)</span></Label>
+          </InputWrapper>
+          <InputWrapper>
+            <InputLabel htmlFor="supplier-email">Email <span className="text-xs font-normal text-muted-foreground">(optional)</span></InputLabel>
             <Input
               id="supplier-email"
               type="email"
@@ -298,18 +297,18 @@ export function SuppliersModule() {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="contact@supplier.com"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="supplier-phone">Phone <span className="text-xs font-normal text-muted-foreground">(optional)</span></Label>
+          </InputWrapper>
+          <InputWrapper>
+            <InputLabel htmlFor="supplier-phone">Phone <span className="text-xs font-normal text-muted-foreground">(optional)</span></InputLabel>
             <Input
               id="supplier-phone"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               placeholder="+60 3-XXXX XXXX"
             />
-          </div>
+          </InputWrapper>
           <div className="space-y-2">
-            <Label htmlFor="supplier-status">Status</Label>
+            <InputLabel htmlFor="supplier-status">Status</InputLabel>
             <Select
               value={form.status}
               onValueChange={(v) => setForm({ ...form, status: v as SupplierStatus })}
@@ -324,7 +323,7 @@ export function SuppliersModule() {
             </Select>
           </div>
           {error && (
-            <p className="text-sm text-destructive" role="alert">{error}</p>
+            <InputError role="alert">{error}</InputError>
           )}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>

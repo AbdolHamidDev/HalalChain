@@ -6,8 +6,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -116,49 +115,52 @@ export default function SecurityPage() {
       <div className="rounded-lg border p-6">
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
           {/* Current Password */}
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current Password</Label>
+          <InputWrapper>
+            <InputLabel htmlFor="currentPassword">Current Password</InputLabel>
             <Input
               id="currentPassword"
               type="password"
               autoComplete="current-password"
+              error={!!errors.currentPassword}
               aria-invalid={!!errors.currentPassword}
               {...register("currentPassword")}
             />
             {errors.currentPassword && (
-              <p className="text-sm text-destructive">{errors.currentPassword.message}</p>
+              <InputError>{errors.currentPassword.message}</InputError>
             )}
-          </div>
+          </InputWrapper>
 
           {/* New Password */}
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">New Password</Label>
+          <InputWrapper>
+            <InputLabel htmlFor="newPassword">New Password</InputLabel>
             <Input
               id="newPassword"
               type="password"
               autoComplete="new-password"
+              error={!!errors.newPassword}
               aria-invalid={!!errors.newPassword}
               {...register("newPassword")}
             />
             {errors.newPassword && (
-              <p className="text-sm text-destructive">{errors.newPassword.message}</p>
+              <InputError>{errors.newPassword.message}</InputError>
             )}
-          </div>
+          </InputWrapper>
 
           {/* Confirm New Password */}
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+          <InputWrapper>
+            <InputLabel htmlFor="confirmPassword">Confirm New Password</InputLabel>
             <Input
               id="confirmPassword"
               type="password"
               autoComplete="new-password"
+              error={!!errors.confirmPassword}
               aria-invalid={!!errors.confirmPassword}
               {...register("confirmPassword")}
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+              <InputError>{errors.confirmPassword.message}</InputError>
             )}
-          </div>
+          </InputWrapper>
 
           {/* Submit */}
           <Button type="submit" disabled={isSubmitting}>

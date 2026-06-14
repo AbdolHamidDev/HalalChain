@@ -12,8 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Sheet } from "@/components/ui/sheet";
 import { dialog } from "@/lib/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError, InputHint } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -158,9 +157,9 @@ export function ProductsModule() {
     >
       {!editing && (
         <div className="space-y-2">
-          <Label htmlFor="product-supplier">
+          <InputLabel htmlFor="product-supplier">
             Supplier <span className="text-destructive" aria-hidden="true">*</span>
-          </Label>
+          </InputLabel>
           <Select
             required
             value={form.supplierId}
@@ -177,10 +176,10 @@ export function ProductsModule() {
           </Select>
         </div>
       )}
-      <div className="space-y-2">
-        <Label htmlFor="product-name">
+      <InputWrapper>
+        <InputLabel htmlFor="product-name">
           Name <span className="text-destructive" aria-hidden="true">*</span>
-        </Label>
+        </InputLabel>
         <Input
           id="product-name"
           required
@@ -188,12 +187,12 @@ export function ProductsModule() {
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           placeholder="e.g. Halal Chicken Breast"
         />
-      </div>
+      </InputWrapper>
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="product-sku">
+        <InputWrapper>
+          <InputLabel htmlFor="product-sku">
             SKU <span className="text-destructive" aria-hidden="true">*</span>
-          </Label>
+          </InputLabel>
           <Input
             id="product-sku"
             required
@@ -201,11 +200,11 @@ export function ProductsModule() {
             onChange={(e) => setForm({ ...form, sku: e.target.value })}
             placeholder="e.g. HCB-001"
           />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="product-category">
+        </InputWrapper>
+        <InputWrapper>
+          <InputLabel htmlFor="product-category">
             Category <span className="text-destructive" aria-hidden="true">*</span>
-          </Label>
+          </InputLabel>
           <Input
             id="product-category"
             required
@@ -213,13 +212,13 @@ export function ProductsModule() {
             onChange={(e) => setForm({ ...form, category: e.target.value })}
             placeholder="e.g. Poultry"
           />
-        </div>
+        </InputWrapper>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="product-unit">
+        <InputWrapper>
+          <InputLabel htmlFor="product-unit">
             Unit <span className="text-destructive" aria-hidden="true">*</span>
-          </Label>
+          </InputLabel>
           <Input
             id="product-unit"
             required
@@ -227,11 +226,11 @@ export function ProductsModule() {
             onChange={(e) => setForm({ ...form, unit: e.target.value })}
             placeholder="e.g. kg"
           />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="product-price">
+        </InputWrapper>
+        <InputWrapper>
+          <InputLabel htmlFor="product-price">
             Unit Price (USD) <span className="text-destructive" aria-hidden="true">*</span>
-          </Label>
+          </InputLabel>
           <Input
             id="product-price"
             type="number"
@@ -241,10 +240,10 @@ export function ProductsModule() {
             value={form.unitPrice}
             onChange={(e) => setForm({ ...form, unitPrice: e.target.value })}
           />
-        </div>
+        </InputWrapper>
       </div>
       {formError && (
-        <p className="text-sm text-destructive" role="alert">{formError}</p>
+        <InputError role="alert">{formError}</InputError>
       )}
     </form>
   );

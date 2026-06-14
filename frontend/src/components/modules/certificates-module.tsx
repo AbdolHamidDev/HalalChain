@@ -10,8 +10,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { dialog } from "@/lib/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError, InputHint } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -144,9 +143,9 @@ export function CertificatesModule() {
     >
       {!editing && (
         <div className="space-y-2">
-          <Label htmlFor="cert-supplier">
+          <InputLabel htmlFor="cert-supplier">
             Supplier <span className="text-destructive" aria-hidden="true">*</span>
-          </Label>
+          </InputLabel>
           <Select
             required
             value={form.supplierId}
@@ -163,10 +162,10 @@ export function CertificatesModule() {
           </Select>
         </div>
       )}
-      <div className="space-y-2">
-        <Label htmlFor="cert-number">
+      <InputWrapper>
+        <InputLabel htmlFor="cert-number">
           Certificate Number <span className="text-destructive" aria-hidden="true">*</span>
-        </Label>
+        </InputLabel>
         <Input
           id="cert-number"
           required
@@ -174,11 +173,11 @@ export function CertificatesModule() {
           onChange={(e) => setForm({ ...form, certificateNumber: e.target.value })}
           placeholder="e.g. JAKIM/2024/001234"
         />
-      </div>
+      </InputWrapper>
       <div className="space-y-2">
-        <Label htmlFor="cert-issuer">
+        <InputLabel htmlFor="cert-issuer">
           Issuing Authority <span className="text-destructive" aria-hidden="true">*</span>
-        </Label>
+        </InputLabel>
         <Select
           value={form.issuedBy}
           onValueChange={(v) => setForm({ ...form, issuedBy: v })}
@@ -195,10 +194,10 @@ export function CertificatesModule() {
         </Select>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="cert-issue-date">
+        <InputWrapper>
+          <InputLabel htmlFor="cert-issue-date">
             Issue Date <span className="text-destructive" aria-hidden="true">*</span>
-          </Label>
+          </InputLabel>
           <Input
             id="cert-issue-date"
             type="date"
@@ -206,11 +205,11 @@ export function CertificatesModule() {
             value={form.issueDate}
             onChange={(e) => setForm({ ...form, issueDate: e.target.value })}
           />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="cert-expiry-date">
+        </InputWrapper>
+        <InputWrapper>
+          <InputLabel htmlFor="cert-expiry-date">
             Expiry Date <span className="text-destructive" aria-hidden="true">*</span>
-          </Label>
+          </InputLabel>
           <Input
             id="cert-expiry-date"
             type="date"
@@ -218,13 +217,13 @@ export function CertificatesModule() {
             value={form.expiryDate}
             onChange={(e) => setForm({ ...form, expiryDate: e.target.value })}
           />
-        </div>
+        </InputWrapper>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="cert-file-url">
+      <InputWrapper>
+        <InputLabel htmlFor="cert-file-url">
           Document URL{" "}
           <span className="text-xs font-normal text-muted-foreground">(optional)</span>
-        </Label>
+        </InputLabel>
         <Input
           id="cert-file-url"
           type="url"
@@ -232,12 +231,12 @@ export function CertificatesModule() {
           onChange={(e) => setForm({ ...form, fileUrl: e.target.value })}
           placeholder="https://..."
         />
-        <p className="text-xs text-muted-foreground">
+        <InputHint>
           Link to the official certificate document (PDF or image)
-        </p>
-      </div>
+        </InputHint>
+      </InputWrapper>
       {formError && (
-        <p className="text-sm text-destructive" role="alert">{formError}</p>
+        <InputError role="alert">{formError}</InputError>
       )}
     </form>
   );

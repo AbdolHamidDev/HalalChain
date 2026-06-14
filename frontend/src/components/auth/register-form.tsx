@@ -7,8 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import { useAuth } from "@/components/providers/auth-provider";
 
 const schema = z
@@ -50,72 +49,68 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      <div className="space-y-2">
-        <Label htmlFor="name">Full Name</Label>
+      <InputWrapper>
+        <InputLabel htmlFor="name">Full Name</InputLabel>
         <Input
           id="name"
           autoComplete="name"
+          error={!!errors.name}
           aria-describedby={errors.name ? "name-error" : undefined}
           aria-invalid={!!errors.name}
           {...register("name")}
         />
         {errors.name && (
-          <p id="name-error" className="text-xs text-destructive" role="alert">
-            {errors.name.message}
-          </p>
+          <InputError id="name-error" role="alert">{errors.name.message}</InputError>
         )}
-      </div>
+      </InputWrapper>
 
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+      <InputWrapper>
+        <InputLabel htmlFor="email">Email</InputLabel>
         <Input
           id="email"
           type="email"
           autoComplete="email"
+          error={!!errors.email}
           aria-describedby={errors.email ? "email-error" : undefined}
           aria-invalid={!!errors.email}
           {...register("email")}
         />
         {errors.email && (
-          <p id="email-error" className="text-xs text-destructive" role="alert">
-            {errors.email.message}
-          </p>
+          <InputError id="email-error" role="alert">{errors.email.message}</InputError>
         )}
-      </div>
+      </InputWrapper>
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <InputWrapper>
+        <InputLabel htmlFor="password">Password</InputLabel>
         <Input
           id="password"
           type="password"
           autoComplete="new-password"
+          error={!!errors.password}
           aria-describedby={errors.password ? "password-error" : undefined}
           aria-invalid={!!errors.password}
           {...register("password")}
         />
         {errors.password && (
-          <p id="password-error" className="text-xs text-destructive" role="alert">
-            {errors.password.message}
-          </p>
+          <InputError id="password-error" role="alert">{errors.password.message}</InputError>
         )}
-      </div>
+      </InputWrapper>
 
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
+      <InputWrapper>
+        <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
         <Input
           id="confirmPassword"
           type="password"
           autoComplete="new-password"
+          error={!!errors.confirmPassword}
           aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
           aria-invalid={!!errors.confirmPassword}
           {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
-          <p id="confirm-password-error" className="text-xs text-destructive" role="alert">
-            {errors.confirmPassword.message}
-          </p>
+          <InputError id="confirm-password-error" role="alert">{errors.confirmPassword.message}</InputError>
         )}
-      </div>
+      </InputWrapper>
 
       {error && (
         <p className="text-sm text-destructive" role="alert">{error}</p>

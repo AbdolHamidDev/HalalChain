@@ -7,7 +7,7 @@ import { api, type User, type UserRole } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, InputWrapper } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
@@ -169,13 +169,12 @@ export default function UsersPage() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+      <div className="max-w-sm">
         <Input
+          leftIcon={<Search className="h-4 w-4" />}
           placeholder="Search by name, email or role…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
         />
       </div>
 
