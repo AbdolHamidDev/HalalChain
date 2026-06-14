@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, ChevronRight, Trash2, Loader2 } from "lucide-react";
+import { Plus, ChevronRight, Trash2, Loader2, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { api, PurchaseOrder, PurchaseOrderStatus } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -36,14 +36,17 @@ const STATUS_LABEL: Partial<Record<PurchaseOrderStatus, string>> = {
   RECEIVED: "Mark Received",
 };
 
-type FormData = { supplierId: string; totalAmount: string };
+type OrderItem = { productId: string; quantity: string; unitPrice: string };
+type FormData = { supplierId: string; items: OrderItem[] };
+
+const emptyItem = (): OrderItem => ({ productId: "", quantity: "1", unitPrice: "" });
 
 export function PurchaseOrdersModule() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const isAdmin = user?.role === "ADMIN";
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<FormData>({ supplierId: "", totalAmount: "" });
+  const [form, setForm] = useState<FormData>({ supplierId: "", items: [emptyItem()] });
   const [error, setError] = useState<string | null>(null);
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
 
@@ -58,16 +61,26 @@ export function PurchaseOrdersModule() {
     enabled: isAdmin,
   });
 
+  const { data: productsData } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => api.getProducts(),
+    enabled: isAdmin,
+  });
+
   const createMutation = useMutation({
     mutationFn: () =>
       api.createPurchaseOrder({
         supplierId: form.supplierId,
-        totalAmount: Number(form.totalAmount),
+        items: form.items.map((item) => ({
+          productId: item.productId,
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+        })),
       }),
     onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ["purchase-orders"] });
       setOpen(false);
-      setForm({ supplierId: "", totalAmount: "" });
+      setForm({ supplierId: "", items: [emptyItem()] });
       setError(null);
       toast.success("Purchase order created", {
         description: `${result.purchaseOrder.poNumber} has been created as a draft.`,
@@ -281,6 +294,7 @@ export function PurchaseOrdersModule() {
       {/* Create dialog */}
       <Dialog open={open} onClose={() => setOpen(false)} title="New Purchase Order">
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }}>
+          {/* Supplier */}
           <div className="space-y-2">
             <InputLabel htmlFor="po-supplier">
               Supplier <span className="text-destructive" aria-hidden="true">*</span>
@@ -300,27 +314,95 @@ export function PurchaseOrdersModule() {
               </SelectContent>
             </Select>
           </div>
-          <InputWrapper>
-            <InputLabel htmlFor="po-amount">
-              Total Amount (USD) <span className="text-destructive" aria-hidden="true">*</span>
+
+          {/* Items */}
+          <div className="space-y-2">
+            <InputLabel>
+              Items <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
-            <Input
-              id="po-amount"
-              type="number"
-              min="0"
-              step="0.01"
-              required
-              value={form.totalAmount}
-              onChange={(e) => setForm({ ...form, totalAmount: e.target.value })}
-              placeholder="0.00"
-            />
-            <InputHint>
-              A PO number will be auto-generated. The order starts in DRAFT status.
-            </InputHint>
-          </InputWrapper>
-          {error && (
-            <InputError role="alert">{error}</InputError>
+            <div className="space-y-2">
+              {form.items.map((item, idx) => (
+                <div key={idx} className="grid grid-cols-[1fr_80px_90px_32px] gap-2 items-start">
+                  <Select
+                    value={item.productId}
+                    onValueChange={(v) => {
+                      const product = (productsData?.products ?? []).find((p) => p.id === v);
+                      const updated = form.items.map((it, i) =>
+                        i === idx ? { ...it, productId: v, unitPrice: product ? String(product.unitPrice) : it.unitPrice } : it
+                      );
+                      setForm({ ...form, items: updated });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Product" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(productsData?.products ?? []).map((p) => (
+                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    type="number"
+                    min="1"
+                    required
+                    placeholder="Qty"
+                    value={item.quantity}
+                    onChange={(e) => {
+                      const updated = form.items.map((it, i) =>
+                        i === idx ? { ...it, quantity: e.target.value } : it
+                      );
+                      setForm({ ...form, items: updated });
+                    }}
+                  />
+                  <Input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    required
+                    placeholder="Price"
+                    value={item.unitPrice}
+                    onChange={(e) => {
+                      const updated = form.items.map((it, i) =>
+                        i === idx ? { ...it, unitPrice: e.target.value } : it
+                      );
+                      setForm({ ...form, items: updated });
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    disabled={form.items.length === 1}
+                    aria-label="Remove item"
+                    onClick={() => setForm({ ...form, items: form.items.filter((_, i) => i !== idx) })}
+                  >
+                    <Minus className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setForm({ ...form, items: [...form.items, emptyItem()] })}
+            >
+              <Plus className="h-3.5 w-3.5 mr-1" /> Add Item
+            </Button>
+          </div>
+
+          {/* Total preview */}
+          {form.items.some((it) => it.quantity && it.unitPrice) && (
+            <p className="text-sm text-muted-foreground text-right">
+              Total:{" "}
+              <span className="font-medium text-foreground">
+                ${form.items.reduce((sum, it) => sum + (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0), 0).toFixed(2)}
+              </span>
+            </p>
           )}
+
+          {error && <InputError role="alert">{error}</InputError>}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
             <Button type="submit" disabled={createMutation.isPending}>

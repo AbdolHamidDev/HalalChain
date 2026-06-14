@@ -428,8 +428,8 @@ export const api = {
     })),
   createPurchaseOrder: (data: {
     supplierId: string;
-    totalAmount: number;
     poNumber?: string;
+    items: { productId: string; quantity: number; unitPrice: number }[];
   }) =>
     request<{ purchaseOrder: PurchaseOrder }>("/api/purchase-orders", {
       method: "POST",
