@@ -116,6 +116,7 @@ type EmptyStateVariant =
   | "inventory-movements"
   | "purchase-orders"
   | "shipments"
+  | "warehouses"
   | "reports"
   | "generic";
 
@@ -172,6 +173,13 @@ const EMPTY_CONFIG: Record<EmptyStateVariant, EmptyConfig> = {
     title: "No shipments yet",
     description:
       "Shipments are automatically created when a purchase order is approved. Approve a PO to generate its first shipment.",
+  },
+  warehouses: {
+    icon: Warehouse,
+    title: "No warehouses yet",
+    description:
+      "Add your first warehouse to start tracking inventory by location across your distribution network.",
+    ctaLabel: "Add Warehouse",
   },
   reports: {
     icon: BarChart3,

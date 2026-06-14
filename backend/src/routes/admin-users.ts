@@ -17,6 +17,79 @@ const router = Router();
 // Apply authentication and ADMIN authorization to all routes in this router
 router.use(authenticate, authorize(UserRole.ADMIN));
 
+// GET /api/admin/users/stats — aggregate counts for the stats header
+// NOTE: must be declared BEFORE /:id to avoid route shadowing
+router.get("/stats", async (_req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const [total, active, suspended, unverified, admins, managers, staff] =
+      await prisma.$transaction([
+        prisma.user.count(),
+        prisma.user.count({ where: { status: UserStatus.ACTIVE } }),
+        prisma.user.count({ where: { status: UserStatus.SUSPENDED } }),
+        prisma.user.count({ where: { isVerified: false } }),
+        prisma.user.count({ where: { role: UserRole.ADMIN } }),
+        prisma.user.count({ where: { role: UserRole.MANAGER } }),
+        prisma.user.count({ where: { role: UserRole.STAFF } }),
+      ]);
+
+    res.json({ stats: { total, active, suspended, unverified, byRole: { admins, managers, staff } } });
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /api/admin/users — list all users (admin only) with pagination + filters
+// NOTE: must be declared BEFORE /:id to avoid route shadowing
+router.get("/", async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { page, limit } = parsePaginationParams(req.query as Record<string, unknown>);
+    const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
+    const role =
+      typeof req.query.role === "string" && Object.values(UserRole).includes(req.query.role as UserRole)
+        ? (req.query.role as UserRole)
+        : undefined;
+    const status =
+      typeof req.query.status === "string" && Object.values(UserStatus).includes(req.query.status as UserStatus)
+        ? (req.query.status as UserStatus)
+        : undefined;
+
+    const where = {
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: "insensitive" as const } },
+              { email: { contains: search, mode: "insensitive" as const } },
+            ],
+          }
+        : {}),
+      ...(role ? { role } : {}),
+      ...(status ? { status } : {}),
+    };
+
+    const [users, total] = await prisma.$transaction([
+      prisma.user.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.user.count({ where }),
+    ]);
+
+    const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
+
+    res.json({
+      users: users.map(buildUserResponse),
+      page,
+      limit,
+      total,
+      totalPages,
+    });
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // GET /api/admin/users/:id — fetch target user profile
 router.get("/:id", async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -156,77 +229,6 @@ router.post("/:id/avatar", (req: AuthRequest, res: Response): void => {
       res.status(500).json({ error: "Internal server error" });
     }
   });
-});
-
-// GET /api/admin/users/stats — aggregate counts for the stats header
-router.get("/stats", async (_req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    const [total, active, suspended, unverified, admins, managers, staff] =
-      await prisma.$transaction([
-        prisma.user.count(),
-        prisma.user.count({ where: { status: UserStatus.ACTIVE } }),
-        prisma.user.count({ where: { status: UserStatus.SUSPENDED } }),
-        prisma.user.count({ where: { isVerified: false } }),
-        prisma.user.count({ where: { role: UserRole.ADMIN } }),
-        prisma.user.count({ where: { role: UserRole.MANAGER } }),
-        prisma.user.count({ where: { role: UserRole.STAFF } }),
-      ]);
-
-    res.json({ stats: { total, active, suspended, unverified, byRole: { admins, managers, staff } } });
-  } catch {
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// GET /api/admin/users — list all users (admin only) with pagination + filters
-router.get("/", async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    const { page, limit } = parsePaginationParams(req.query as Record<string, unknown>);
-    const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
-    const role =
-      typeof req.query.role === "string" && Object.values(UserRole).includes(req.query.role as UserRole)
-        ? (req.query.role as UserRole)
-        : undefined;
-    const status =
-      typeof req.query.status === "string" && Object.values(UserStatus).includes(req.query.status as UserStatus)
-        ? (req.query.status as UserStatus)
-        : undefined;
-
-    const where = {
-      ...(search
-        ? {
-            OR: [
-              { name: { contains: search, mode: "insensitive" as const } },
-              { email: { contains: search, mode: "insensitive" as const } },
-            ],
-          }
-        : {}),
-      ...(role ? { role } : {}),
-      ...(status ? { status } : {}),
-    };
-
-    const [users, total] = await prisma.$transaction([
-      prisma.user.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-      prisma.user.count({ where }),
-    ]);
-
-    const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
-
-    res.json({
-      users: users.map(buildUserResponse),
-      page,
-      limit,
-      total,
-      totalPages,
-    });
-  } catch {
-    res.status(500).json({ error: "Internal server error" });
-  }
 });
 
 // PATCH /api/admin/users/:id/verify — toggle isVerified for a user (admin only)

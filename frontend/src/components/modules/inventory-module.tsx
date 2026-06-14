@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -41,13 +41,33 @@ export function InventoryModule() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const canMove = user?.role === "ADMIN" || user?.role === "STAFF";
+
+  // Filter state
+  const [filterWarehouseId, setFilterWarehouseId] = useState<string>("");
+  const [filterProductId, setFilterProductId] = useState<string>("");
+  const [filterBelowReorder, setFilterBelowReorder] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Movement dialog state
   const [dialogType, setDialogType] = useState<"inbound" | "outbound" | null>(null);
   const [form, setForm] = useState<MovementForm>(emptyMovement);
   const [error, setError] = useState<string | null>(null);
 
+  // Build query key including filters so refetch triggers on filter change
+  const inventoryQueryKey = [
+    "inventory",
+    { warehouseId: filterWarehouseId, productId: filterProductId, belowReorder: filterBelowReorder },
+  ];
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["inventory"],
-    queryFn: () => api.getInventory(),
+    queryKey: inventoryQueryKey,
+    queryFn: () =>
+      api.getInventory({
+        warehouseId: filterWarehouseId || undefined,
+        productId: filterProductId || undefined,
+        belowReorder: filterBelowReorder || undefined,
+        limit: 100,
+      }),
   });
 
   const { data: movementsData, isLoading: isLoadingMovements } = useQuery({
@@ -58,13 +78,13 @@ export function InventoryModule() {
   const { data: productsData } = useQuery({
     queryKey: ["products"],
     queryFn: () => api.getProducts(),
-    enabled: canMove,
+    enabled: canMove || showFilters,
   });
 
   const { data: warehousesData } = useQuery({
     queryKey: ["warehouses"],
-    queryFn: () => api.getWarehouses(),
-    enabled: canMove,
+    queryFn: () => api.getWarehouses({ limit: 100 }),
+    enabled: canMove || showFilters,
   });
 
   const moveMutation = useMutation({
@@ -83,11 +103,10 @@ export function InventoryModule() {
       qc.invalidateQueries({ queryKey: ["inventory-movements"] });
       const product = productsData?.products.find((p) => p.id === form.productId);
       const productName = product?.name ?? "product";
-      const action = dialogType === "inbound" ? "received" : "dispatched";
       toast.success(
         dialogType === "inbound" ? "Inbound movement recorded" : "Outbound movement recorded",
         {
-          description: `${form.quantity} units of ${productName} ${action} successfully.`,
+          description: `${form.quantity} units of ${productName} ${dialogType === "inbound" ? "received" : "dispatched"} successfully.`,
         }
       );
       setDialogType(null);
@@ -103,8 +122,17 @@ export function InventoryModule() {
     setError(null);
   }
 
+  function clearFilters() {
+    setFilterWarehouseId("");
+    setFilterProductId("");
+    setFilterBelowReorder(false);
+  }
+
+  const hasActiveFilters = !!(filterWarehouseId || filterProductId || filterBelowReorder);
   const inventory = data?.inventory ?? [];
   const movements = movementsData?.movements ?? [];
+  const warehouses = warehousesData?.warehouses ?? [];
+  const products = productsData?.products ?? [];
 
   return (
     <div className="space-y-8">
@@ -125,6 +153,100 @@ export function InventoryModule() {
         }
       />
 
+      {/* Filter bar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          variant={showFilters ? "default" : "outline"}
+          size="sm"
+          onClick={() => setShowFilters((v) => !v)}
+        >
+          <Filter className="h-3.5 w-3.5 mr-1.5" />
+          Filters
+          {hasActiveFilters && (
+            <span className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-foreground text-primary text-xs font-bold">
+              {[filterWarehouseId, filterProductId, filterBelowReorder].filter(Boolean).length}
+            </span>
+          )}
+        </Button>
+
+        {showFilters && (
+          <>
+            {/* Warehouse filter */}
+            <Select
+              value={filterWarehouseId || "__all__"}
+              onValueChange={(v) => setFilterWarehouseId(v === "__all__" ? "" : v)}
+            >
+              <SelectTrigger className="h-8 w-48 text-xs">
+                <SelectValue placeholder="All warehouses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">All warehouses</SelectItem>
+                {warehouses.map((w) => (
+                  <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Product filter */}
+            <Select
+              value={filterProductId || "__all__"}
+              onValueChange={(v) => setFilterProductId(v === "__all__" ? "" : v)}
+            >
+              <SelectTrigger className="h-8 w-48 text-xs">
+                <SelectValue placeholder="All products" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">All products</SelectItem>
+                {products.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>{p.sku} — {p.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Below reorder filter */}
+            <Button
+              size="sm"
+              variant={filterBelowReorder ? "destructive" : "outline"}
+              className="h-8 text-xs"
+              onClick={() => setFilterBelowReorder((v) => !v)}
+            >
+              {filterBelowReorder ? "⚠ Low stock only" : "Show low stock only"}
+            </Button>
+
+            {hasActiveFilters && (
+              <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={clearFilters}>
+                Clear filters
+              </Button>
+            )}
+          </>
+        )}
+
+        {/* Active filter chips when filters collapsed */}
+        {!showFilters && hasActiveFilters && (
+          <div className="flex flex-wrap gap-1.5">
+            {filterWarehouseId && (
+              <Badge variant="default" className="text-xs">
+                {warehouses.find((w) => w.id === filterWarehouseId)?.name ?? "Warehouse"}
+              </Badge>
+            )}
+            {filterProductId && (
+              <Badge variant="default" className="text-xs">
+                {products.find((p) => p.id === filterProductId)?.name ?? "Product"}
+              </Badge>
+            )}
+            {filterBelowReorder && (
+              <Badge variant="warning" className="text-xs">Low stock</Badge>
+            )}
+            <button
+              className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+              onClick={clearFilters}
+            >
+              Clear
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Stock levels */}
       {isLoading && <TableSkeleton columns={7} rows={5} />}
       {isError && (
@@ -134,11 +256,26 @@ export function InventoryModule() {
         />
       )}
       {!isLoading && !isError && inventory.length === 0 && (
-        <EmptyState variant="inventory" />
+        <EmptyState
+          variant="inventory"
+          description={
+            hasActiveFilters
+              ? "No inventory records match the current filters."
+              : undefined
+          }
+        />
       )}
 
       {inventory.length > 0 && (
         <>
+          {/* Result count */}
+          {hasActiveFilters && (
+            <p className="text-xs text-muted-foreground">
+              Showing {inventory.length} record{inventory.length !== 1 ? "s" : ""}
+              {data?.total && data.total > inventory.length ? ` of ${data.total}` : ""}
+            </p>
+          )}
+
           {/* Mobile card view */}
           <div className="grid gap-3 sm:hidden">
             {inventory.map((row) => {
@@ -224,7 +361,10 @@ export function InventoryModule() {
                 <div key={m.id} className="rounded-xl border bg-card p-4 space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-medium truncate">{m.product.name}</p>
-                    <Badge variant={m.type === "INBOUND" ? "success" : "info"} className="shrink-0">
+                    <Badge
+                      variant={m.type === "INBOUND" ? "success" : m.type === "OUTBOUND" ? "info" : "default"}
+                      className="shrink-0"
+                    >
                       {m.type}
                     </Badge>
                   </div>
@@ -256,7 +396,9 @@ export function InventoryModule() {
                     <TableRow key={m.id}>
                       <TableCell>{new Date(m.createdAt).toLocaleString()}</TableCell>
                       <TableCell>
-                        <Badge variant={m.type === "INBOUND" ? "success" : "info"}>
+                        <Badge
+                          variant={m.type === "INBOUND" ? "success" : m.type === "OUTBOUND" ? "info" : "default"}
+                        >
                           {m.type}
                         </Badge>
                       </TableCell>
@@ -299,7 +441,7 @@ export function InventoryModule() {
                 <SelectValue placeholder="Select product" />
               </SelectTrigger>
               <SelectContent>
-                {(productsData?.products ?? []).map((p) => (
+                {products.map((p) => (
                   <SelectItem key={p.id} value={p.id}>{p.sku} — {p.name}</SelectItem>
                 ))}
               </SelectContent>
@@ -318,7 +460,7 @@ export function InventoryModule() {
                 <SelectValue placeholder="Select warehouse" />
               </SelectTrigger>
               <SelectContent>
-                {(warehousesData?.warehouses ?? []).map((w) => (
+                {warehouses.map((w) => (
                   <SelectItem key={w.id} value={w.id}>{w.name} ({w.location})</SelectItem>
                 ))}
               </SelectContent>

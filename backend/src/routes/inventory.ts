@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { z } from "zod";
-import { InventoryMovementType, UserRole } from "@prisma/client";
+import { InventoryMovementType, Prisma, UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { parseBody, sendNotFound, sendValidationError } from "../lib/validate";
 import { AuthRequest, authenticate, authorize } from "../middleware/auth";
@@ -21,24 +21,97 @@ router.get(
   "/",
   authenticate,
   authorize(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF),
-  async (_req, res: Response) => {
-    const inventory = await prisma.inventory.findMany({
-      orderBy: { updatedAt: "desc" },
-      include: {
-        product: {
-          select: {
-            id: true,
-            name: true,
-            sku: true,
-            unit: true,
-            unitPrice: true,
-            supplier: { select: { name: true, country: true } },
+  async (req, res: Response) => {
+    const params = parsePaginationParams(req.query as Record<string, unknown>);
+    const { page, limit } = params;
+    const skip = (page - 1) * limit;
+
+    // Build filters from query params
+    const where: {
+      warehouseId?: string;
+      productId?: string;
+      quantity?: { lte: number };
+    } = {};
+
+    if (typeof req.query.warehouseId === "string" && req.query.warehouseId) {
+      where.warehouseId = req.query.warehouseId;
+    }
+    if (typeof req.query.productId === "string" && req.query.productId) {
+      where.productId = req.query.productId;
+    }
+    // belowReorder=true returns only rows where quantity <= reorderLevel
+    // Prisma doesn't support cross-field comparisons, so we use $queryRaw
+    const belowReorder = req.query.belowReorder === "true";
+
+    if (belowReorder) {
+      // Build optional WHERE clauses for warehouse and product filters
+      const warehouseClause = where.warehouseId
+        ? Prisma.sql`AND warehouse_id = ${where.warehouseId}::uuid`
+        : Prisma.empty;
+      const productClause = where.productId
+        ? Prisma.sql`AND product_id = ${where.productId}::uuid`
+        : Prisma.empty;
+
+      type RawRow = { id: string };
+      const rows = await prisma.$queryRaw<RawRow[]>`
+        SELECT id FROM inventory
+        WHERE quantity <= reorder_level
+        ${warehouseClause}
+        ${productClause}
+      `;
+      const ids = rows.map((r) => r.id);
+
+      const [total, inventory] = await Promise.all([
+        prisma.inventory.count({ where: { id: { in: ids } } }),
+        prisma.inventory.findMany({
+          where: { id: { in: ids } },
+          skip,
+          take: limit,
+          orderBy: { updatedAt: "desc" },
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                sku: true,
+                unit: true,
+                unitPrice: true,
+                supplier: { select: { name: true, country: true } },
+              },
+            },
+            warehouse: { select: { id: true, name: true, location: true } },
           },
+        }),
+      ]);
+
+      res.json(buildPaginatedResponse(inventory, total, params));
+      return;
+    }
+
+    const [total, inventory] = await Promise.all([
+      prisma.inventory.count({ where }),
+      prisma.inventory.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { updatedAt: "desc" },
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              sku: true,
+              unit: true,
+              unitPrice: true,
+              supplier: { select: { name: true, country: true } },
+            },
+          },
+          warehouse: { select: { id: true, name: true, location: true } },
         },
-        warehouse: { select: { id: true, name: true, location: true } },
-      },
-    });
-    res.json({ inventory });
+      }),
+    ]);
+
+    res.json(buildPaginatedResponse(inventory, total, params));
   }
 );
 

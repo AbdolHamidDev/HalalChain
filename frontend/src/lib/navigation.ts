@@ -1,6 +1,7 @@
 import {
   Award,
   BarChart3,
+  Building2,
   LayoutDashboard,
   Package,
   ShoppingCart,
@@ -43,6 +44,12 @@ export const navItems: NavItem[] = [
     label: "Inventory",
     icon: Warehouse,
     roles: ["ADMIN", "MANAGER", "STAFF"],
+  },
+  {
+    href: "/dashboard/warehouses",
+    label: "Warehouses",
+    icon: Building2,
+    roles: ["ADMIN", "MANAGER"],
   },
   {
     href: "/dashboard/purchase-orders",

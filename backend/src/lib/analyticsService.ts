@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import {
   startOfMonth,
-  endOfMonth,
   subMonths,
   format,
   startOfQuarter,
@@ -16,6 +15,7 @@ import {
  * Computes the net inventory movement per month for the past `months` months.
  * net = Σ INBOUND - Σ OUTBOUND - Σ ADJUSTMENT
  *
+ * Uses a single GROUP BY query instead of N sequential queries.
  * Returns an array ordered from oldest to most recent month.
  */
 export async function computeInventoryTrend(
@@ -23,38 +23,53 @@ export async function computeInventoryTrend(
   months: number = 6
 ): Promise<{ month: string; quantity: number }[]> {
   const now = new Date();
-  const result: { month: string; quantity: number }[] = [];
+  const rangeStart = startOfMonth(subMonths(now, months - 1));
 
+  type RawRow = { month_start: Date; type: string; total: bigint };
+
+  const rows = await prisma.$queryRaw<RawRow[]>`
+    SELECT
+      date_trunc('month', "created_at") AS month_start,
+      type,
+      SUM(quantity)::bigint             AS total
+    FROM inventory_movements
+    WHERE "created_at" >= ${rangeStart}
+    GROUP BY date_trunc('month', "created_at"), type
+    ORDER BY month_start ASC
+  `;
+
+  // Build a map: monthLabel -> net quantity
+  const netByMonth = new Map<string, number>();
+
+  // Pre-populate all months with 0 so months with no movements still appear
   for (let i = months - 1; i >= 0; i--) {
-    const referenceDate = subMonths(now, i);
-    const monthStart = startOfMonth(referenceDate);
-    const monthEnd = endOfMonth(referenceDate);
-
-    const movements = await prisma.inventoryMovement.findMany({
-      where: {
-        createdAt: { gte: monthStart, lte: monthEnd },
-      },
-      select: { type: true, quantity: true },
-    });
-
-    const net = movements.reduce((acc, m) => {
-      if (m.type === "INBOUND") return acc + m.quantity;
-      if (m.type === "OUTBOUND") return acc - m.quantity;
-      if (m.type === "ADJUSTMENT") return acc - m.quantity;
-      return acc;
-    }, 0);
-
-    result.push({ month: format(monthStart, "MMM"), quantity: net });
+    const label = format(startOfMonth(subMonths(now, i)), "MMM");
+    netByMonth.set(label, 0);
   }
 
-  return result;
+  for (const row of rows) {
+    const label = format(new Date(row.month_start), "MMM");
+    const qty = Number(row.total);
+    const prev = netByMonth.get(label) ?? 0;
+    if (row.type === "INBOUND") {
+      netByMonth.set(label, prev + qty);
+    } else {
+      // OUTBOUND and ADJUSTMENT both reduce net stock
+      netByMonth.set(label, prev - qty);
+    }
+  }
+
+  return Array.from(netByMonth.entries()).map(([month, quantity]) => ({
+    month,
+    quantity,
+  }));
 }
 
 // ─── Purchase Orders Per Month ────────────────────────────────────────────────
 
 /**
  * Counts PurchaseOrders created per month for the past 6 months.
- * Months with zero orders still appear with count = 0.
+ * Uses a single GROUP BY query. Months with zero orders still appear.
  *
  * Returns an array ordered from oldest to most recent month.
  */
@@ -62,23 +77,36 @@ export async function computePurchaseOrdersPerMonth(
   prisma: PrismaClient
 ): Promise<{ month: string; orders: number }[]> {
   const now = new Date();
-  const result: { month: string; orders: number }[] = [];
+  const rangeStart = startOfMonth(subMonths(now, 5));
 
+  type RawRow = { month_start: Date; total: bigint };
+
+  const rows = await prisma.$queryRaw<RawRow[]>`
+    SELECT
+      date_trunc('month', "created_at") AS month_start,
+      COUNT(*)::bigint                  AS total
+    FROM purchase_orders
+    WHERE "created_at" >= ${rangeStart}
+    GROUP BY date_trunc('month', "created_at")
+    ORDER BY month_start ASC
+  `;
+
+  // Pre-populate all 6 months with 0
+  const ordersByMonth = new Map<string, number>();
   for (let i = 5; i >= 0; i--) {
-    const referenceDate = subMonths(now, i);
-    const monthStart = startOfMonth(referenceDate);
-    const monthEnd = endOfMonth(referenceDate);
-
-    const count = await prisma.purchaseOrder.count({
-      where: {
-        createdAt: { gte: monthStart, lte: monthEnd },
-      },
-    });
-
-    result.push({ month: format(monthStart, "MMM"), orders: count });
+    const label = format(startOfMonth(subMonths(now, i)), "MMM");
+    ordersByMonth.set(label, 0);
   }
 
-  return result;
+  for (const row of rows) {
+    const label = format(new Date(row.month_start), "MMM");
+    ordersByMonth.set(label, Number(row.total));
+  }
+
+  return Array.from(ordersByMonth.entries()).map(([month, orders]) => ({
+    month,
+    orders,
+  }));
 }
 
 // ─── Shipment Status Distribution ─────────────────────────────────────────────
@@ -105,7 +133,7 @@ export async function computeShipmentStatusDistribution(
 /**
  * Counts HalalCertificates by the quarter their expiryDate falls in,
  * for 6 quarters starting from the current quarter.
- * All 6 quarters appear even if count = 0.
+ * Uses a single GROUP BY query. All 6 quarters appear even if count = 0.
  *
  * Returns an array ordered from the current quarter to 5 quarters ahead.
  */
@@ -114,21 +142,33 @@ export async function computeCertificateExpiryTrend(
 ): Promise<{ quarter: string; count: number }[]> {
   const now = new Date();
   const currentQuarterStart = startOfQuarter(now);
-  const result: { quarter: string; count: number }[] = [];
+  const rangeEnd = addQuarters(currentQuarterStart, 6);
 
-  for (let i = 0; i < 6; i++) {
-    const quarterStart = addQuarters(currentQuarterStart, i);
-    const quarterEnd = addQuarters(currentQuarterStart, i + 1);
+  type RawRow = { quarter_start: Date; total: bigint };
 
-    const count = await prisma.halalCertificate.count({
-      where: {
-        expiryDate: { gte: quarterStart, lt: quarterEnd },
-      },
-    });
+  const rows = await prisma.$queryRaw<RawRow[]>`
+    SELECT
+      date_trunc('quarter', "expiry_date") AS quarter_start,
+      COUNT(*)::bigint                     AS total
+    FROM halal_certificates
+    WHERE "expiry_date" >= ${currentQuarterStart}
+      AND "expiry_date" <  ${rangeEnd}
+    GROUP BY date_trunc('quarter', "expiry_date")
+    ORDER BY quarter_start ASC
+  `;
 
-    const label = `Q${getQuarter(quarterStart)} ${getYear(quarterStart)}`;
-    result.push({ quarter: label, count });
+  // Build lookup map: quarter label -> count
+  const countByQuarter = new Map<string, number>();
+  for (const row of rows) {
+    const d = new Date(row.quarter_start);
+    const label = `Q${getQuarter(d)} ${getYear(d)}`;
+    countByQuarter.set(label, Number(row.total));
   }
 
-  return result;
+  // Return all 6 quarters, defaulting to 0 when no data
+  return Array.from({ length: 6 }, (_, i) => {
+    const quarterStart = addQuarters(currentQuarterStart, i);
+    const label = `Q${getQuarter(quarterStart)} ${getYear(quarterStart)}`;
+    return { quarter: label, count: countByQuarter.get(label) ?? 0 };
+  });
 }

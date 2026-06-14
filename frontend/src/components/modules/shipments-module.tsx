@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { api, Shipment, ShipmentStatus } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -23,51 +23,116 @@ import {
 } from "@/components/ui/table";
 import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/state-blocks";
 
+type CreateForm = {
+  purchaseOrderId: string;
+  trackingNumber: string;
+  origin: string;
+  destination: string;
+  estimatedArrival: string;
+};
+
+const emptyCreate: CreateForm = {
+  purchaseOrderId: "",
+  trackingNumber: "",
+  origin: "",
+  destination: "",
+  estimatedArrival: "",
+};
+
 export function ShipmentsModule() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const isAdmin = user?.role === "ADMIN";
+
+  // Edit state
   const [editing, setEditing] = useState<Shipment | null>(null);
-  const [status, setStatus] = useState<ShipmentStatus>("PENDING");
-  const [tracking, setTracking] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [editStatus, setEditStatus] = useState<ShipmentStatus>("PENDING");
+  const [editTracking, setEditTracking] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
+
+  // Create state
+  const [creating, setCreating] = useState(false);
+  const [createForm, setCreateForm] = useState<CreateForm>(emptyCreate);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["shipments"],
     queryFn: () => api.getShipments(),
   });
 
+  // Load purchase orders for the create dialog dropdown (ADMIN only)
+  const { data: poData } = useQuery({
+    queryKey: ["purchase-orders"],
+    queryFn: () => api.getPurchaseOrders(),
+    enabled: isAdmin,
+  });
+
   const updateMutation = useMutation({
     mutationFn: () =>
       api.updateShipment(editing!.id, {
-        status,
-        trackingNumber: tracking,
+        status: editStatus,
+        trackingNumber: editTracking,
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["shipments"] });
       toast.success("Shipment updated", {
-        description: `Tracking ${tracking} has been updated to ${status.replace("_", " ")}.`,
+        description: `Tracking ${editTracking} updated to ${editStatus.replace("_", " ")}.`,
       });
       setEditing(null);
-      setError(null);
+      setEditError(null);
     },
-    onError: (e: Error) => setError(e.message),
+    onError: (e: Error) => setEditError(e.message),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: () =>
+      api.createShipment({
+        purchaseOrderId: createForm.purchaseOrderId,
+        trackingNumber: createForm.trackingNumber,
+        origin: createForm.origin,
+        destination: createForm.destination,
+        estimatedArrival: createForm.estimatedArrival || null,
+      }),
+    onSuccess: (res) => {
+      qc.invalidateQueries({ queryKey: ["shipments"] });
+      toast.success("Shipment created", {
+        description: `Tracking ${res.shipment.trackingNumber} is now being monitored.`,
+      });
+      setCreating(false);
+      setCreateForm(emptyCreate);
+      setCreateError(null);
+    },
+    onError: (e: Error) => setCreateError(e.message),
   });
 
   function openEdit(s: Shipment) {
     setEditing(s);
-    setStatus(s.status);
-    setTracking(s.trackingNumber);
-    setError(null);
+    setEditStatus(s.status);
+    setEditTracking(s.trackingNumber);
+    setEditError(null);
+  }
+
+  function openCreate() {
+    setCreateForm(emptyCreate);
+    setCreateError(null);
+    setCreating(true);
   }
 
   const shipments = data?.shipments ?? [];
+  const purchaseOrders = poData?.purchaseOrders ?? [];
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Shipment Monitoring"
         description="Track inbound cargo from origin port to distribution hubs"
+        action={
+          isAdmin ? (
+            <Button onClick={openCreate}>
+              <Plus className="h-4 w-4" /> New Shipment
+            </Button>
+          ) : undefined
+        }
       />
 
       {isLoading && <TableSkeleton columns={isAdmin ? 7 : 6} rows={5} />}
@@ -79,7 +144,16 @@ export function ShipmentsModule() {
       )}
 
       {!isLoading && !isError && shipments.length === 0 && (
-        <EmptyState variant="shipments" />
+        <EmptyState
+          variant="shipments"
+          description={
+            isAdmin
+              ? "No shipments yet. You can create one manually or approve a purchase order to auto-generate a shipment."
+              : undefined
+          }
+          onAction={isAdmin ? openCreate : undefined}
+          ctaLabel={isAdmin ? "New Shipment" : undefined}
+        />
       )}
 
       {shipments.length > 0 && (
@@ -168,6 +242,7 @@ export function ShipmentsModule() {
         </>
       )}
 
+      {/* Update Shipment dialog */}
       <Dialog
         open={editing !== null}
         onClose={() => setEditing(null)}
@@ -187,15 +262,15 @@ export function ShipmentsModule() {
             <Input
               id="ship-tracking"
               required
-              value={tracking}
-              onChange={(e) => setTracking(e.target.value)}
+              value={editTracking}
+              onChange={(e) => setEditTracking(e.target.value)}
             />
           </InputWrapper>
           <div className="space-y-2">
             <InputLabel htmlFor="ship-status">Status</InputLabel>
             <Select
-              value={status}
-              onValueChange={(v) => setStatus(v as ShipmentStatus)}
+              value={editStatus}
+              onValueChange={(v) => setEditStatus(v as ShipmentStatus)}
             >
               <SelectTrigger id="ship-status">
                 <SelectValue />
@@ -208,13 +283,105 @@ export function ShipmentsModule() {
               </SelectContent>
             </Select>
           </div>
-          {error && (
-            <InputError role="alert">{error}</InputError>
-          )}
+          {editError && <InputError role="alert">{editError}</InputError>}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
             <Button type="submit" disabled={updateMutation.isPending}>
               {updateMutation.isPending ? "Saving…" : "Save Changes"}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
+
+      {/* Create Shipment dialog */}
+      <Dialog
+        open={creating}
+        onClose={() => setCreating(false)}
+        title="New Shipment"
+      >
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            createMutation.mutate();
+          }}
+        >
+          <div className="space-y-2">
+            <InputLabel htmlFor="create-po">
+              Purchase Order <span className="text-destructive" aria-hidden="true">*</span>
+            </InputLabel>
+            <Select
+              required
+              value={createForm.purchaseOrderId}
+              onValueChange={(v) => setCreateForm({ ...createForm, purchaseOrderId: v })}
+            >
+              <SelectTrigger id="create-po">
+                <SelectValue placeholder="Select purchase order" />
+              </SelectTrigger>
+              <SelectContent>
+                {purchaseOrders.map((po) => (
+                  <SelectItem key={po.id} value={po.id}>
+                    {po.poNumber} — {po.supplier?.name ?? ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <InputWrapper>
+            <InputLabel htmlFor="create-tracking">
+              Tracking Number <span className="text-destructive" aria-hidden="true">*</span>
+            </InputLabel>
+            <Input
+              id="create-tracking"
+              required
+              value={createForm.trackingNumber}
+              onChange={(e) => setCreateForm({ ...createForm, trackingNumber: e.target.value })}
+              placeholder="e.g. SHP-2026-0042"
+            />
+          </InputWrapper>
+          <InputWrapper>
+            <InputLabel htmlFor="create-origin">
+              Origin <span className="text-destructive" aria-hidden="true">*</span>
+            </InputLabel>
+            <Input
+              id="create-origin"
+              required
+              value={createForm.origin}
+              onChange={(e) => setCreateForm({ ...createForm, origin: e.target.value })}
+              placeholder="e.g. Kuala Lumpur, Malaysia"
+            />
+          </InputWrapper>
+          <InputWrapper>
+            <InputLabel htmlFor="create-destination">
+              Destination <span className="text-destructive" aria-hidden="true">*</span>
+            </InputLabel>
+            <Input
+              id="create-destination"
+              required
+              value={createForm.destination}
+              onChange={(e) => setCreateForm({ ...createForm, destination: e.target.value })}
+              placeholder="e.g. Ho Chi Minh City, Vietnam"
+            />
+          </InputWrapper>
+          <InputWrapper>
+            <InputLabel htmlFor="create-eta">
+              Estimated Arrival{" "}
+              <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+            </InputLabel>
+            <Input
+              id="create-eta"
+              type="date"
+              value={createForm.estimatedArrival}
+              onChange={(e) => setCreateForm({ ...createForm, estimatedArrival: e.target.value })}
+            />
+          </InputWrapper>
+          {createError && <InputError role="alert">{createError}</InputError>}
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="outline" onClick={() => setCreating(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={createMutation.isPending}>
+              {createMutation.isPending ? "Creating…" : "Create Shipment"}
             </Button>
           </div>
         </form>

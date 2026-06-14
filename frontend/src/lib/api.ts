@@ -6,7 +6,7 @@ const API_BASE =
 export type UserRole = "ADMIN" | "MANAGER" | "STAFF";
 export type UserStatus = "ACTIVE" | "SUSPENDED";
 export type SupplierStatus = "ACTIVE" | "INACTIVE";
-export type PurchaseOrderStatus = "DRAFT" | "APPROVED" | "SHIPPING" | "RECEIVED";
+export type PurchaseOrderStatus = "DRAFT" | "APPROVED" | "SHIPPING" | "RECEIVED" | "CANCELLED" | "PARTIAL";
 export type ShipmentStatus = "PENDING" | "IN_TRANSIT" | "DELIVERED" | "DELAYED";
 
 export interface User {
@@ -60,6 +60,7 @@ export interface Warehouse {
   id: string;
   name: string;
   location: string;
+  _count?: { inventory: number };
 }
 
 export interface InventoryRow {
@@ -82,7 +83,7 @@ export interface InventoryRow {
 
 export interface InventoryMovement {
   id: string;
-  type: "INBOUND" | "OUTBOUND";
+  type: "INBOUND" | "OUTBOUND" | "ADJUSTMENT";
   quantity: number;
   note: string | null;
   createdAt: string;
@@ -352,16 +353,53 @@ export const api = {
     }),
 
   // Inventory
-  getInventory: () =>
-    request<PaginatedResponse<InventoryRow>>("/api/inventory").then((r) => ({
+  getInventory: (params?: { warehouseId?: string; productId?: string; belowReorder?: boolean; page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.warehouseId) query.set("warehouseId", params.warehouseId);
+    if (params?.productId) query.set("productId", params.productId);
+    if (params?.belowReorder) query.set("belowReorder", "true");
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<PaginatedResponse<InventoryRow>>(`/api/inventory${qs ? `?${qs}` : ""}`).then((r) => ({
       inventory: r.data,
-    })),
+      page: r.page,
+      limit: r.limit,
+      total: r.total,
+      totalPages: r.totalPages,
+    }));
+  },
   getInventoryMovements: () =>
     request<PaginatedResponse<InventoryMovement>>("/api/inventory/movements").then((r) => ({
       movements: r.data,
     })),
-  getWarehouses: () =>
-    request<{ warehouses: Warehouse[] }>("/api/inventory/warehouses"),
+  getWarehouses: (params?: { page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<PaginatedResponse<Warehouse>>(`/api/warehouses${qs ? `?${qs}` : ""}`).then((r) => ({
+      warehouses: r.data,
+      page: r.page,
+      limit: r.limit,
+      total: r.total,
+      totalPages: r.totalPages,
+    }));
+  },
+  getWarehouse: (id: string) =>
+    request<{ warehouse: Warehouse & { inventory: InventoryRow[] } }>(`/api/warehouses/${id}`),
+  createWarehouse: (data: { name: string; location: string }) =>
+    request<{ warehouse: Warehouse }>("/api/warehouses", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateWarehouse: (id: string, data: { name?: string; location?: string }) =>
+    request<{ warehouse: Warehouse }>(`/api/warehouses/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  deleteWarehouse: (id: string) =>
+    request<{ message: string }>(`/api/warehouses/${id}`, { method: "DELETE" }),
   inbound: (data: {
     productId: string;
     warehouseId: string;
@@ -412,6 +450,17 @@ export const api = {
     request<PaginatedResponse<Shipment>>("/api/shipments").then((r) => ({
       shipments: r.data,
     })),
+  createShipment: (data: {
+    purchaseOrderId: string;
+    trackingNumber: string;
+    origin: string;
+    destination: string;
+    estimatedArrival?: string | null;
+  }) =>
+    request<{ shipment: Shipment }>("/api/shipments", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
   updateShipment: (
     id: string,
     data: Partial<{

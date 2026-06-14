@@ -11,6 +11,14 @@ import { notifyShipmentDelayed } from "../lib/notificationService";
 
 const router = Router();
 
+const createSchema = z.object({
+  purchaseOrderId: z.string().uuid(),
+  trackingNumber: z.string().min(3).max(100),
+  origin: z.string().min(2).max(200),
+  destination: z.string().min(2).max(200),
+  estimatedArrival: z.coerce.date().optional().nullable(),
+});
+
 const updateSchema = z.object({
   trackingNumber: z.string().min(3).max(100).optional(),
   origin: z.string().min(2).max(200).optional(),
@@ -19,6 +27,84 @@ const updateSchema = z.object({
   estimatedArrival: z.coerce.date().optional().nullable(),
 });
 
+// POST /api/shipments — create a new shipment for an existing purchase order (ADMIN only)
+router.post(
+  "/",
+  authenticate,
+  authorize(UserRole.ADMIN),
+  async (req: AuthRequest, res: Response) => {
+    const parsed = parseBody(createSchema, req.body);
+    if (!parsed.success) {
+      sendValidationError(res, parsed.message);
+      return;
+    }
+
+    const { purchaseOrderId, trackingNumber, origin, destination, estimatedArrival } = parsed.data;
+    const userId = req.user?.sub ?? null;
+
+    // Validate PO exists
+    const po = await prisma.purchaseOrder.findUnique({
+      where: { id: purchaseOrderId },
+    });
+    if (!po) {
+      sendNotFound(res, "Purchase order");
+      return;
+    }
+
+    // Prevent duplicate tracking numbers
+    const existingTracking = await prisma.shipment.findFirst({
+      where: { trackingNumber },
+    });
+    if (existingTracking) {
+      res.status(409).json({ error: "Tracking number already exists" });
+      return;
+    }
+
+    const shipment = await prisma.$transaction(async (tx) => {
+      const created = await tx.shipment.create({
+        data: {
+          purchaseOrderId,
+          trackingNumber,
+          origin,
+          destination,
+          status: ShipmentStatus.PENDING,
+          estimatedArrival: estimatedArrival ?? null,
+        },
+        include: {
+          purchaseOrder: {
+            select: {
+              poNumber: true,
+              status: true,
+              supplier: { select: { name: true, country: true } },
+            },
+          },
+        },
+      });
+
+      await logAudit(tx, {
+        userId,
+        action: "CREATE",
+        entityType: "Shipment",
+        entityId: created.id,
+        newData: {
+          id: created.id,
+          purchaseOrderId,
+          trackingNumber,
+          origin,
+          destination,
+          status: created.status,
+          estimatedArrival: created.estimatedArrival,
+        },
+      });
+
+      return created;
+    });
+
+    res.status(201).json({ shipment });
+  }
+);
+
+// GET /api/shipments — list shipments with pagination
 router.get(
   "/",
   authenticate,
@@ -50,6 +136,7 @@ router.get(
   }
 );
 
+// GET /api/shipments/:id — fetch single shipment
 router.get(
   "/:id",
   authenticate,
@@ -69,6 +156,7 @@ router.get(
   }
 );
 
+// PATCH /api/shipments/:id — update shipment status and details (ADMIN only)
 router.patch(
   "/:id",
   authenticate,
