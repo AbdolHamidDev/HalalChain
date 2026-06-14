@@ -14,7 +14,13 @@ import { Sheet } from "@/components/ui/sheet";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -161,15 +167,18 @@ export function ProductsModule() {
             Supplier <span className="text-destructive" aria-hidden="true">*</span>
           </Label>
           <Select
-            id="product-supplier"
             required
             value={form.supplierId}
-            onChange={(e) => setForm({ ...form, supplierId: e.target.value })}
+            onValueChange={(v) => setForm({ ...form, supplierId: v })}
           >
-            <option value="">Select supplier</option>
-            {(suppliersData?.suppliers ?? []).map((s) => (
-              <option key={s.id} value={s.id}>{s.name} ({s.country})</option>
-            ))}
+            <SelectTrigger id="product-supplier">
+              <SelectValue placeholder="Select supplier" />
+            </SelectTrigger>
+            <SelectContent>
+              {(suppliersData?.suppliers ?? []).map((s) => (
+                <SelectItem key={s.id} value={s.id}>{s.name} ({s.country})</SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
       )}

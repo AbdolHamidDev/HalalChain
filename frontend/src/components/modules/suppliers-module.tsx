@@ -12,7 +12,13 @@ import { Dialog } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge, statusVariant } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -294,12 +300,16 @@ export function SuppliersModule() {
           <div className="space-y-2">
             <Label htmlFor="supplier-status">Status</Label>
             <Select
-              id="supplier-status"
               value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value as SupplierStatus })}
+              onValueChange={(v) => setForm({ ...form, status: v as SupplierStatus })}
             >
-              <option value="ACTIVE">Active</option>
-              <option value="INACTIVE">Inactive</option>
+              <SelectTrigger id="supplier-status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="INACTIVE">Inactive</SelectItem>
+              </SelectContent>
             </Select>
           </div>
           {error && (

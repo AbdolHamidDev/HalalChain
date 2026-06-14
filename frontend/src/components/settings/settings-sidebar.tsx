@@ -3,39 +3,70 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Bell,
+  KeyRound,
+  Menu,
+  Settings,
+  User,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  { label: "Profile", href: "/settings/profile" },
-  { label: "Security", href: "/settings/security" },
-  { label: "Preferences", href: "/settings/preferences" },
+const settingsNavItems = [
+  { label: "Profile", href: "/settings/profile", icon: User },
+  { label: "Security", href: "/settings/security", icon: KeyRound },
+  { label: "Preferences", href: "/settings/preferences", icon: Bell },
 ];
 
-function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-1 p-3">
-      {navItems.map((item) => {
-        const active = pathname === item.href;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            className={cn(
-              "flex items-center rounded-md px-3 py-2 text-sm transition-colors duration-150",
-              active
-                ? "bg-accent font-semibold text-accent-foreground"
-                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-            )}
-          >
-            {item.label}
-          </Link>
-        );
-      })}
-    </nav>
+    <div className="flex h-full flex-col">
+      {/* Back to dashboard */}
+      <div className="p-3 pb-1">
+        <Link
+          href="/dashboard"
+          onClick={onNavigate}
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent/50 hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4 shrink-0" />
+          <span>Back to Dashboard</span>
+        </Link>
+      </div>
+
+      {/* Divider */}
+      <div className="mx-4 my-2 border-t border-border" />
+
+      {/* Settings nav */}
+      <nav className="flex flex-col gap-1 p-3 pt-0">
+        <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+          Settings
+        </p>
+        {settingsNavItems.map((item) => {
+          const Icon = item.icon;
+          const active = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              className={cn(
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
+                active
+                  ? "bg-accent font-semibold text-accent-foreground"
+                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+              )}
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
   );
 }
 
@@ -43,12 +74,10 @@ export function SettingsSidebar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  // Close mobile overlay when route changes
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
-  // Prevent body scroll when overlay is open
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
@@ -60,13 +89,10 @@ export function SettingsSidebar() {
 
   return (
     <>
-      {/* Desktop sidebar — visible on md and above */}
-      <aside className="hidden md:block w-[220px] shrink-0 border-r border-border">
-        <div className="sticky top-0 pt-6">
-          <p className="px-6 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Settings
-          </p>
-          <SidebarNav />
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-[220px] shrink-0 flex-col border-r border-border">
+        <div className="sticky top-0 pt-4">
+          <SidebarContent />
         </div>
       </aside>
 
@@ -98,7 +124,10 @@ export function SettingsSidebar() {
         )}
       >
         <div className="flex h-14 items-center justify-between border-b border-border px-4">
-          <span className="text-sm font-semibold">Settings</span>
+          <div className="flex items-center gap-2">
+            <Settings className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-semibold">Settings</span>
+          </div>
           <button
             type="button"
             aria-label="Close settings menu"
@@ -108,7 +137,7 @@ export function SettingsSidebar() {
             <X className="h-4 w-4" />
           </button>
         </div>
-        <SidebarNav onNavigate={() => setOpen(false)} />
+        <SidebarContent onNavigate={() => setOpen(false)} />
       </div>
     </>
   );

@@ -11,7 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge, statusVariant } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -189,14 +195,18 @@ export function ShipmentsModule() {
           <div className="space-y-2">
             <Label htmlFor="ship-status">Status</Label>
             <Select
-              id="ship-status"
               value={status}
-              onChange={(e) => setStatus(e.target.value as ShipmentStatus)}
+              onValueChange={(v) => setStatus(v as ShipmentStatus)}
             >
-              <option value="PENDING">Pending</option>
-              <option value="IN_TRANSIT">In Transit</option>
-              <option value="DELIVERED">Delivered</option>
-              <option value="DELAYED">Delayed</option>
+              <SelectTrigger id="ship-status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="IN_TRANSIT">In Transit</SelectItem>
+                <SelectItem value="DELIVERED">Delivered</SelectItem>
+                <SelectItem value="DELAYED">Delayed</SelectItem>
+              </SelectContent>
             </Select>
           </div>
           {error && (

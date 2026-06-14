@@ -53,9 +53,7 @@ export function DashboardHeader() {
         </Button>
 
         <div className="flex min-w-0 flex-1 items-center gap-2 text-small">
-          <span className="hidden shrink-0 text-muted-foreground sm:inline">
-            HalalChain
-          </span>
+        
           <Separator
             orientation="vertical"
             className="hidden h-4 sm:block"

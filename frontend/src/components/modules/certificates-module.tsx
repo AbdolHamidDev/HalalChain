@@ -12,7 +12,13 @@ import { Sheet } from "@/components/ui/sheet";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -146,15 +152,18 @@ export function CertificatesModule() {
             Supplier <span className="text-destructive" aria-hidden="true">*</span>
           </Label>
           <Select
-            id="cert-supplier"
             required
             value={form.supplierId}
-            onChange={(e) => setForm({ ...form, supplierId: e.target.value })}
+            onValueChange={(v) => setForm({ ...form, supplierId: v })}
           >
-            <option value="">Select supplier</option>
-            {(suppliersData?.suppliers ?? []).map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
+            <SelectTrigger id="cert-supplier">
+              <SelectValue placeholder="Select supplier" />
+            </SelectTrigger>
+            <SelectContent>
+              {(suppliersData?.suppliers ?? []).map((s) => (
+                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
       )}
@@ -175,14 +184,18 @@ export function CertificatesModule() {
           Issuing Authority <span className="text-destructive" aria-hidden="true">*</span>
         </Label>
         <Select
-          id="cert-issuer"
           value={form.issuedBy}
-          onChange={(e) => setForm({ ...form, issuedBy: e.target.value })}
+          onValueChange={(v) => setForm({ ...form, issuedBy: v })}
         >
-          <option value="JAKIM">JAKIM (Malaysia)</option>
-          <option value="MUI">MUI (Indonesia)</option>
-          <option value="CICOT">CICOT (Thailand)</option>
-          <option value="Other">Other</option>
+          <SelectTrigger id="cert-issuer">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="JAKIM">JAKIM (Malaysia)</SelectItem>
+            <SelectItem value="MUI">MUI (Indonesia)</SelectItem>
+            <SelectItem value="CICOT">CICOT (Thailand)</SelectItem>
+            <SelectItem value="Other">Other</SelectItem>
+          </SelectContent>
         </Select>
       </div>
       <div className="grid grid-cols-2 gap-4">

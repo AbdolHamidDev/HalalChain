@@ -11,7 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -286,15 +292,18 @@ export function InventoryModule() {
               Product <span className="text-destructive" aria-hidden="true">*</span>
             </Label>
             <Select
-              id="move-product"
               required
               value={form.productId}
-              onChange={(e) => setForm({ ...form, productId: e.target.value })}
+              onValueChange={(v) => setForm({ ...form, productId: v })}
             >
-              <option value="">Select product</option>
-              {(productsData?.products ?? []).map((p) => (
-                <option key={p.id} value={p.id}>{p.sku} — {p.name}</option>
-              ))}
+              <SelectTrigger id="move-product">
+                <SelectValue placeholder="Select product" />
+              </SelectTrigger>
+              <SelectContent>
+                {(productsData?.products ?? []).map((p) => (
+                  <SelectItem key={p.id} value={p.id}>{p.sku} — {p.name}</SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
@@ -302,15 +311,18 @@ export function InventoryModule() {
               Warehouse <span className="text-destructive" aria-hidden="true">*</span>
             </Label>
             <Select
-              id="move-warehouse"
               required
               value={form.warehouseId}
-              onChange={(e) => setForm({ ...form, warehouseId: e.target.value })}
+              onValueChange={(v) => setForm({ ...form, warehouseId: v })}
             >
-              <option value="">Select warehouse</option>
-              {(warehousesData?.warehouses ?? []).map((w) => (
-                <option key={w.id} value={w.id}>{w.name} ({w.location})</option>
-              ))}
+              <SelectTrigger id="move-warehouse">
+                <SelectValue placeholder="Select warehouse" />
+              </SelectTrigger>
+              <SelectContent>
+                {(warehousesData?.warehouses ?? []).map((w) => (
+                  <SelectItem key={w.id} value={w.id}>{w.name} ({w.location})</SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
