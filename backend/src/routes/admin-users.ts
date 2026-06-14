@@ -149,6 +149,66 @@ router.post("/:id/avatar", (req: AuthRequest, res: Response): void => {
   });
 });
 
+// GET /api/admin/users — list all users (admin only)
+router.get("/", async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    res.json({ users: users.map(buildUserResponse) });
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PATCH /api/admin/users/:id/verify — toggle isVerified for a user (admin only)
+const verifyUserSchema = z.object({
+  isVerified: z.boolean(),
+});
+
+router.patch("/:id/verify", async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const adminId = req.user!.sub;
+    const targetId = req.params.id as string;
+
+    const parsed = verifyUserSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.flatten() });
+      return;
+    }
+
+    const { isVerified } = parsed.data;
+
+    const currentUser = await prisma.user.findUnique({ where: { id: targetId } });
+    if (!currentUser) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      const updated = await tx.user.update({
+        where: { id: targetId },
+        data: { isVerified },
+      });
+
+      await logAudit(tx, {
+        userId: adminId,
+        action: "UPDATE",
+        entityType: "User",
+        entityId: targetId,
+        oldData: { isVerified: currentUser.isVerified },
+        newData: { isVerified },
+      });
+
+      return updated;
+    });
+
+    res.json({ user: buildUserResponse(updatedUser) });
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // POST /api/admin/users/:id/reset-password — admin resets a user's password (no current password required)
 const resetPasswordSchema = z.object({
   newPassword: z.string(),

@@ -7,6 +7,7 @@ export interface UserResponse {
   role: UserRole;
   createdAt: Date;
   avatarUrl: string | null;
+  isVerified: boolean;
 }
 
 export function buildUserResponse(user: {
@@ -16,6 +17,7 @@ export function buildUserResponse(user: {
   role: UserRole;
   createdAt: Date;
   avatarUrl?: string | null;
+  isVerified?: boolean;
 }): UserResponse {
   return {
     id: user.id,
@@ -24,5 +26,6 @@ export function buildUserResponse(user: {
     role: user.role,
     createdAt: user.createdAt,
     avatarUrl: user.avatarUrl ?? null,
+    isVerified: user.isVerified ?? false,
   };
 }

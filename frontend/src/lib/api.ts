@@ -15,6 +15,7 @@ export interface User {
   role: UserRole;
   createdAt: string;
   avatarUrl?: string | null;
+  isVerified: boolean;
 }
 
 export interface Supplier {
@@ -500,6 +501,7 @@ export const api = {
     }),
 
   // Admin user management
+  adminListUsers: () => request<{ users: User[] }>("/api/admin/users"),
   adminGetUser: (id: string) => request<{ user: User }>(`/api/admin/users/${id}`),
   adminUpdateUser: (id: string, data: { name: string }) =>
     request<{ user: User }>(`/api/admin/users/${id}`, {
@@ -526,5 +528,10 @@ export const api = {
     request<{ message: string }>(`/api/admin/users/${id}/reset-password`, {
       method: "POST",
       body: JSON.stringify(data),
+    }),
+  adminVerifyUser: (id: string, isVerified: boolean) =>
+    request<{ user: User }>(`/api/admin/users/${id}/verify`, {
+      method: "PATCH",
+      body: JSON.stringify({ isVerified }),
     }),
 };

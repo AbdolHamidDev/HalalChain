@@ -21,6 +21,7 @@ async function main() {
       email: "admin@halalchain.com",
       passwordHash,
       role: UserRole.ADMIN,
+      isVerified: true,
     },
   });
 
@@ -346,7 +347,7 @@ async function main() {
     create: {
       supplierId: supplierSG.id,
       poNumber: "PO-2025-0004",
-      status: PurchaseOrderStatus.PENDING,
+      status: PurchaseOrderStatus.DRAFT,
       totalAmount: 5320,
       createdAt: new Date("2025-05-20"),
     },

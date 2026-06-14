@@ -5,6 +5,7 @@ import {
   Package,
   ShoppingCart,
   Truck,
+  UserCheck,
   Users,
   Warehouse,
   type LucideIcon,
@@ -66,6 +67,12 @@ export const navItems: NavItem[] = [
     label: "Reports",
     icon: BarChart3,
     roles: ["ADMIN", "MANAGER"],
+  },
+  {
+    href: "/dashboard/users",
+    label: "User Management",
+    icon: UserCheck,
+    roles: ["ADMIN"],
   },
 ];
 

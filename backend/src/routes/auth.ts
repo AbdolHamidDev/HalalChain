@@ -38,6 +38,7 @@ function sanitizeUser(user: {
   role: UserRole;
   createdAt: Date;
   avatarUrl?: string | null;
+  isVerified?: boolean;
 }) {
   return {
     id: user.id,
@@ -46,6 +47,7 @@ function sanitizeUser(user: {
     role: user.role,
     createdAt: user.createdAt,
     avatarUrl: user.avatarUrl ?? null,
+    isVerified: user.isVerified ?? false,
   };
 }
 
@@ -133,6 +135,7 @@ router.get("/me", authenticate, async (req: AuthRequest, res: Response) => {
       role: true,
       createdAt: true,
       avatarUrl: true,
+      isVerified: true,
     },
   });
 

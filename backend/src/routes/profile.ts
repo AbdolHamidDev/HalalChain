@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { Router, Response } from "express";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
@@ -10,7 +8,7 @@ import { buildUserResponse } from "../lib/userResponse";
 import { validateName } from "../lib/validateName";
 import { validatePassword } from "../lib/passwordValidator";
 import { logAudit } from "../lib/auditLog";
-import { avatarUpload } from "../lib/avatarUpload";
+import { avatarUpload, uploadAvatarToCloudinary, deleteAvatarFromCloudinary } from "../lib/avatarUpload";
 
 const router = Router();
 
@@ -139,7 +137,7 @@ router.patch("/", authenticate, async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /avatar — upload or replace avatar
+// POST /avatar — upload or replace avatar (stored on Cloudinary)
 router.post("/avatar", authenticate, (req: AuthRequest, res: Response) => {
   avatarUpload.single("avatar")(req as any, res as any, async (err) => {
     if (err) {
@@ -155,23 +153,29 @@ router.post("/avatar", authenticate, (req: AuthRequest, res: Response) => {
         return res.status(400).json({ error: "No file uploaded" });
       }
 
-      // Fetch current avatarUrl to record in audit log oldData
+      // Fetch current user to capture old avatar for cleanup + audit
       const existingUser = await prisma.user.findUnique({
         where: { id: userId },
-        select: { avatarUrl: true },
+        select: { avatarUrl: true, avatarPublicId: true },
       });
 
       if (!existingUser) {
         return res.status(404).json({ error: "User not found" });
       }
 
+      // Upload new image to Cloudinary (in-memory buffer, never touches disk)
+      const { secureUrl, publicId } = await uploadAvatarToCloudinary(
+        req.file.buffer,
+        req.file.mimetype
+      );
+
       const oldAvatarUrl = existingUser.avatarUrl;
-      const newAvatarUrl = `/uploads/avatars/${req.file.filename}`;
+      const oldPublicId = existingUser.avatarPublicId;
 
       const updatedUser = await prisma.$transaction(async (tx) => {
         const updated = await tx.user.update({
           where: { id: userId },
-          data: { avatarUrl: newAvatarUrl },
+          data: { avatarUrl: secureUrl, avatarPublicId: publicId },
           select: {
             id: true,
             name: true,
@@ -188,11 +192,16 @@ router.post("/avatar", authenticate, (req: AuthRequest, res: Response) => {
           entityType: "User",
           entityId: userId,
           oldData: { avatarUrl: oldAvatarUrl },
-          newData: { avatarUrl: newAvatarUrl },
+          newData: { avatarUrl: secureUrl },
         });
 
         return updated;
       });
+
+      // Delete old Cloudinary asset after DB commit (non-blocking)
+      if (oldPublicId) {
+        deleteAvatarFromCloudinary(oldPublicId);
+      }
 
       return res.json({ user: buildUserResponse(updatedUser) });
     } catch (error) {
@@ -209,7 +218,7 @@ router.delete("/avatar", authenticate, async (req: AuthRequest, res: Response) =
 
     const currentUser = await prisma.user.findUnique({
       where: { id: userId },
-      select: { avatarUrl: true },
+      select: { avatarUrl: true, avatarPublicId: true },
     });
 
     if (!currentUser) {
@@ -217,24 +226,12 @@ router.delete("/avatar", authenticate, async (req: AuthRequest, res: Response) =
     }
 
     const oldAvatarUrl = currentUser.avatarUrl;
-
-    if (oldAvatarUrl) {
-      // Delete file from filesystem
-      const filename = oldAvatarUrl.split("/").pop();
-      if (filename) {
-        const filePath = path.join(process.cwd(), "uploads", "avatars", filename);
-        try {
-          fs.unlinkSync(filePath);
-        } catch {
-          // File may not exist on disk, continue regardless
-        }
-      }
-    }
+    const oldPublicId = currentUser.avatarPublicId;
 
     const updatedUser = await prisma.$transaction(async (tx) => {
       const updated = await tx.user.update({
         where: { id: userId },
-        data: { avatarUrl: null },
+        data: { avatarUrl: null, avatarPublicId: null },
         select: {
           id: true,
           name: true,
@@ -256,6 +253,11 @@ router.delete("/avatar", authenticate, async (req: AuthRequest, res: Response) =
 
       return updated;
     });
+
+    // Delete from Cloudinary after DB commit (non-blocking)
+    if (oldPublicId) {
+      deleteAvatarFromCloudinary(oldPublicId);
+    }
 
     return res.json({ user: buildUserResponse(updatedUser) });
   } catch (error) {

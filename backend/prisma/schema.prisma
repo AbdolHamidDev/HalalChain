@@ -13,12 +13,15 @@ model User {
   email        String   @unique
   passwordHash String   @map("password_hash")
   role         UserRole @default(STAFF)
-  avatarUrl    String?  @map("avatar_url")
+  avatarUrl      String?  @map("avatar_url")
+  avatarPublicId String?  @map("avatar_public_id")
   createdAt    DateTime @default(now()) @map("created_at")
 
   auditLogs          AuditLog[]
   inventoryMovements InventoryMovement[]
   notifications      Notification[]
+  
+  isVerified Boolean @default(false) @map("is_verified")
 
   @@map("users")
 }
