@@ -4,6 +4,7 @@ const API_BASE =
     : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000");
 
 export type UserRole = "ADMIN" | "MANAGER" | "STAFF";
+export type UserStatus = "ACTIVE" | "SUSPENDED";
 export type SupplierStatus = "ACTIVE" | "INACTIVE";
 export type PurchaseOrderStatus = "DRAFT" | "APPROVED" | "SHIPPING" | "RECEIVED";
 export type ShipmentStatus = "PENDING" | "IN_TRANSIT" | "DELIVERED" | "DELAYED";
@@ -13,9 +14,11 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  status: UserStatus;
   createdAt: string;
   avatarUrl?: string | null;
   isVerified: boolean;
+  lastLoginAt?: string | null;
 }
 
 export interface Supplier {
@@ -150,6 +153,24 @@ export interface AuditLog {
   newData: Record<string, unknown> | null;
   createdAt: string;
   user?: { name: string } | null;
+}
+
+export interface UserStats {
+  total: number;
+  active: number;
+  suspended: number;
+  unverified: number;
+  byRole: { admins: number; managers: number; staff: number };
+}
+
+export interface Invitation {
+  id: string;
+  email: string;
+  role: UserRole;
+  expiresAt: string;
+  createdAt: string;
+  inviteUrl?: string;
+  inviter?: { name: string };
 }
 
 export interface ActivityItem {
@@ -501,7 +522,27 @@ export const api = {
     }),
 
   // Admin user management
-  adminListUsers: () => request<{ users: User[] }>("/api/admin/users"),
+  adminGetUserStats: () =>
+    request<{ stats: UserStats }>("/api/admin/users/stats"),
+
+  adminListUsers: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    role?: UserRole;
+    status?: UserStatus;
+  }) => {
+    const query = new URLSearchParams();
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
+    if (params?.search) query.set("search", params.search);
+    if (params?.role) query.set("role", params.role);
+    if (params?.status) query.set("status", params.status);
+    const qs = query.toString();
+    return request<{ users: User[]; page: number; limit: number; total: number; totalPages: number }>(
+      `/api/admin/users${qs ? `?${qs}` : ""}`
+    );
+  },
   adminGetUser: (id: string) => request<{ user: User }>(`/api/admin/users/${id}`),
   adminUpdateUser: (id: string, data: { name: string }) =>
     request<{ user: User }>(`/api/admin/users/${id}`, {
@@ -533,5 +574,35 @@ export const api = {
     request<{ user: User }>(`/api/admin/users/${id}/verify`, {
       method: "PATCH",
       body: JSON.stringify({ isVerified }),
+    }),
+
+  adminChangeRole: (id: string, role: UserRole) =>
+    request<{ user: User }>(`/api/auth/users/${id}/role`, {
+      method: "PATCH",
+      body: JSON.stringify({ role }),
+    }),
+
+  adminSetStatus: (id: string, status: UserStatus) =>
+    request<{ user: User }>(`/api/admin/users/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }),
+
+  // Invitations
+  adminCreateInvitation: (data: { email: string; role: UserRole }) =>
+    request<{ invitation: Invitation }>("/api/invitations", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  adminListInvitations: () =>
+    request<{ invitations: Invitation[] }>("/api/invitations"),
+  adminRevokeInvitation: (id: string) =>
+    request<{ message: string }>(`/api/invitations/${id}`, { method: "DELETE" }),
+  validateInviteToken: (token: string) =>
+    request<{ email: string; role: UserRole }>(`/api/invitations/validate?token=${encodeURIComponent(token)}`),
+  acceptInvitation: (data: { token: string; name: string; password: string }) =>
+    request<{ user: User }>("/api/invitations/accept", {
+      method: "POST",
+      body: JSON.stringify(data),
     }),
 };

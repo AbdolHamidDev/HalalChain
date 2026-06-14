@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { z } from "zod";
-import { UserRole } from "@prisma/client";
+import { UserRole, UserStatus } from "@prisma/client";
 import multer from "multer";
 import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma";
@@ -9,7 +9,8 @@ import { buildUserResponse } from "../lib/userResponse";
 import { validateName } from "../lib/validateName";
 import { validatePassword } from "../lib/passwordValidator";
 import { logAudit } from "../lib/auditLog";
-import { avatarUpload } from "../lib/avatarUpload";
+import { avatarUpload, uploadAvatarToCloudinary, deleteAvatarFromCloudinary } from "../lib/avatarUpload";
+import { parsePaginationParams } from "../lib/paginate";
 
 const router = Router();
 
@@ -94,7 +95,6 @@ router.post("/:id/avatar", (req: AuthRequest, res: Response): void => {
   avatarUpload.single("avatar")(req as Request, res, async (err) => {
     if (err) {
       if (err instanceof multer.MulterError) {
-        // Multer-level error (e.g. file size exceeded)
         res.status(400).json({ error: "File too large. Maximum size is 5 MB" });
       } else if (err instanceof Error && err.message === "Unsupported file type") {
         res.status(400).json({ error: "Unsupported file type. Accepted: JPEG, PNG, GIF, WebP" });
@@ -113,7 +113,6 @@ router.post("/:id/avatar", (req: AuthRequest, res: Response): void => {
         return;
       }
 
-      // Check target user exists
       const currentUser = await prisma.user.findUnique({ where: { id: targetId } });
       if (!currentUser) {
         res.status(404).json({ error: "User not found" });
@@ -121,13 +120,18 @@ router.post("/:id/avatar", (req: AuthRequest, res: Response): void => {
       }
 
       const oldAvatarUrl = currentUser.avatarUrl;
-      const newAvatarUrl = `/uploads/avatars/${req.file.filename}`;
+      const oldPublicId = currentUser.avatarPublicId;
 
-      // Update avatarUrl + audit log in a single atomic transaction (Requirements 8.6, 12.3)
+      // Upload new image to Cloudinary (in-memory buffer, never touches disk)
+      const { secureUrl, publicId } = await uploadAvatarToCloudinary(
+        req.file.buffer,
+        req.file.mimetype
+      );
+
       const updatedUser = await prisma.$transaction(async (tx) => {
         const updated = await tx.user.update({
           where: { id: targetId },
-          data: { avatarUrl: newAvatarUrl },
+          data: { avatarUrl: secureUrl, avatarPublicId: publicId },
         });
 
         await logAudit(tx, {
@@ -136,11 +140,16 @@ router.post("/:id/avatar", (req: AuthRequest, res: Response): void => {
           entityType: "User",
           entityId: targetId,
           oldData: { avatarUrl: oldAvatarUrl },
-          newData: { avatarUrl: newAvatarUrl },
+          newData: { avatarUrl: secureUrl },
         });
 
         return updated;
       });
+
+      // Delete old Cloudinary asset after DB commit (non-blocking)
+      if (oldPublicId) {
+        deleteAvatarFromCloudinary(oldPublicId);
+      }
 
       res.json({ user: buildUserResponse(updatedUser) });
     } catch {
@@ -149,13 +158,72 @@ router.post("/:id/avatar", (req: AuthRequest, res: Response): void => {
   });
 });
 
-// GET /api/admin/users — list all users (admin only)
+// GET /api/admin/users/stats — aggregate counts for the stats header
+router.get("/stats", async (_req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const [total, active, suspended, unverified, admins, managers, staff] =
+      await prisma.$transaction([
+        prisma.user.count(),
+        prisma.user.count({ where: { status: UserStatus.ACTIVE } }),
+        prisma.user.count({ where: { status: UserStatus.SUSPENDED } }),
+        prisma.user.count({ where: { isVerified: false } }),
+        prisma.user.count({ where: { role: UserRole.ADMIN } }),
+        prisma.user.count({ where: { role: UserRole.MANAGER } }),
+        prisma.user.count({ where: { role: UserRole.STAFF } }),
+      ]);
+
+    res.json({ stats: { total, active, suspended, unverified, byRole: { admins, managers, staff } } });
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /api/admin/users — list all users (admin only) with pagination + filters
 router.get("/", async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const users = await prisma.user.findMany({
-      orderBy: { createdAt: "desc" },
+    const { page, limit } = parsePaginationParams(req.query as Record<string, unknown>);
+    const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
+    const role =
+      typeof req.query.role === "string" && Object.values(UserRole).includes(req.query.role as UserRole)
+        ? (req.query.role as UserRole)
+        : undefined;
+    const status =
+      typeof req.query.status === "string" && Object.values(UserStatus).includes(req.query.status as UserStatus)
+        ? (req.query.status as UserStatus)
+        : undefined;
+
+    const where = {
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: "insensitive" as const } },
+              { email: { contains: search, mode: "insensitive" as const } },
+            ],
+          }
+        : {}),
+      ...(role ? { role } : {}),
+      ...(status ? { status } : {}),
+    };
+
+    const [users, total] = await prisma.$transaction([
+      prisma.user.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.user.count({ where }),
+    ]);
+
+    const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
+
+    res.json({
+      users: users.map(buildUserResponse),
+      page,
+      limit,
+      total,
+      totalPages,
     });
-    res.json({ users: users.map(buildUserResponse) });
   } catch {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -249,7 +317,10 @@ router.post("/:id/reset-password", async (req: AuthRequest, res: Response): Prom
     await prisma.$transaction(async (tx) => {
       await tx.user.update({
         where: { id: targetId },
-        data: { passwordHash: newHash },
+        data: {
+          passwordHash: newHash,
+          tokenVersion: { increment: 1 }, // invalidate all existing sessions
+        },
       });
 
       await logAudit(tx, {
@@ -264,6 +335,64 @@ router.post("/:id/reset-password", async (req: AuthRequest, res: Response): Prom
 
     // 6. Return success (req 9.5)
     res.status(200).json({ message: "Password reset successfully" });
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PATCH /api/admin/users/:id/status — suspend or activate a user (admin only)
+const updateStatusSchema = z.object({
+  status: z.nativeEnum(UserStatus),
+});
+
+router.patch("/:id/status", async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const adminId = req.user!.sub;
+    const targetId = req.params.id as string;
+
+    // Prevent admin from suspending themselves
+    if (targetId === adminId) {
+      res.status(400).json({ error: "You cannot suspend your own account." });
+      return;
+    }
+
+    const parsed = updateStatusSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.flatten() });
+      return;
+    }
+
+    const { status } = parsed.data;
+
+    const currentUser = await prisma.user.findUnique({ where: { id: targetId } });
+    if (!currentUser) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      const updated = await tx.user.update({
+        where: { id: targetId },
+        data: {
+          status,
+          // Increment tokenVersion when suspending so existing sessions are immediately invalidated
+          ...(status === UserStatus.SUSPENDED ? { tokenVersion: { increment: 1 } } : {}),
+        },
+      });
+
+      await logAudit(tx, {
+        userId: adminId,
+        action: "STATUS_CHANGE",
+        entityType: "User",
+        entityId: targetId,
+        oldData: { status: currentUser.status },
+        newData: { status },
+      });
+
+      return updated;
+    });
+
+    res.json({ user: buildUserResponse(updatedUser) });
   } catch {
     res.status(500).json({ error: "Internal server error" });
   }

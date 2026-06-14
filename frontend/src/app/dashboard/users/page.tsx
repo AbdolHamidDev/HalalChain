@@ -2,13 +2,27 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ShieldCheck, ShieldOff, RefreshCw, Search } from "lucide-react";
-import { api, type User, type UserRole } from "@/lib/api";
+import {
+  RefreshCw,
+  Search,
+  UserCog,
+  ChevronLeft,
+  ChevronRight,
+  UserPlus,
+} from "lucide-react";
+import { api, type User, type UserRole, type UserStatus, type UserStats } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input, InputWrapper } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -17,7 +31,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { dialog } from "@/lib/dialog";
+import { UserDetailDrawer } from "@/components/modules/user-detail-drawer";
+import { InviteUserDialog } from "@/components/modules/invite-user-dialog";
+import { useDebounce } from "@/lib/useDebounce";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -44,7 +60,6 @@ function roleBadgeVariant(role: UserRole): BadgeProps["variant"] {
       return "info";
     case "MANAGER":
       return "warning";
-    case "STAFF":
     default:
       return "outline";
   }
@@ -53,7 +68,7 @@ function roleBadgeVariant(role: UserRole): BadgeProps["variant"] {
 function SkeletonRow() {
   return (
     <TableRow>
-      {[...Array(5)].map((_, i) => (
+      {[...Array(6)].map((_, i) => (
         <TableCell key={i}>
           <div className="h-4 animate-pulse rounded bg-muted" />
         </TableCell>
@@ -61,6 +76,32 @@ function SkeletonRow() {
     </TableRow>
   );
 }
+
+function StatCard({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: number;
+  color?: "emerald" | "red" | "amber";
+}) {
+  const colorMap = {
+    emerald: "text-emerald-500",
+    red: "text-red-500",
+    amber: "text-amber-500",
+  };
+  return (
+    <div className="rounded-xl border border-border bg-card px-4 py-3">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className={`mt-1 text-2xl font-semibold tabular-nums ${color ? colorMap[color] : ""}`}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+const PAGE_LIMIT = 10;
 
 // ---------------------------------------------------------------------------
 // Page
@@ -71,230 +112,360 @@ export default function UsersPage() {
 
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
+
+  // Stats
+  const [stats, setStats] = useState<UserStats | null>(null);
+
+  // Filters
   const [search, setSearch] = useState("");
-  const [verifying, setVerifying] = useState<string | null>(null); // userId being toggled
+  const [roleFilter, setRoleFilter] = useState<UserRole | "ALL">("ALL");
+  const [statusFilter, setStatusFilter] = useState<UserStatus | "ALL">("ALL");
+
+  const debouncedSearch = useDebounce(search, 300);
+
+  // Drawer
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Invite dialog
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   // ---------------------------------------------------------------------------
   // Load
   // ---------------------------------------------------------------------------
 
-  const loadUsers = useCallback(async () => {
+  const loadUsers = useCallback(async (p: number) => {
     setLoading(true);
     try {
-      const { users: data } = await api.adminListUsers();
-      setUsers(data);
+      const res = await api.adminListUsers({
+        page: p,
+        limit: PAGE_LIMIT,
+        search: debouncedSearch || undefined,
+        role: roleFilter !== "ALL" ? roleFilter : undefined,
+        status: statusFilter !== "ALL" ? statusFilter : undefined,
+      });
+      setUsers(res.users);
+      setTotal(res.total);
+      setTotalPages(res.totalPages);
     } catch {
       toast.error("Failed to load users.");
     } finally {
       setLoading(false);
     }
+  }, [debouncedSearch, roleFilter, statusFilter]);
+
+  // Refresh stats whenever users change (after update/suspend/etc)
+  const loadStats = useCallback(async () => {
+    try {
+      const { stats: data } = await api.adminGetUserStats();
+      setStats(data);
+    } catch {
+      // non-critical
+    }
   }, []);
 
   useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
+    loadStats();
+  }, [loadStats]);
+
+  // Reset to page 1 whenever filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, roleFilter, statusFilter]);
+
+  useEffect(() => {
+    loadUsers(page);
+  }, [loadUsers, page]);
 
   // ---------------------------------------------------------------------------
-  // Verify toggle
+  // Drawer
   // ---------------------------------------------------------------------------
 
-  const handleVerifyClick = async (user: User) => {
-    const nextValue = !user.isVerified;
+  function openDrawer(user: User) {
+    setSelectedUser(user);
+    setDrawerOpen(true);
+  }
 
-    const ok = await dialog.confirm({
-      type: nextValue ? "confirm" : "destructive",
-      title: nextValue ? "Verify user?" : "Remove verification?",
-      description: nextValue
-        ? `This will mark ${user.name} as a verified user. They will see a verified badge in the sidebar.`
-        : `This will remove the verified badge from ${user.name}.`,
-      confirmLabel: nextValue ? "Verify" : "Remove",
-      cancelLabel: "Cancel",
-    });
+  function closeDrawer() {
+    setDrawerOpen(false);
+  }
 
-    if (!ok) return;
-
-    setVerifying(user.id);
-    try {
-      const { user: updated } = await api.adminVerifyUser(user.id, nextValue);
-      setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
-      toast.success(
-        nextValue
-          ? `${updated.name} has been verified.`
-          : `Verification removed from ${updated.name}.`
-      );
-    } catch (err: unknown) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to update verification status."
-      );
-    } finally {
-      setVerifying(null);
-    }
-  };
-
-  // ---------------------------------------------------------------------------
-  // Filter
-  // ---------------------------------------------------------------------------
-
-  const filtered = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      u.role.toLowerCase().includes(search.toLowerCase())
-  );
+  function handleUserUpdated(updated: User) {
+    setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
+    setSelectedUser(updated);
+    // Refresh aggregate stats after any user change
+    loadStats();
+  }
 
   // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">User Management</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage accounts and verified status for all users.
-          </p>
+    <>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold">User Management</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {total > 0 ? `${total} user${total === 1 ? "" : "s"} total` : "Manage accounts, roles, and access."}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => { loadUsers(page); loadStats(); }}
+              disabled={loading}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setInviteOpen(true)}
+              className="gap-2"
+            >
+              <UserPlus className="h-3.5 w-3.5" />
+              Invite User
+            </Button>
+          </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={loadUsers}
-          disabled={loading}
-          className="gap-2 self-start sm:self-auto"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-          Refresh
-        </Button>
-      </div>
 
-      {/* Search */}
-      <div className="max-w-sm">
-        <Input
-          leftIcon={<Search className="h-4 w-4" />}
-          placeholder="Search by name, email or role…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+        {/* Stat cards */}
+        {stats && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <StatCard label="Total Users"   value={stats.total}     />
+            <StatCard label="Active"        value={stats.active}    color="emerald" />
+            <StatCard label="Suspended"     value={stats.suspended} color="red" />
+            <StatCard label="Unverified"    value={stats.unverified} color="amber" />
+          </div>
+        )}
 
-      {/* Table */}
-      <div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Verified</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
-            ) : filtered.length === 0 ? (
+        {/* Filters row */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="w-full max-w-xs">
+            <Input
+              leftIcon={<Search className="h-4 w-4" />}
+              placeholder="Search by name or email…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <Select value={roleFilter} onValueChange={(v) => setRoleFilter(v as UserRole | "ALL")}>
+            <SelectTrigger className="w-44">
+              <SelectValue placeholder="All roles" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All roles</SelectItem>
+              <SelectItem value="ADMIN">Administrator</SelectItem>
+              <SelectItem value="MANAGER">Operations Manager</SelectItem>
+              <SelectItem value="STAFF">Warehouse Staff</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as UserStatus | "ALL")}>
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All statuses</SelectItem>
+              <SelectItem value="ACTIVE">Active</SelectItem>
+              <SelectItem value="SUSPENDED">Suspended</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {(search || roleFilter !== "ALL" || statusFilter !== "ALL") && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setSearch(""); setRoleFilter("ALL"); setStatusFilter("ALL"); }}
+            >
+              Clear filters
+            </Button>
+          )}
+        </div>
+
+        {/* Table */}
+        <div>
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">
-                  {search ? "No users match your search." : "No users found."}
-                </TableCell>
+                <TableHead>User</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Last Login</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ) : (
-              filtered.map((u) => {
-                const isSelf = u.id === currentUser?.id;
-                const isUpdating = verifying === u.id;
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                Array.from({ length: PAGE_LIMIT }).map((_, i) => <SkeletonRow key={i} />)
+              ) : users.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="py-10 text-center text-sm text-muted-foreground"
+                  >
+                    {search || roleFilter !== "ALL" || statusFilter !== "ALL"
+                      ? "No users match your filters."
+                      : "No users found."}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                users.map((u) => {
+                  const isSelf = u.id === currentUser?.id;
+                  const isSuspended = u.status === "SUSPENDED";
 
-                return (
-                  <TableRow key={u.id}>
-                    {/* User */}
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8 shrink-0">
-                          {u.avatarUrl && (
-                            <AvatarImage src={u.avatarUrl} alt={u.name} />
-                          )}
-                          <AvatarFallback className="text-[11px]">
-                            {getInitials(u.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-medium leading-tight">
-                            {u.name}
-                            {isSelf && (
-                              <span className="ml-1.5 text-xs text-muted-foreground">(you)</span>
+                  return (
+                    <TableRow
+                      key={u.id}
+                      className={`cursor-pointer ${isSuspended ? "opacity-60" : ""}`}
+                      onClick={() => openDrawer(u)}
+                    >
+                      {/* User */}
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8 shrink-0">
+                            {u.avatarUrl && (
+                              <AvatarImage src={u.avatarUrl} alt={u.name} />
                             )}
-                          </p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {new Date(u.createdAt).toLocaleDateString("en-US", {
+                            <AvatarFallback className="text-[11px]">
+                              {getInitials(u.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <p className="truncate text-sm font-medium leading-tight">
+                                {u.name}
+                              </p>
+                              {u.isVerified && (
+                                <img src="/verified.png" alt="Verified" className="h-3.5 w-3.5 shrink-0" />
+                              )}
+                              {isSelf && (
+                                <span className="text-xs text-muted-foreground">(you)</span>
+                              )}
+                            </div>
+                            <p className="truncate text-xs text-muted-foreground">
+                              Joined{" "}
+                              {new Date(u.createdAt).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+
+                      {/* Email */}
+                      <TableCell className="text-sm text-muted-foreground">
+                        {u.email}
+                      </TableCell>
+
+                      {/* Role */}
+                      <TableCell>
+                        <Badge variant={roleBadgeVariant(u.role)}>
+                          {roleLabels[u.role]}
+                        </Badge>
+                      </TableCell>
+
+                      {/* Status */}
+                      <TableCell>
+                        {isSuspended ? (
+                          <Badge variant="danger">Suspended</Badge>
+                        ) : (
+                          <Badge variant="success">Active</Badge>
+                        )}
+                      </TableCell>
+
+                      {/* Last Login */}
+                      <TableCell className="text-sm text-muted-foreground">
+                        {u.lastLoginAt
+                          ? new Date(u.lastLoginAt).toLocaleDateString("en-US", {
                               month: "short",
                               day: "numeric",
                               year: "numeric",
-                            })}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
+                            })
+                          : <span className="text-xs italic">Never</span>}
+                      </TableCell>
 
-                    {/* Email */}
-                    <TableCell className="text-sm text-muted-foreground">
-                      {u.email}
-                    </TableCell>
+                      {/* Actions */}
+                      <TableCell className="text-right">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDrawer(u);
+                          }}
+                          className="gap-1.5"
+                        >
+                          <UserCog className="h-3.5 w-3.5" />
+                          Manage
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-                    {/* Role */}
-                    <TableCell>
-                      <Badge variant={roleBadgeVariant(u.role)}>
-                        {roleLabels[u.role]}
-                      </Badge>
-                    </TableCell>
-
-                    {/* Verified status */}
-                    <TableCell>
-                      {u.isVerified ? (
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="/verified.png"
-                            alt="Verified"
-                            className="h-5 w-5"
-                          />
-                          <span className="text-sm font-medium text-emerald-600">Verified</span>
-                        </div>
-                      ) : (
-                        <Badge variant="outline">Unverified</Badge>
-                      )}
-                    </TableCell>
-
-                    {/* Actions */}
-                    <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        variant={u.isVerified ? "outline" : "default"}
-                        disabled={isUpdating || isSelf}
-                        onClick={() => handleVerifyClick(u)}
-                        className="gap-1.5"
-                        title={isSelf ? "You cannot change your own verification status" : undefined}
-                      >
-                        {isUpdating ? (
-                          <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                        ) : u.isVerified ? (
-                          <>
-                            <ShieldOff className="h-3.5 w-3.5" />
-                            Unverify
-                          </>
-                        ) : (
-                          <>
-                            <ShieldCheck className="h-3.5 w-3.5" />
-                            Verify
-                          </>
-                        )}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <span>
+              Page {page} of {totalPages} · {total} user{total === 1 ? "" : "s"}
+            </span>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1 || loading}
+                className="gap-1"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                Prev
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages || loading}
+                className="gap-1"
+              >
+                Next
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* User detail drawer */}
+      <UserDetailDrawer
+        user={selectedUser}
+        currentUserId={currentUser?.id ?? ""}
+        open={drawerOpen}
+        onClose={closeDrawer}
+        onUserUpdated={handleUserUpdated}
+      />
+
+      {/* Invite user dialog */}
+      <InviteUserDialog
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+      />
+    </>
   );
 }

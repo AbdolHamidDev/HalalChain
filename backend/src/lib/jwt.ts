@@ -6,6 +6,8 @@ export interface JwtPayload {
   email: string;
   role: UserRole;
   name: string;
+  /** Incremented on suspend/password-reset to invalidate existing tokens */
+  tv: number;
 }
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret-change-me";

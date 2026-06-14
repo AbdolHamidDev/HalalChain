@@ -127,6 +127,7 @@ router.patch("/", authenticate, async (req: AuthRequest, res: Response) => {
       email: updatedUser.email,
       role: updatedUser.role,
       name: updatedUser.name,
+      tv: req.user!.tv,
     });
 
     res.cookie(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
@@ -319,7 +320,13 @@ router.post("/password", authenticate, async (req: AuthRequest, res: Response) =
 
     // Persist in transaction with audit log (req 6.9, 11.2, 11.6, 12.4)
     await prisma.$transaction(async (tx) => {
-      await tx.user.update({ where: { id: userId }, data: { passwordHash: newHash } });
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          passwordHash: newHash,
+          tokenVersion: { increment: 1 }, // invalidate all existing sessions
+        },
+      });
       await logAudit(tx, {
         userId,
         action: "UPDATE",

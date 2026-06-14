@@ -5,6 +5,7 @@ import { UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { AUTH_COOKIE_NAME, signToken } from "../lib/jwt";
 import { AuthRequest, authenticate, authorize } from "../middleware/auth";
+import { logAudit } from "../lib/auditLog";
 
 const router = Router();
 
@@ -82,6 +83,7 @@ router.post("/register", async (req: AuthRequest, res: Response) => {
     email: user.email,
     role: user.role,
     name: user.name,
+    tv: user.tokenVersion,
   });
 
   res.cookie(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
@@ -109,12 +111,22 @@ router.post("/login", async (req, res: Response) => {
     return;
   }
 
+  // Reject suspended accounts
+  if (user.status === "SUSPENDED") {
+    res.status(403).json({ error: "Your account has been suspended. Please contact an administrator." });
+    return;
+  }
+
   const token = signToken({
     sub: user.id,
     email: user.email,
     role: user.role,
     name: user.name,
+    tv: user.tokenVersion,
   });
+
+  // Track last login time (non-blocking)
+  prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } }).catch(() => {});
 
   res.cookie(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
   res.json({ user: sanitizeUser(user) });
@@ -136,6 +148,7 @@ router.get("/me", authenticate, async (req: AuthRequest, res: Response) => {
       createdAt: true,
       avatarUrl: true,
       isVerified: true,
+      tokenVersion: true,
     },
   });
 
@@ -167,16 +180,29 @@ router.patch(
       return;
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      data: { role },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      },
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      const updated = await tx.user.update({
+        where: { id },
+        data: { role },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+        },
+      });
+
+      await logAudit(tx, {
+        userId: req.user!.sub,
+        action: "UPDATE",
+        entityType: "User",
+        entityId: id,
+        oldData: { role: existing.role },
+        newData: { role },
+      });
+
+      return updated;
     });
 
     res.json({ user: updatedUser });
