@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2, GitBranch, QrCode, Download } from "lucide-react"
 import Link from "next/link";
 import { toast } from "sonner";
 import { api, Product } from "@/lib/api";
+import { countryFlag } from "@/lib/countryFlag";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
@@ -170,7 +171,9 @@ export function ProductsModule() {
             </SelectTrigger>
             <SelectContent>
               {(suppliersData?.suppliers ?? []).map((s) => (
-                <SelectItem key={s.id} value={s.id}>{s.name} ({s.country})</SelectItem>
+                <SelectItem key={s.id} value={s.id}>
+                  {countryFlag(s.country)} {s.name} ({s.country})
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>

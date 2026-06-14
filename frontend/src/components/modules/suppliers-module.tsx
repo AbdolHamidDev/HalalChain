@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { api, Supplier, SupplierStatus } from "@/lib/api";
+import { countryFlag } from "@/lib/countryFlag";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
@@ -146,7 +147,9 @@ export function SuppliersModule() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-medium truncate">{s.name}</p>
-                    <p className="text-xs text-muted-foreground">{s.country}</p>
+                    <p className="text-xs text-muted-foreground">
+                      <span aria-hidden="true">{countryFlag(s.country)} </span>{s.country}
+                    </p>
                   </div>
                   <Badge variant={statusVariant(s.status)} className="shrink-0">{s.status}</Badge>
                 </div>
@@ -205,7 +208,9 @@ export function SuppliersModule() {
                 {suppliers.map((s) => (
                   <TableRow key={s.id}>
                     <TableCell className="font-medium">{s.name}</TableCell>
-                    <TableCell>{s.country}</TableCell>
+                    <TableCell>
+                      <span aria-hidden="true">{countryFlag(s.country)} </span>{s.country}
+                    </TableCell>
                     <TableCell>
                       <div className="text-xs">
                         {s.email && <p>{s.email}</p>}

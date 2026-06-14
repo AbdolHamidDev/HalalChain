@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
+import { countryFlag } from "@/lib/countryFlag";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -89,7 +90,7 @@ export function ReportsModule() {
           <CardContent className="space-y-2">
             {Object.entries(s.suppliersByCountry).map(([country, count]) => (
               <div key={country} className="flex justify-between text-sm">
-                <span>{country}</span>
+                <span><span aria-hidden="true">{countryFlag(country)} </span>{country}</span>
                 <Badge>{count}</Badge>
               </div>
             ))}

@@ -4,6 +4,7 @@ import {
   TraceabilityTimeline,
   type TimelineEvent,
 } from "@/components/traceability/traceability-timeline";
+import { countryFlag } from "@/lib/countryFlag";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -208,7 +209,7 @@ export default async function PublicTraceabilityPage({ params }: PageProps) {
                 {" · "}
                 {data.supplier.name}{" "}
                 <span className="text-muted-foreground/60">
-                  ({data.supplier.country})
+                  (<span aria-hidden="true">{countryFlag(data.supplier.country)} </span>{data.supplier.country})
                 </span>
               </p>
             </div>
