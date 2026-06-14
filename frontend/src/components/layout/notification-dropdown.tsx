@@ -23,12 +23,12 @@ interface NotificationDropdownProps {
 
 const typeVariant: Record<
   Notification["type"],
-  "warning" | "danger" | "info" | "secondary"
+  "warning" | "danger" | "info" | "default"
 > = {
   LOW_STOCK: "warning",
   CERTIFICATE_EXPIRING: "danger",
   SHIPMENT_DELAYED: "info",
-  SYSTEM: "secondary",
+  SYSTEM: "default",
 };
 
 const typeLabel: Record<Notification["type"], string> = {

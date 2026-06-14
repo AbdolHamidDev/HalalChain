@@ -65,7 +65,7 @@ export function UserMenu() {
                 ? "success"
                 : user.role === "MANAGER"
                 ? "info"
-                : "secondary"
+                : "default"
             }
             className="mt-1"
           >
