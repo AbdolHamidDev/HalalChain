@@ -13,7 +13,7 @@ import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { dialog } from "@/lib/dialog";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -114,7 +114,6 @@ export default function ProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   // Unsaved-changes guard state (Requirement 4.8)
-  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const pendingNavigationRef = useRef<(() => void) | null>(null);
 
   const {
@@ -181,12 +180,19 @@ export default function ProfilePage() {
 
     const originalPush = router.push.bind(router);
 
-    (router as typeof router & { _guardedPush?: typeof router.push })._guardedPush = (
+    (router as typeof router & { _guardedPush?: typeof router.push })._guardedPush = async (
       href: string,
       options?: Parameters<typeof router.push>[1]
     ) => {
-      pendingNavigationRef.current = () => originalPush(href, options);
-      setShowLeaveDialog(true);
+      const ok = await dialog.confirm({
+        title: "Unsaved changes",
+        description:
+          "You have unsaved changes. If you leave this page, your changes will be lost.",
+        type: "destructive",
+        confirmLabel: "Leave",
+        cancelLabel: "Stay",
+      });
+      if (ok) originalPush(href, options);
     };
 
     return () => {
@@ -225,23 +231,6 @@ export default function ProfilePage() {
         toast.error(message || "Failed to update profile. Please try again.");
       }
     }
-  };
-
-  // ---------------------------------------------------------------------------
-  // Leave-dialog handlers
-  // ---------------------------------------------------------------------------
-
-  const handleConfirmLeave = () => {
-    setShowLeaveDialog(false);
-    if (pendingNavigationRef.current) {
-      pendingNavigationRef.current();
-      pendingNavigationRef.current = null;
-    }
-  };
-
-  const handleCancelLeave = () => {
-    setShowLeaveDialog(false);
-    pendingNavigationRef.current = null;
   };
 
   // Save button is disabled when: submitting, name unchanged, or no profile loaded
@@ -357,18 +346,6 @@ export default function ProfilePage() {
           </Button>
         </form>
       )}
-
-      {/* Unsaved-changes confirmation dialog (Requirements 4.8, 13.6) */}
-      <ConfirmDialog
-        open={showLeaveDialog}
-        onClose={handleCancelLeave}
-        onConfirm={handleConfirmLeave}
-        title="Unsaved changes"
-        description="You have unsaved changes. If you leave this page, your changes will be lost."
-        confirmLabel="Leave"
-        cancelLabel="Stay"
-        variant="destructive"
-      />
     </div>
   );
 }

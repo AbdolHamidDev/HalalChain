@@ -9,7 +9,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { dialog } from "@/lib/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -49,7 +49,6 @@ export function SuppliersModule() {
   const [editing, setEditing] = useState<Supplier | null>(null);
   const [form, setForm] = useState<FormData>(empty);
   const [error, setError] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Supplier | null>(null);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["suppliers"],
@@ -79,16 +78,12 @@ export function SuppliersModule() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteSupplier(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       qc.invalidateQueries({ queryKey: ["suppliers"] });
-      toast.success("Supplier deleted", {
-        description: `${deleteTarget?.name} has been removed.`,
-      });
-      setDeleteTarget(null);
+      toast.success("Supplier deleted");
     },
     onError: (e: Error) => {
       toast.error("Failed to delete supplier", { description: e.message });
-      setDeleteTarget(null);
     },
   });
 
@@ -175,7 +170,15 @@ export function SuppliersModule() {
                       size="sm"
                       variant="destructive"
                       className="flex-1"
-                      onClick={() => setDeleteTarget(s)}
+                      onClick={async () => {
+                        const ok = await dialog.confirm({
+                          type: "destructive",
+                          title: "Delete supplier?",
+                          description: `This will permanently remove "${s.name}" and cannot be undone. Products and certificates linked to this supplier may be affected.`,
+                          confirmLabel: "Delete Supplier",
+                        });
+                        if (ok) deleteMutation.mutate(s.id);
+                      }}
                     >
                       <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
                     </Button>
@@ -230,7 +233,15 @@ export function SuppliersModule() {
                             size="sm"
                             variant="destructive"
                             aria-label={`Delete ${s.name}`}
-                            onClick={() => setDeleteTarget(s)}
+                            onClick={async () => {
+                              const ok = await dialog.confirm({
+                                type: "destructive",
+                                title: "Delete supplier?",
+                                description: `This will permanently remove "${s.name}" and cannot be undone. Products and certificates linked to this supplier may be affected.`,
+                                confirmLabel: "Delete Supplier",
+                              });
+                              if (ok) deleteMutation.mutate(s.id);
+                            }}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
@@ -326,16 +337,6 @@ export function SuppliersModule() {
         </form>
       </Dialog>
 
-      {/* Delete confirmation */}
-      <ConfirmDialog
-        open={deleteTarget !== null}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-        isPending={deleteMutation.isPending}
-        title="Delete supplier?"
-        description={`This will permanently remove "${deleteTarget?.name}" and cannot be undone. Products and certificates linked to this supplier may be affected.`}
-        confirmLabel="Delete Supplier"
-      />
     </div>
   );
 }

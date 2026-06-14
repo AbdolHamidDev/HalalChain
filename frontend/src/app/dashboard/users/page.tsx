@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { dialog } from "@/lib/dialog";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -72,10 +72,6 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [pendingVerify, setPendingVerify] = useState<{
-    user: User;
-    nextValue: boolean;
-  } | null>(null);
   const [verifying, setVerifying] = useState<string | null>(null); // userId being toggled
 
   // ---------------------------------------------------------------------------
@@ -102,17 +98,24 @@ export default function UsersPage() {
   // Verify toggle
   // ---------------------------------------------------------------------------
 
-  const handleVerifyClick = (user: User) => {
-    setPendingVerify({ user, nextValue: !user.isVerified });
-  };
+  const handleVerifyClick = async (user: User) => {
+    const nextValue = !user.isVerified;
 
-  const handleConfirmVerify = async () => {
-    if (!pendingVerify) return;
-    const { user: target, nextValue } = pendingVerify;
-    setPendingVerify(null);
-    setVerifying(target.id);
+    const ok = await dialog.confirm({
+      type: nextValue ? "confirm" : "destructive",
+      title: nextValue ? "Verify user?" : "Remove verification?",
+      description: nextValue
+        ? `This will mark ${user.name} as a verified user. They will see a verified badge in the sidebar.`
+        : `This will remove the verified badge from ${user.name}.`,
+      confirmLabel: nextValue ? "Verify" : "Remove",
+      cancelLabel: "Cancel",
+    });
+
+    if (!ok) return;
+
+    setVerifying(user.id);
     try {
-      const { user: updated } = await api.adminVerifyUser(target.id, nextValue);
+      const { user: updated } = await api.adminVerifyUser(user.id, nextValue);
       setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
       toast.success(
         nextValue
@@ -293,22 +296,6 @@ export default function UsersPage() {
           </TableBody>
         </Table>
       </div>
-
-      {/* Confirm dialog */}
-      <ConfirmDialog
-        open={!!pendingVerify}
-        onClose={() => setPendingVerify(null)}
-        onConfirm={handleConfirmVerify}
-        title={pendingVerify?.nextValue ? "Verify user?" : "Remove verification?"}
-        description={
-          pendingVerify?.nextValue
-            ? `This will mark ${pendingVerify.user.name} as a verified user. They will see a verified badge in the sidebar.`
-            : `This will remove the verified badge from ${pendingVerify?.user.name}.`
-        }
-        confirmLabel={pendingVerify?.nextValue ? "Verify" : "Remove"}
-        cancelLabel="Cancel"
-        variant={pendingVerify?.nextValue ? "default" : "destructive"}
-      />
     </div>
   );
 }

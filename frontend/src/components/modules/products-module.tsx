@@ -11,7 +11,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Sheet } from "@/components/ui/sheet";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { dialog } from "@/lib/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -64,7 +64,6 @@ export function ProductsModule() {
   const [form, setForm] = useState<FormData>(empty);
   const [formError, setFormError] = useState<string | null>(null);
   const [qrProductId, setQrProductId] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["products"],
@@ -113,16 +112,12 @@ export function ProductsModule() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteProduct(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       qc.invalidateQueries({ queryKey: ["products"] });
-      toast.success("Product deleted", {
-        description: `${deleteTarget?.name} has been removed from the catalog.`,
-      });
-      setDeleteTarget(null);
+      toast.success("Product deleted");
     },
     onError: (e: Error) => {
       toast.error("Failed to delete product", { description: e.message });
-      setDeleteTarget(null);
     },
   });
 
@@ -323,7 +318,15 @@ export function ProductsModule() {
                         size="sm"
                         variant="destructive"
                         aria-label={`Delete ${p.name}`}
-                        onClick={() => setDeleteTarget(p)}
+                        onClick={async () => {
+                          const ok = await dialog.confirm({
+                            type: "destructive",
+                            title: "Delete product?",
+                            description: `This will permanently remove "${p.name}" (${p.sku}) and all associated inventory records. This cannot be undone.`,
+                            confirmLabel: "Delete Product",
+                          });
+                          if (ok) deleteMutation.mutate(p.id);
+                        }}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -402,7 +405,15 @@ export function ProductsModule() {
                             size="sm"
                             variant="destructive"
                             aria-label={`Delete ${p.name}`}
-                            onClick={() => setDeleteTarget(p)}
+                            onClick={async () => {
+                              const ok = await dialog.confirm({
+                                type: "destructive",
+                                title: "Delete product?",
+                                description: `This will permanently remove "${p.name}" (${p.sku}) and all associated inventory records. This cannot be undone.`,
+                                confirmLabel: "Delete Product",
+                              });
+                              if (ok) deleteMutation.mutate(p.id);
+                            }}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
@@ -477,16 +488,6 @@ export function ProductsModule() {
         {formContent}
       </Sheet>
 
-      {/* Delete confirmation */}
-      <ConfirmDialog
-        open={deleteTarget !== null}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-        isPending={deleteMutation.isPending}
-        title="Delete product?"
-        description={`This will permanently remove "${deleteTarget?.name}" (${deleteTarget?.sku}) and all associated inventory records. This cannot be undone.`}
-        confirmLabel="Delete Product"
-      />
     </div>
   );
 }

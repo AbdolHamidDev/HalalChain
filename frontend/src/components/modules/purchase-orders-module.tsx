@@ -9,7 +9,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { dialog } from "@/lib/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -46,7 +46,6 @@ export function PurchaseOrdersModule() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>({ supplierId: "", totalAmount: "" });
   const [error, setError] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<PurchaseOrder | null>(null);
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
 
   const { data, isLoading, isError, refetch } = useQuery({
@@ -100,16 +99,12 @@ export function PurchaseOrdersModule() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deletePurchaseOrder(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       qc.invalidateQueries({ queryKey: ["purchase-orders"] });
-      toast.success("Purchase order deleted", {
-        description: `${deleteTarget?.poNumber} has been removed.`,
-      });
-      setDeleteTarget(null);
+      toast.success("Purchase order deleted");
     },
     onError: (e: Error) => {
       toast.error("Failed to delete purchase order", { description: e.message });
-      setDeleteTarget(null);
     },
   });
 
@@ -189,7 +184,15 @@ export function PurchaseOrdersModule() {
                           variant="destructive"
                           className={next ? "" : "flex-1"}
                           aria-label={`Delete purchase order ${po.poNumber}`}
-                          onClick={() => setDeleteTarget(po)}
+                          onClick={async () => {
+                            const ok = await dialog.confirm({
+                              type: "destructive",
+                              title: "Delete purchase order?",
+                              description: `This will permanently remove PO "${po.poNumber}". Only DRAFT orders can be deleted.`,
+                              confirmLabel: "Delete PO",
+                            });
+                            if (ok) deleteMutation.mutate(po.id);
+                          }}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
@@ -251,7 +254,15 @@ export function PurchaseOrdersModule() {
                                 size="sm"
                                 variant="destructive"
                                 aria-label={`Delete purchase order ${po.poNumber}`}
-                                onClick={() => setDeleteTarget(po)}
+                                onClick={async () => {
+                                  const ok = await dialog.confirm({
+                                    type: "destructive",
+                                    title: "Delete purchase order?",
+                                    description: `This will permanently remove PO "${po.poNumber}". Only DRAFT orders can be deleted.`,
+                                    confirmLabel: "Delete PO",
+                                  });
+                                  if (ok) deleteMutation.mutate(po.id);
+                                }}
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </Button>
@@ -320,16 +331,6 @@ export function PurchaseOrdersModule() {
         </form>
       </Dialog>
 
-      {/* Delete confirmation */}
-      <ConfirmDialog
-        open={deleteTarget !== null}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-        isPending={deleteMutation.isPending}
-        title="Delete purchase order?"
-        description={`This will permanently remove PO "${deleteTarget?.poNumber}". Only DRAFT orders can be deleted.`}
-        confirmLabel="Delete PO"
-      />
     </div>
   );
 }

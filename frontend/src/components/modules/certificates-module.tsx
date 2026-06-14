@@ -9,7 +9,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { dialog } from "@/lib/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -58,7 +58,7 @@ export function CertificatesModule() {
   const [editing, setEditing] = useState<HalalCertificate | null>(null);
   const [form, setForm] = useState<FormData>(empty);
   const [formError, setFormError] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<HalalCertificate | null>(null);
+
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["certificates"],
@@ -101,16 +101,12 @@ export function CertificatesModule() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteCertificate(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       qc.invalidateQueries({ queryKey: ["certificates"] });
-      toast.success("Certificate deleted", {
-        description: `Certificate ${deleteTarget?.certificateNumber} has been removed.`,
-      });
-      setDeleteTarget(null);
+      toast.success("Certificate deleted");
     },
     onError: (e: Error) => {
       toast.error("Failed to delete certificate", { description: e.message });
-      setDeleteTarget(null);
     },
   });
 
@@ -305,7 +301,15 @@ export function CertificatesModule() {
                         variant="destructive"
                         className="flex-1"
                         aria-label={`Delete certificate ${c.certificateNumber}`}
-                        onClick={() => setDeleteTarget(c)}
+                        onClick={async () => {
+                          const ok = await dialog.confirm({
+                            type: "destructive",
+                            title: "Delete certificate?",
+                            description: `This will permanently remove certificate "${c.certificateNumber}". Compliance records for this supplier may be affected.`,
+                            confirmLabel: "Delete Certificate",
+                          });
+                          if (ok) deleteMutation.mutate(c.id);
+                        }}
                       >
                         <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
                       </Button>
@@ -356,7 +360,15 @@ export function CertificatesModule() {
                               size="sm"
                               variant="destructive"
                               aria-label={`Delete certificate ${c.certificateNumber}`}
-                              onClick={() => setDeleteTarget(c)}
+                              onClick={async () => {
+                                const ok = await dialog.confirm({
+                                  type: "destructive",
+                                  title: "Delete certificate?",
+                                  description: `This will permanently remove certificate "${c.certificateNumber}". Compliance records for this supplier may be affected.`,
+                                  confirmLabel: "Delete Certificate",
+                                });
+                                if (ok) deleteMutation.mutate(c.id);
+                              }}
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
@@ -400,16 +412,6 @@ export function CertificatesModule() {
         {formContent}
       </Sheet>
 
-      {/* Delete confirmation */}
-      <ConfirmDialog
-        open={deleteTarget !== null}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-        isPending={deleteMutation.isPending}
-        title="Delete certificate?"
-        description={`This will permanently remove certificate "${deleteTarget?.certificateNumber}". Compliance records for this supplier may be affected.`}
-        confirmLabel="Delete Certificate"
-      />
     </div>
   );
 }
