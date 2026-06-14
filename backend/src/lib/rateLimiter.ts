@@ -1,4 +1,4 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 export const authRateLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -6,5 +6,5 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests, please try again later." },
-  keyGenerator: (req) => req.ip ?? "unknown",
+  keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
 });
