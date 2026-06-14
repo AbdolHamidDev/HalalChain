@@ -115,13 +115,12 @@ export default function SecurityPage() {
       <div className="rounded-lg border p-6">
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
           {/* Current Password */}
-          <InputWrapper>
+          <InputWrapper error={!!errors.currentPassword}>
             <InputLabel htmlFor="currentPassword">Current Password</InputLabel>
             <Input
               id="currentPassword"
               type="password"
               autoComplete="current-password"
-              error={!!errors.currentPassword}
               aria-invalid={!!errors.currentPassword}
               {...register("currentPassword")}
             />
@@ -131,13 +130,12 @@ export default function SecurityPage() {
           </InputWrapper>
 
           {/* New Password */}
-          <InputWrapper>
+          <InputWrapper error={!!errors.newPassword}>
             <InputLabel htmlFor="newPassword">New Password</InputLabel>
             <Input
               id="newPassword"
               type="password"
               autoComplete="new-password"
-              error={!!errors.newPassword}
               aria-invalid={!!errors.newPassword}
               {...register("newPassword")}
             />
@@ -147,13 +145,12 @@ export default function SecurityPage() {
           </InputWrapper>
 
           {/* Confirm New Password */}
-          <InputWrapper>
+          <InputWrapper error={!!errors.confirmPassword}>
             <InputLabel htmlFor="confirmPassword">Confirm New Password</InputLabel>
             <Input
               id="confirmPassword"
               type="password"
               autoComplete="new-password"
-              error={!!errors.confirmPassword}
               aria-invalid={!!errors.confirmPassword}
               {...register("confirmPassword")}
             />

@@ -42,13 +42,12 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      <InputWrapper>
+      <InputWrapper error={!!errors.email}>
         <InputLabel htmlFor="email">Email</InputLabel>
         <Input
           id="email"
           type="email"
           autoComplete="email"
-          error={!!errors.email}
           aria-describedby={errors.email ? "email-error" : undefined}
           aria-invalid={!!errors.email}
           {...register("email")}
@@ -58,13 +57,12 @@ export function LoginForm() {
         )}
       </InputWrapper>
 
-      <InputWrapper>
+      <InputWrapper error={!!errors.password}>
         <InputLabel htmlFor="password">Password</InputLabel>
         <Input
           id="password"
           type="password"
           autoComplete="current-password"
-          error={!!errors.password}
           aria-describedby={errors.password ? "password-error" : undefined}
           aria-invalid={!!errors.password}
           {...register("password")}

@@ -49,12 +49,11 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      <InputWrapper>
+      <InputWrapper error={!!errors.name}>
         <InputLabel htmlFor="name">Full Name</InputLabel>
         <Input
           id="name"
           autoComplete="name"
-          error={!!errors.name}
           aria-describedby={errors.name ? "name-error" : undefined}
           aria-invalid={!!errors.name}
           {...register("name")}
@@ -64,13 +63,12 @@ export function RegisterForm() {
         )}
       </InputWrapper>
 
-      <InputWrapper>
+      <InputWrapper error={!!errors.email}>
         <InputLabel htmlFor="email">Email</InputLabel>
         <Input
           id="email"
           type="email"
           autoComplete="email"
-          error={!!errors.email}
           aria-describedby={errors.email ? "email-error" : undefined}
           aria-invalid={!!errors.email}
           {...register("email")}
@@ -80,13 +78,12 @@ export function RegisterForm() {
         )}
       </InputWrapper>
 
-      <InputWrapper>
+      <InputWrapper error={!!errors.password}>
         <InputLabel htmlFor="password">Password</InputLabel>
         <Input
           id="password"
           type="password"
           autoComplete="new-password"
-          error={!!errors.password}
           aria-describedby={errors.password ? "password-error" : undefined}
           aria-invalid={!!errors.password}
           {...register("password")}
@@ -96,13 +93,12 @@ export function RegisterForm() {
         )}
       </InputWrapper>
 
-      <InputWrapper>
+      <InputWrapper error={!!errors.confirmPassword}>
         <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
         <Input
           id="confirmPassword"
           type="password"
           autoComplete="new-password"
-          error={!!errors.confirmPassword}
           aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
           aria-invalid={!!errors.confirmPassword}
           {...register("confirmPassword")}

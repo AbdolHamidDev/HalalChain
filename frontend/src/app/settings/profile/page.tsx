@@ -303,13 +303,12 @@ export default function ProfilePage() {
           className="rounded-lg border p-6 space-y-4"
         >
           {/* Display name — editable (Requirements 4.1, 13.4) */}
-          <InputWrapper>
+          <InputWrapper error={!!errors.name}>
             <InputLabel htmlFor="name">Display Name</InputLabel>
             <Input
               id="name"
               type="text"
               autoComplete="name"
-              error={!!errors.name}
               aria-invalid={!!errors.name}
               {...register("name")}
             />
