@@ -184,6 +184,83 @@
   }
 }
 
+/* ── Sonner Toast – Custom SaaS Style ───────────────────────────── */
+[data-sonner-toaster] {
+  --width: 360px;
+}
+
+[data-sonner-toast] {
+  background: var(--card) !important;
+  color: var(--card-foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.07),
+    0 10px 24px -4px rgba(0, 0, 0, 0.08) !important;
+  padding: 12px 14px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 13.5px !important;
+  line-height: 1.5 !important;
+  gap: 10px !important;
+}
+
+.dark [data-sonner-toast] {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 24px -4px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* success — tinted green background */
+[data-sonner-toast][data-type="success"] {
+  background: color-mix(in srgb, var(--success) 8%, var(--card)) !important;
+  border-color: color-mix(in srgb, var(--success) 20%, var(--border)) !important;
+}
+
+/* error — tinted red background */
+[data-sonner-toast][data-type="error"] {
+  background: color-mix(in srgb, var(--destructive) 8%, var(--card)) !important;
+  border-color: color-mix(in srgb, var(--destructive) 20%, var(--border)) !important;
+}
+
+/* warning — tinted amber background */
+[data-sonner-toast][data-type="warning"] {
+  background: color-mix(in srgb, var(--warning) 8%, var(--card)) !important;
+  border-color: color-mix(in srgb, var(--warning) 20%, var(--border)) !important;
+}
+
+/* info — tinted indigo background */
+[data-sonner-toast][data-type="info"] {
+  background: color-mix(in srgb, var(--primary) 8%, var(--card)) !important;
+  border-color: color-mix(in srgb, var(--primary) 20%, var(--border)) !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+  color: var(--foreground) !important;
+  font-size: 13.5px !important;
+}
+
+[data-sonner-toast] [data-description] {
+  font-size: 12px !important;
+  color: var(--muted-foreground) !important;
+  margin-top: 1px !important;
+}
+
+/* icon colors */
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: var(--success) !important;
+}
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: var(--destructive) !important;
+}
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  color: var(--warning) !important;
+}
+[data-sonner-toast][data-type="info"] [data-icon] {
+  color: var(--primary) !important;
+}
+
 @layer utilities {
   @keyframes wiggle {
     0%,

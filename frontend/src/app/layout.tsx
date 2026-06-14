@@ -55,14 +55,12 @@ export default function RootLayout({
           </QueryProvider>
           <UltraDialogHost />
           <Toaster
-            position="bottom-right"
-            richColors
-            closeButton
+            position="top-center"
+            expand
+            gap={8}
+            offset={16}
             toastOptions={{
               duration: 4000,
-              classNames: {
-                toast: "font-sans text-sm",
-              },
             }}
           />
         </ThemeProvider>
