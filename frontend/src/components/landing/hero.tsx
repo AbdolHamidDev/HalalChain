@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, PlayCircle } from "lucide-react";
+import { useTranslation } from "@/i18n/hooks";
 
 export function HeroSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden">
       {/* Premium background effects */}
@@ -28,21 +33,20 @@ export function HeroSection() {
               <span className="absolute h-full w-full rounded-full bg-emerald-400 animate-ping opacity-40" />
               <span className="relative h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            Trusted by halal supply chain businesses across Southeast Asia
+            {t("landing.hero.badge")}
           </div>
 
           {/* Headline with gradient accent */}
           <h1 className="text-display text-balance mb-6 leading-[0.95] tracking-[-0.04em]">
-            End-to-End Halal Supply Chain{" "}
+            {t("landing.hero.title")}{" "}
             <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              Traceability
+              {t("landing.hero.titleAccent")}
             </span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-body text-muted-foreground max-w-2xl mx-auto mb-10 text-balance leading-relaxed">
-            Track products, suppliers, certifications, inventory and shipments
-            through a unified platform built for modern halal businesses.
+            {t("landing.hero.subtitle")}
           </p>
 
           {/* CTAs */}
@@ -53,7 +57,7 @@ export function HeroSection() {
               asChild
             >
               <Link href="/register">
-                Get Started
+                {t("landing.hero.getStarted")}
                 <ArrowRight className="ml-1.5 size-4" />
               </Link>
             </Button>
@@ -65,7 +69,7 @@ export function HeroSection() {
             >
               <Link href="/demo">
                 <PlayCircle className="mr-1.5 size-4" />
-                View Demo
+                {t("landing.hero.viewDemo")}
               </Link>
             </Button>
           </div>
@@ -85,7 +89,7 @@ export function HeroSection() {
                 <div className="w-3 h-3 rounded-full bg-emerald-400/80" />
               </div>
               <div className="ml-4 text-xs text-muted-foreground/70 font-mono">
-                app.halalchain.io/dashboard
+                {t("landing.hero.dashboardPreview")}
               </div>
             </div>
 
@@ -95,12 +99,12 @@ export function HeroSection() {
                 {/* Sidebar */}
                 <div className="col-span-1 hidden md:flex flex-col gap-2">
                   {[
-                    { label: "Dashboard", active: true },
-                    { label: "Products", active: false },
-                    { label: "Suppliers", active: false },
-                    { label: "Shipments", active: false },
-                    { label: "Certifications", active: false },
-                    { label: "Reports", active: false },
+                    { label: t("landing.hero.sidebar.dashboard"), active: true },
+                    { label: t("landing.hero.sidebar.products"), active: false },
+                    { label: t("landing.hero.sidebar.suppliers"), active: false },
+                    { label: t("landing.hero.sidebar.shipments"), active: false },
+                    { label: t("landing.hero.sidebar.certifications"), active: false },
+                    { label: t("landing.hero.sidebar.reports"), active: false },
                   ].map((item) => (
                     <div
                       key={item.label}
@@ -130,9 +134,9 @@ export function HeroSection() {
                   {/* Stats cards */}
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { label: "Products", value: "2,847", color: "from-primary/10 to-primary/5", accent: "bg-primary" },
-                      { label: "Suppliers", value: "128", color: "from-emerald-500/10 to-emerald-500/5", accent: "bg-emerald-500" },
-                      { label: "Shipments", value: "493", color: "from-amber-500/10 to-amber-500/5", accent: "bg-amber-500" },
+                      { label: t("landing.hero.stats.products"), value: "2,847", color: "from-primary/10 to-primary/5", accent: "bg-primary" },
+                      { label: t("landing.hero.stats.suppliers"), value: "128", color: "from-emerald-500/10 to-emerald-500/5", accent: "bg-emerald-500" },
+                      { label: t("landing.hero.stats.shipments"), value: "493", color: "from-amber-500/10 to-amber-500/5", accent: "bg-amber-500" },
                     ].map((stat) => (
                       <div
                         key={stat.label}
@@ -148,14 +152,14 @@ export function HeroSection() {
                   {/* Activity table */}
                   <div className="rounded-xl border border-border/30 bg-muted/10 p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-medium text-muted-foreground">Recent Activity</span>
-                      <span className="text-[10px] text-muted-foreground/50">Today</span>
+                      <span className="text-xs font-medium text-muted-foreground">{t("landing.hero.activity.title")}</span>
+                      <span className="text-[10px] text-muted-foreground/50">{t("landing.hero.activity.today")}</span>
                     </div>
                     <div className="space-y-2">
                       {[
-                        { label: "New shipment received", time: "2 min ago" },
-                        { label: "Certificate expiring soon", time: "1 hour ago" },
-                        { label: "Inventory adjusted", time: "3 hours ago" },
+                        { label: t("landing.hero.activity.newShipment"), time: `2 ${t("landing.hero.activity.minutesAgo")}` },
+                        { label: t("landing.hero.activity.certificateExpiring"), time: `1 ${t("landing.hero.activity.hourAgo")}` },
+                        { label: t("landing.hero.activity.inventoryAdjusted"), time: `3 ${t("landing.hero.activity.hoursAgo")}` },
                       ].map((item) => (
                         <div key={item.label} className="flex items-center gap-3 py-1.5 border-b border-border/10 last:border-0">
                           <div className="w-1.5 h-1.5 rounded-full bg-primary/60" />

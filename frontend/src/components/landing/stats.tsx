@@ -4,23 +4,16 @@ import { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bell, ScrollText, Users, ShieldCheck, QrCode, FileSpreadsheet } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useTranslation } from "@/i18n/hooks";
+import type { TranslationKey } from "@/i18n/types";
 
 interface Stat {
   icon: LucideIcon;
-  label: string;
+  labelKey: string;
   value: number;
-  suffix: string;
+  suffixKey: string;
   gradient: string;
 }
-
-const stats: Stat[] = [
-  { icon: Bell, label: "Real-time Notifications", value: 100, suffix: "%", gradient: "from-primary/20 via-primary/5 to-transparent" },
-  { icon: ScrollText, label: "Audit Logging", value: 100, suffix: "%", gradient: "from-emerald-500/20 via-emerald-500/5 to-transparent" },
-  { icon: Users, label: "Multi-role Access", value: 5, suffix: "+ roles", gradient: "from-amber-500/20 via-amber-500/5 to-transparent" },
-  { icon: ShieldCheck, label: "Secure Authentication", value: 100, suffix: "%", gradient: "from-sky-500/20 via-sky-500/5 to-transparent" },
-  { icon: QrCode, label: "QR Verification", value: 100, suffix: "%", gradient: "from-violet-500/20 via-violet-500/5 to-transparent" },
-  { icon: FileSpreadsheet, label: "Reporting Exports", value: 5, suffix: "+ formats", gradient: "from-rose-500/20 via-rose-500/5 to-transparent" },
-];
 
 function AnimatedCounter({ value, suffix, duration = 2000 }: { value: number; suffix: string; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -60,17 +53,27 @@ function AnimatedCounter({ value, suffix, duration = 2000 }: { value: number; su
 }
 
 export function StatsSection() {
+  const { t } = useTranslation();
+
+  const stats: Stat[] = [
+    { icon: Bell, labelKey: "landing.stats.notifications", value: 100, suffixKey: "landing.stats.suffixPercent", gradient: "from-primary/20 via-primary/5 to-transparent" },
+    { icon: ScrollText, labelKey: "landing.stats.auditLogging", value: 100, suffixKey: "landing.stats.suffixPercent", gradient: "from-emerald-500/20 via-emerald-500/5 to-transparent" },
+    { icon: Users, labelKey: "landing.stats.multiRoleAccess", value: 5, suffixKey: "landing.stats.suffixRoles", gradient: "from-amber-500/20 via-amber-500/5 to-transparent" },
+    { icon: ShieldCheck, labelKey: "landing.stats.secureAuth", value: 100, suffixKey: "landing.stats.suffixPercent", gradient: "from-sky-500/20 via-sky-500/5 to-transparent" },
+    { icon: QrCode, labelKey: "landing.stats.qrVerification", value: 100, suffixKey: "landing.stats.suffixPercent", gradient: "from-violet-500/20 via-violet-500/5 to-transparent" },
+    { icon: FileSpreadsheet, labelKey: "landing.stats.reportingExports", value: 5, suffixKey: "landing.stats.suffixFormats", gradient: "from-rose-500/20 via-rose-500/5 to-transparent" },
+  ];
+
   return (
     <section className="py-20 md:py-28">
       <div className="container-genesis">
         {/* Section Header */}
         <div className="max-w-2xl mx-auto text-center mb-16">
           <h2 className="text-section mb-4">
-            Enterprise-grade platform capabilities
+            {t("landing.stats.title")}
           </h2>
           <p className="text-body text-muted-foreground">
-            Built for businesses that require complete visibility and control
-            over their halal supply chain operations.
+            {t("landing.stats.subtitle")}
           </p>
         </div>
 
@@ -80,7 +83,7 @@ export function StatsSection() {
             const Icon = stat.icon;
             return (
               <Card
-                key={stat.label}
+                key={stat.labelKey}
                 className="group relative overflow-hidden border-border/50 hover:border-border transition-all duration-300"
               >
                 <div
@@ -90,8 +93,8 @@ export function StatsSection() {
                   <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-muted text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300">
                     <Icon className="size-6" />
                   </div>
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  <AnimatedCounter value={stat.value} suffix={t(stat.suffixKey as TranslationKey)} />
+                  <p className="text-sm text-muted-foreground">{t(stat.labelKey as TranslationKey)}</p>
                 </CardContent>
               </Card>
             );

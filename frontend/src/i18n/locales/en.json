@@ -152,7 +152,8 @@
         "certificateExpiring": "Certificate expiring soon",
         "inventoryAdjusted": "Inventory adjusted",
         "minutesAgo": "min ago",
-        "hourAgo": "hours ago"
+        "hourAgo": "hour ago",
+        "hoursAgo": "hours ago"
       }
     },
     "features": {
@@ -223,11 +224,29 @@
     },
     "verificationDemo": {
       "title": "QR Code Verification",
-      "subtitle": "End customers can instantly verify product authenticity by scanning the QR code on any packaging. Try the demo below.",
-      "scanPlaceholder": "Scan QR code to verify",
-      "verified": "Product Verified",
-      "notFound": "Product Not Found",
-      "tryAgain": "Scan Again"
+      "subtitle": "End consumers can verify product authenticity instantly by scanning the QR code on packaging. No account required.",
+      "steps": {
+        "qrScanning": {
+          "title": "QR Code Scanning",
+          "description": "Each product has a unique QR code printed on packaging. Consumers scan it with any smartphone camera."
+        },
+        "productVerification": {
+          "title": "Product Verification",
+          "description": "The public portal displays product origin, batch number, production date, and halal status instantly."
+        },
+        "certificateValidation": {
+          "title": "Certificate Validation",
+          "description": "View all attached halal certificates, certifying bodies, and expiry dates with a single click."
+        },
+        "shipmentHistory": {
+          "title": "Shipment History",
+          "description": "Track the complete journey from supplier to warehouse to retailer with timestamps and locations."
+        }
+      },
+      "cta": {
+        "tryText": "Try it now with a real seeded product from our database",
+        "button": "Verify Organic Coconut Milk"
+      }
     },
     "architecture": {
       "title": "Platform Architecture",
@@ -235,7 +254,40 @@
       "frontend": "Frontend",
       "backend": "Backend",
       "database": "Database",
-      "deployment": "Deployment"
+      "deployment": "Deployment",
+      "mainStack": {
+        "nextjs": {
+          "label": "Next.js",
+          "description": "Frontend & SSR"
+        },
+        "express": {
+          "label": "Express API",
+          "description": "RESTful backend"
+        },
+        "prisma": {
+          "label": "Prisma ORM",
+          "description": "Type-safe queries"
+        },
+        "postgresql": {
+          "label": "PostgreSQL",
+          "description": "Relational database"
+        }
+      },
+      "externalServices": "External Services",
+      "services": {
+        "cloudinary": {
+          "label": "Cloudinary",
+          "description": "Media & file uploads"
+        },
+        "resend": {
+          "label": "Resend",
+          "description": "Email notifications"
+        },
+        "sse": {
+          "label": "SSE Notifications",
+          "description": "Real-time updates"
+        }
+      }
     },
     "stats": {
       "title": "Enterprise-grade platform capabilities",
@@ -252,7 +304,30 @@
     },
     "screenshots": {
       "title": "See HalalChain in Action",
-      "subtitle": "Intuitive interface designed for efficiency across all supply chain operations."
+      "subtitle": "Intuitive interface designed for efficiency across all supply chain operations.",
+      "slides": {
+        "dashboard": {
+          "title": "Dashboard Analytics",
+          "description": "Comprehensive overview of your supply chain operations"
+        },
+        "products": {
+          "title": "Product Management",
+          "description": "Manage products with batch tracking and halal status"
+        },
+        "traceability": {
+          "title": "Traceability Portal",
+          "description": "Public-facing product verification with full supply chain timeline"
+        },
+        "users": {
+          "title": "User Management",
+          "description": "Role-based access control with detailed permissions"
+        }
+      },
+      "aria": {
+        "prevSlide": "Previous slide",
+        "nextSlide": "Next slide",
+        "goToSlide": "Go to slide {{number}}"
+      }
     },
     "techStack": {
       "title": "Built with Modern Technology",
@@ -511,7 +586,7 @@
     "statusUpdatedDesc": "Purchase order has been moved to {{status}}.",
     "statusUpdateFailed": "Failed to update status",
     "deleteConfirm": "Delete purchase order?",
-    "deleteDescription": "This will permanently remove PO \"{{poNumber}}\". Only DRAFT orders can be deleted.",
+    "deleteDescription": "This will permanently delete PO \"{{poNumber}}\". Only DRAFT orders can be deleted.",
     "deletePO": "Delete PO",
     "amount": "Amount",
     "shipments": "Shipments",

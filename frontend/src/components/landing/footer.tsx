@@ -1,26 +1,31 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-
-const footerLinks = {
-  Product: [
-    { label: "Features", href: "#features" },
-    { label: "Workflow", href: "#workflow" },
-    { label: "Architecture", href: "#architecture" },
-    { label: "Tech Stack", href: "#tech-stack" },
-  ],
-  Resources: [
-    { label: "API Documentation", href: "/api-docs" },
-    { label: "Traceability Demo", href: "/traceability/product/00000000-0000-4000-8000-000000000001" },
-    { label: "Status", href: "#" },
-  ],
-  Company: [
-    { label: "About", href: "#" },
-    { label: "Privacy", href: "#" },
-    { label: "Terms", href: "#" },
-  ],
-};
+import { useTranslation } from "@/i18n/hooks";
 
 export function LandingFooter() {
+  const { t } = useTranslation();
+
+  const footerLinks = {
+    [t("landing.footer.product")]: [
+      { label: t("landing.footer.features"), href: "#features" },
+      { label: t("landing.footer.workflow"), href: "#workflow" },
+      { label: t("landing.footer.architecture"), href: "#architecture" },
+      { label: t("landing.footer.techStack"), href: "#tech-stack" },
+    ],
+    [t("landing.footer.resources")]: [
+      { label: t("landing.footer.apiDocs"), href: "/api-docs" },
+      { label: t("landing.footer.traceabilityDemo"), href: "/traceability/product/00000000-0000-4000-8000-000000000001" },
+      { label: t("landing.footer.status"), href: "#" },
+    ],
+    [t("landing.footer.company")]: [
+      { label: t("landing.footer.about"), href: "#" },
+      { label: t("landing.footer.privacy"), href: "#" },
+      { label: t("landing.footer.terms"), href: "#" },
+    ],
+  };
+
   return (
     <footer className="border-t border-border/40 bg-muted/20">
       <div className="container-genesis py-12 md:py-16">
@@ -42,8 +47,7 @@ export function LandingFooter() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-              End-to-end halal supply chain traceability platform for modern
-              halal businesses across Southeast Asia.
+              {t("landing.footer.description")}
             </p>
           </div>
 
@@ -70,14 +74,14 @@ export function LandingFooter() {
         {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} HalalChain. All rights reserved.
+            &copy; {new Date().getFullYear()} HalalChain. {t("landing.footer.copyright")}
           </p>
           <div className="flex items-center gap-6">
             <Link href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              Privacy Policy
+              {t("landing.footer.privacyPolicy")}
             </Link>
             <Link href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              Terms of Service
+              {t("landing.footer.termsOfService")}
             </Link>
           </div>
         </div>

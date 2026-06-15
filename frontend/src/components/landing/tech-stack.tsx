@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Globe,
@@ -9,6 +11,7 @@ import {
   Box,
   type LucideIcon,
 } from "lucide-react";
+import { useTranslation } from "@/i18n/hooks";
 
 interface Tech {
   icon: LucideIcon;
@@ -28,15 +31,16 @@ const technologies: Tech[] = [
 ];
 
 export function TechStackSection() {
+  const { t } = useTranslation();
+
   return (
     <section id="tech-stack" className="py-20 md:py-28">
       <div className="container-genesis">
         {/* Section Header */}
         <div className="max-w-2xl mx-auto text-center mb-16">
-          <h2 className="text-section mb-4">Built with modern technology</h2>
+          <h2 className="text-section mb-4">{t("landing.techStack.title")}</h2>
           <p className="text-body text-muted-foreground">
-            A carefully selected stack that prioritizes performance, developer
-            experience, and maintainability.
+            {t("landing.techStack.subtitle")}
           </p>
         </div>
 

@@ -152,7 +152,8 @@
         "certificateExpiring": "Chứng chỉ sắp hết hạn",
         "inventoryAdjusted": "Đã điều chỉnh tồn kho",
         "minutesAgo": "phút trước",
-        "hourAgo": "giờ trước"
+        "hourAgo": "giờ trước",
+        "hoursAgo": "giờ trước"
       }
     },
     "features": {
@@ -223,11 +224,29 @@
     },
     "verificationDemo": {
       "title": "Xác Minh Mã QR",
-      "subtitle": "Khách hàng có thể xác minh ngay tính xác thực của sản phẩm bằng cách quét mã QR trên bao bì. Thử demo bên dưới.",
-      "scanPlaceholder": "Quét mã QR để xác minh",
-      "verified": "Sản phẩm đã được xác minh",
-      "notFound": "Không tìm thấy sản phẩm",
-      "tryAgain": "Quét lại"
+      "subtitle": "Người tiêu dùng có thể xác minh ngay tính xác thực của sản phẩm bằng cách quét mã QR trên bao bì. Không cần tài khoản.",
+      "steps": {
+        "qrScanning": {
+          "title": "Quét Mã QR",
+          "description": "Mỗi sản phẩm có mã QR duy nhất in trên bao bì. Người tiêu dùng quét bằng camera điện thoại."
+        },
+        "productVerification": {
+          "title": "Xác Minh Sản Phẩm",
+          "description": "Cổng thông tin công khai hiển thị nguồn gốc sản phẩm, số lô, ngày sản xuất và trạng thái halal ngay lập tức."
+        },
+        "certificateValidation": {
+          "title": "Xác Thực Chứng Chỉ",
+          "description": "Xem tất cả chứng chỉ halal, tổ chức cấp và ngày hết hạn chỉ với một cú nhấp chuột."
+        },
+        "shipmentHistory": {
+          "title": "Lịch Sử Vận Chuyển",
+          "description": "Theo dõi toàn bộ hành trình từ nhà cung cấp đến kho hàng đến nhà bán lẻ với thời gian và địa điểm."
+        }
+      },
+      "cta": {
+        "tryText": "Dùng thử ngay với sản phẩm thực tế từ cơ sở dữ liệu của chúng tôi",
+        "button": "Xác Minh Sữa Dừa Hữu Cơ"
+      }
     },
     "architecture": {
       "title": "Kiến Trúc Nền Tảng",
@@ -235,7 +254,40 @@
       "frontend": "Giao diện",
       "backend": "Backend",
       "database": "Cơ sở dữ liệu",
-      "deployment": "Triển khai"
+      "deployment": "Triển khai",
+      "mainStack": {
+        "nextjs": {
+          "label": "Next.js",
+          "description": "Giao diện & SSR"
+        },
+        "express": {
+          "label": "Express API",
+          "description": "Backend RESTful"
+        },
+        "prisma": {
+          "label": "Prisma ORM",
+          "description": "Truy vấn an toàn kiểu"
+        },
+        "postgresql": {
+          "label": "PostgreSQL",
+          "description": "Cơ sở dữ liệu quan hệ"
+        }
+      },
+      "externalServices": "Dịch vụ bên ngoài",
+      "services": {
+        "cloudinary": {
+          "label": "Cloudinary",
+          "description": "Tải lên phương tiện & tệp"
+        },
+        "resend": {
+          "label": "Resend",
+          "description": "Thông báo email"
+        },
+        "sse": {
+          "label": "SSE Notifications",
+          "description": "Cập nhật thời gian thực"
+        }
+      }
     },
     "stats": {
       "title": "Năng lực nền tảng cấp doanh nghiệp",
@@ -252,7 +304,30 @@
     },
     "screenshots": {
       "title": "Xem HalalChain Hoạt Động",
-      "subtitle": "Giao diện trực quan được thiết kế cho hiệu quả trên tất cả hoạt động chuỗi cung ứng."
+      "subtitle": "Giao diện trực quan được thiết kế cho hiệu quả trên tất cả hoạt động chuỗi cung ứng.",
+      "slides": {
+        "dashboard": {
+          "title": "Phân tích Bảng điều khiển",
+          "description": "Tổng quan toàn diện về hoạt động chuỗi cung ứng"
+        },
+        "products": {
+          "title": "Quản lý Sản phẩm",
+          "description": "Quản lý sản phẩm với theo dõi lô và trạng thái halal"
+        },
+        "traceability": {
+          "title": "Cổng Truy xuất",
+          "description": "Xác minh sản phẩm công khai với dòng thời gian chuỗi cung ứng"
+        },
+        "users": {
+          "title": "Quản lý Người dùng",
+          "description": "Kiểm soát truy cập dựa trên vai trò với quyền chi tiết"
+        }
+      },
+      "aria": {
+        "prevSlide": "Trang trình bày trước",
+        "nextSlide": "Trang trình bày tiếp theo",
+        "goToSlide": "Đến trang trình bày {{number}}"
+      }
     },
     "techStack": {
       "title": "Xây Dựng Với Công Nghệ Hiện Đại",
@@ -494,46 +569,6 @@
     },
     "errors": {
       "loadFailed": "Không thể tải dữ liệu tồn kho"
-    }
-  },
-  "warehouses": {
-    "pageTitle": "Quản lý kho hàng",
-    "pageDescription": "Quản lý địa điểm lưu trữ trên mạng lưới phân phối",
-    "addWarehouse": "Thêm kho",
-    "newWarehouse": "Kho mới",
-    "editWarehouse": "Sửa kho",
-    "deleteWarehouse": "Xóa kho",
-    "saveChanges": "Lưu thay đổi",
-    "warehouseUpdated": "Đã cập nhật kho",
-    "warehouseCreated": "Đã tạo kho",
-    "warehouseEdited": "{{name}} đã được cập nhật.",
-    "warehouseAdded": "{{name}} đã được thêm.",
-    "warehouseDeleted": "Đã xóa kho",
-    "warehouseDeleteFailed": "Không thể xóa kho",
-    "deleteConfirm": "Xóa kho?",
-    "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn \"{{name}}\". Tất cả bản ghi tồn kho trong kho này có thể bị ảnh hưởng.",
-    "form": {
-      "name": "Tên kho",
-      "namePlaceholder": "VD: Kho chính Jakarta",
-      "location": "Địa điểm",
-      "locationPlaceholder": "VD: Jakarta, Indonesia"
-    },
-    "table": {
-      "name": "Tên",
-      "location": "Địa điểm",
-      "items": "Mặt hàng",
-      "actions": "Thao tác"
-    },
-    "common": {
-      "editItem": "Sửa {{name}}",
-      "deleteItem": "Xóa {{name}}"
-    },
-    "empty": {
-      "title": "Chưa có kho hàng",
-      "description": "Thêm kho đầu tiên để bắt đầu theo dõi tồn kho theo địa điểm."
-    },
-    "errors": {
-      "loadFailed": "Không thể tải danh sách kho"
     }
   },
   "purchaseOrders": {

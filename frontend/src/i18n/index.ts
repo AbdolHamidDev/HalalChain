@@ -54,7 +54,7 @@ function interpolate(
 
 // ─── Translation function ──────────────────────────────────────────
 export function t(
-  key: TranslationKey,
+  key: TranslationKey | (string & {}),
   options?: TranslationOptions & { locale?: string }
 ): string {
   const locale = options?.locale ?? currentLocale;

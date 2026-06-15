@@ -1,16 +1,46 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
-
-const steps = [
-  { label: "Supplier", description: "Register and verify halal-certified suppliers", color: "from-primary to-primary/60" },
-  { label: "Product", description: "Log products with batch numbers and ingredients", color: "from-emerald-500 to-emerald-400" },
-  { label: "Certification", description: "Attach halal certificates and track expiry", color: "from-amber-500 to-amber-400" },
-  { label: "Warehouse", description: "Manage inventory across multiple locations", color: "from-sky-500 to-sky-400" },
-  { label: "Shipment", description: "Track shipments with real-time status updates", color: "from-violet-500 to-violet-400" },
-  { label: "Consumer", description: "End customers verify authenticity via QR code", color: "from-rose-500 to-rose-400" },
-];
+import { useTranslation } from "@/i18n/hooks";
+import type { TranslationKey } from "@/i18n/types";
 
 export function WorkflowSection() {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      labelKey: "landing.workflow.steps.supplier.label",
+      descKey: "landing.workflow.steps.supplier.description",
+      color: "from-primary to-primary/60"
+    },
+    {
+      labelKey: "landing.workflow.steps.product.label",
+      descKey: "landing.workflow.steps.product.description",
+      color: "from-emerald-500 to-emerald-400"
+    },
+    {
+      labelKey: "landing.workflow.steps.certification.label",
+      descKey: "landing.workflow.steps.certification.description",
+      color: "from-amber-500 to-amber-400"
+    },
+    {
+      labelKey: "landing.workflow.steps.warehouse.label",
+      descKey: "landing.workflow.steps.warehouse.description",
+      color: "from-sky-500 to-sky-400"
+    },
+    {
+      labelKey: "landing.workflow.steps.shipment.label",
+      descKey: "landing.workflow.steps.shipment.description",
+      color: "from-violet-500 to-violet-400"
+    },
+    {
+      labelKey: "landing.workflow.steps.consumer.label",
+      descKey: "landing.workflow.steps.consumer.description",
+      color: "from-rose-500 to-rose-400"
+    },
+  ];
+
   return (
     <section id="workflow" className="relative py-24 md:py-32 overflow-hidden">
       <div className="absolute inset-0 -z-10 bg-muted/30" />
@@ -19,10 +49,9 @@ export function WorkflowSection() {
       <div className="container-genesis">
         {/* Section Header */}
         <div className="max-w-2xl mx-auto text-center mb-16">
-          <h2 className="text-section mb-4">How HalalChain Works</h2>
+          <h2 className="text-section mb-4">{t("landing.workflow.title")}</h2>
           <p className="text-body text-muted-foreground">
-            From supplier registration to consumer verification, every step is
-            tracked and recorded on an immutable audit trail.
+            {t("landing.workflow.subtitle")}
           </p>
         </div>
 
@@ -35,7 +64,7 @@ export function WorkflowSection() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
             {steps.map((step, index) => (
-              <div key={step.label} className="relative flex flex-col items-center">
+              <div key={step.labelKey} className="relative flex flex-col items-center">
                 {/* Step circle */}
                 <div className="relative mb-4">
                   {/* Outer ring glow */}
@@ -55,10 +84,10 @@ export function WorkflowSection() {
                 <Card className="w-full border-border/40 bg-background/80 backdrop-blur-sm hover:shadow-md transition-all duration-300">
                   <CardContent className="p-4 text-center space-y-2">
                     <h3 className="font-display text-sm font-semibold tracking-tight">
-                      {step.label}
+                      {t(step.labelKey as TranslationKey)}
                     </h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      {step.description}
+                      {t(step.descKey as TranslationKey)}
                     </p>
                   </CardContent>
                 </Card>
@@ -72,26 +101,17 @@ export function WorkflowSection() {
           <Card className="border-border/40 bg-background/80 backdrop-blur-sm">
             <CardContent className="p-6 md:p-8 space-y-4">
               <h3 className="font-display text-subhead">
-                Full supply chain transparency
+                {t("landing.workflow.explanation.title")}
               </h3>
               <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
                 <p>
-                  HalalChain creates a digital thread connecting every entity in
-                  your supply chain. Each product batch receives a unique
-                  identifier that follows it from raw materials to the end
-                  consumer.
+                  {t("landing.workflow.explanation.p1")}
                 </p>
                 <p>
-                  Suppliers are onboarded with verified halal certifications.
-                  Products are logged with complete ingredient lists and
-                  processing methods. Certifications are attached digitally and
-                  monitored for expiry.
+                  {t("landing.workflow.explanation.p2")}
                 </p>
                 <p>
-                  Warehouse operators scan incoming and outgoing shipments,
-                  updating inventory in real-time. When products ship, customers
-                  receive tracking information and can verify authenticity by
-                  scanning the QR code on the packaging.
+                  {t("landing.workflow.explanation.p3")}
                 </p>
               </div>
             </CardContent>

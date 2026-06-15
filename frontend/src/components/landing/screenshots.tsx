@@ -4,46 +4,49 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const slides = [
-  {
-    title: "Dashboard Analytics",
-    description: "Comprehensive overview of your supply chain operations",
-    src: "/screenshots/dashboard.png",
-    gradient: "from-primary/10 via-primary/5 to-background",
-  },
-  {
-    title: "Product Management",
-    description: "Manage products with batch tracking and halal status",
-    src: "/screenshots/inventory.png",
-    gradient: "from-emerald-500/10 via-emerald-500/5 to-background",
-  },
-  {
-    title: "Traceability Portal",
-    description: "Public-facing product verification with full supply chain timeline",
-    src: "/screenshots/traceability.png",
-    gradient: "from-amber-500/10 via-amber-500/5 to-background",
-  },
-  {
-    title: "User Management",
-    description: "Role-based access control with detailed permissions",
-    src: "/screenshots/users.png",
-    gradient: "from-sky-500/10 via-sky-500/5 to-background",
-  },
-];
+import { useTranslation } from "@/i18n/hooks";
+import type { TranslationKey } from "@/i18n/types";
 
 export function ScreenshotsSection() {
+  const { t } = useTranslation();
   const [current, setCurrent] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
 
+  const slides = [
+    {
+      titleKey: "landing.screenshots.slides.dashboard.title",
+      descKey: "landing.screenshots.slides.dashboard.description",
+      src: "/screenshots/dashboard.png",
+      gradient: "from-primary/10 via-primary/5 to-background",
+    },
+    {
+      titleKey: "landing.screenshots.slides.products.title",
+      descKey: "landing.screenshots.slides.products.description",
+      src: "/screenshots/inventory.png",
+      gradient: "from-emerald-500/10 via-emerald-500/5 to-background",
+    },
+    {
+      titleKey: "landing.screenshots.slides.traceability.title",
+      descKey: "landing.screenshots.slides.traceability.description",
+      src: "/screenshots/traceability.png",
+      gradient: "from-amber-500/10 via-amber-500/5 to-background",
+    },
+    {
+      titleKey: "landing.screenshots.slides.users.title",
+      descKey: "landing.screenshots.slides.users.description",
+      src: "/screenshots/users.png",
+      gradient: "from-sky-500/10 via-sky-500/5 to-background",
+    },
+  ];
+
   const next = useCallback(() => {
     setCurrent((prev) => (prev + 1) % slides.length);
-  }, []);
+  }, [slides.length]);
 
   const prev = useCallback(() => {
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  }, []);
+  }, [slides.length]);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
@@ -57,10 +60,10 @@ export function ScreenshotsSection() {
         {/* Section Header */}
         <div className="max-w-2xl mx-auto text-center mb-16">
           <h2 className="text-section mb-4">
-            See HalalChain in action
+            {t("landing.screenshots.title")}
           </h2>
           <p className="text-body text-muted-foreground">
-            {`A glimpse into the platform's intuitive interface and powerful features.`}
+            {t("landing.screenshots.subtitle")}
           </p>
         </div>
 
@@ -92,10 +95,10 @@ export function ScreenshotsSection() {
                       <div className="w-6 h-6 rounded bg-muted-foreground/30" />
                     </div>
                     <h3 className="font-display text-2xl md:text-3xl font-bold tracking-tight mb-3">
-                      {slides[current].title}
+                      {t(slides[current].titleKey as TranslationKey)}
                     </h3>
                     <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                      {slides[current].description}
+                      {t(slides[current].descKey as TranslationKey)}
                     </p>
                     <p className="text-xs text-muted-foreground/50 mt-4">
                       TODO: Replace with actual screenshot
@@ -104,7 +107,7 @@ export function ScreenshotsSection() {
                 ) : (
                   <Image
                     src={slides[current].src}
-                    alt={slides[current].title}
+                    alt={t(slides[current].titleKey as TranslationKey)}
                     fill
                     className="object-cover object-top"
                     sizes="(max-width: 1280px) 100vw, 1280px"
@@ -118,14 +121,14 @@ export function ScreenshotsSection() {
               <button
                 onClick={prev}
                 className="absolute left-3 top-[calc(50%+5px)] -translate-y-1/2 w-10 h-10 rounded-full bg-background/80 border border-border/50 flex items-center justify-center hover:bg-background transition-colors shadow-sm backdrop-blur-sm"
-                aria-label="Previous slide"
+                aria-label={t("landing.screenshots.aria.prevSlide")}
               >
                 <ChevronLeft className="size-5 text-muted-foreground" />
               </button>
               <button
                 onClick={next}
                 className="absolute right-3 top-[calc(50%+5px)] -translate-y-1/2 w-10 h-10 rounded-full bg-background/80 border border-border/50 flex items-center justify-center hover:bg-background transition-colors shadow-sm backdrop-blur-sm"
-                aria-label="Next slide"
+                aria-label={t("landing.screenshots.aria.nextSlide")}
               >
                 <ChevronRight className="size-5 text-muted-foreground" />
               </button>
@@ -143,7 +146,7 @@ export function ScreenshotsSection() {
                       ? "bg-primary w-8 h-2"
                       : "bg-border h-2 w-2 hover:bg-muted-foreground/40"
                   )}
-                  aria-label={`Go to slide ${index + 1}`}
+                  aria-label={t("landing.screenshots.aria.goToSlide", { values: { number: index + 1 } })}
                 />
               ))}
             </div>

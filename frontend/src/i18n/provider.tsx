@@ -23,7 +23,7 @@ export interface I18nContextValue {
   /** Current locale code (e.g. "en", "vi") */
   locale: string;
   /** Translation function — same API as the module-level `t()` */
-  t: (key: TranslationKey, options?: TranslationOptions) => string;
+  t: (key: TranslationKey | (string & {}), options?: TranslationOptions) => string;
   /** Switch language and persist the choice */
   setLanguage: (locale: string) => Promise<void>;
   /** Available locales */
@@ -79,8 +79,8 @@ export function I18nProvider({
   }, []);
 
   const t = useCallback(
-    (key: TranslationKey, options?: TranslationOptions) => {
-      return translate(key, { ...options, locale });
+    (key: TranslationKey | (string & {}), options?: TranslationOptions) => {
+      return translate(key as TranslationKey, { ...options, locale });
     },
     [locale]
   );
