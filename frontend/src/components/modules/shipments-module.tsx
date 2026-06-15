@@ -6,6 +6,7 @@ import { Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { api, Shipment, ShipmentStatus } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -40,17 +41,16 @@ const emptyCreate: CreateForm = {
 };
 
 export function ShipmentsModule() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const qc = useQueryClient();
   const isAdmin = user?.role === "ADMIN";
 
-  // Edit state
   const [editing, setEditing] = useState<Shipment | null>(null);
   const [editStatus, setEditStatus] = useState<ShipmentStatus>("PENDING");
   const [editTracking, setEditTracking] = useState("");
   const [editError, setEditError] = useState<string | null>(null);
 
-  // Create state
   const [creating, setCreating] = useState(false);
   const [createForm, setCreateForm] = useState<CreateForm>(emptyCreate);
   const [createError, setCreateError] = useState<string | null>(null);
@@ -60,7 +60,6 @@ export function ShipmentsModule() {
     queryFn: () => api.getShipments(),
   });
 
-  // Load purchase orders for the create dialog dropdown (ADMIN only)
   const { data: poData } = useQuery({
     queryKey: ["purchase-orders"],
     queryFn: () => api.getPurchaseOrders(),
@@ -75,8 +74,10 @@ export function ShipmentsModule() {
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["shipments"] });
-      toast.success("Shipment updated", {
-        description: `Tracking ${editTracking} updated to ${editStatus.replace("_", " ")}.`,
+      toast.success(t("shipments.shipmentUpdated"), {
+        description: t("shipments.shipmentUpdatedDesc", {
+          values: { trackingNumber: editTracking, status: t(`shipments.statusOptions.${editStatus.toLowerCase()}` as any) },
+        }),
       });
       setEditing(null);
       setEditError(null);
@@ -95,8 +96,8 @@ export function ShipmentsModule() {
       }),
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ["shipments"] });
-      toast.success("Shipment created", {
-        description: `Tracking ${res.shipment.trackingNumber} is now being monitored.`,
+      toast.success(t("shipments.shipmentCreated"), {
+        description: t("shipments.shipmentCreatedDesc", { values: { trackingNumber: res.shipment.trackingNumber } }),
       });
       setCreating(false);
       setCreateForm(emptyCreate);
@@ -124,12 +125,12 @@ export function ShipmentsModule() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Shipment Monitoring"
-        description="Track inbound cargo from origin port to distribution hubs"
+        title={t("shipments.pageTitle")}
+        description={t("shipments.pageDescription")}
         action={
           isAdmin ? (
             <Button onClick={openCreate}>
-              <Plus className="h-4 w-4" /> New Shipment
+              <Plus className="h-4 w-4" /> {t("shipments.newShipment")}
             </Button>
           ) : undefined
         }
@@ -138,7 +139,7 @@ export function ShipmentsModule() {
       {isLoading && <TableSkeleton columns={isAdmin ? 7 : 6} rows={5} />}
       {isError && (
         <ErrorState
-          message="Failed to load shipments"
+          message={t("shipments.errors.loadFailed")}
           onRetry={() => refetch()}
         />
       )}
@@ -148,17 +149,16 @@ export function ShipmentsModule() {
           variant="shipments"
           description={
             isAdmin
-              ? "No shipments yet. You can create one manually or approve a purchase order to auto-generate a shipment."
+              ? t("shipments.createDescription")
               : undefined
           }
           onAction={isAdmin ? openCreate : undefined}
-          ctaLabel={isAdmin ? "New Shipment" : undefined}
+          ctaLabel={isAdmin ? t("shipments.newShipmentCta") : undefined}
         />
       )}
 
       {shipments.length > 0 && (
         <>
-          {/* Mobile card view */}
           <div className="grid gap-3 sm:hidden">
             {shipments.map((s) => (
               <div key={s.id} className="rounded-xl border bg-card p-4 space-y-3">
@@ -172,7 +172,7 @@ export function ShipmentsModule() {
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                   <span>PO: <span className="font-medium text-foreground">{s.purchaseOrder?.poNumber}</span></span>
                   <span className="truncate">{s.origin} → {s.destination}</span>
-                  <span>ETA: <span className="font-medium text-foreground">
+                  <span>{t("shipments.eta")}: <span className="font-medium text-foreground">
                     {s.estimatedArrival ? new Date(s.estimatedArrival).toLocaleDateString() : "—"}
                   </span></span>
                 </div>
@@ -182,10 +182,10 @@ export function ShipmentsModule() {
                       size="sm"
                       variant="outline"
                       className="w-full"
-                      aria-label={`Update shipment ${s.trackingNumber}`}
+                      aria-label={t("shipments.common.editItem", { values: { trackingNumber: s.trackingNumber } })}
                       onClick={() => openEdit(s)}
                     >
-                      <Pencil className="h-3.5 w-3.5 mr-1" /> Update Shipment
+                      <Pencil className="h-3.5 w-3.5 mr-1" /> {t("shipments.updateShipment")}
                     </Button>
                   </div>
                 )}
@@ -193,18 +193,17 @@ export function ShipmentsModule() {
             ))}
           </div>
 
-          {/* Desktop table view */}
           <div className="hidden sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tracking #</TableHead>
-                  <TableHead>PO</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Route</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>ETA</TableHead>
-                  {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                  <TableHead>{t("shipments.table.trackingNumber")}</TableHead>
+                  <TableHead>{t("shipments.table.poNumber")}</TableHead>
+                  <TableHead>{t("shipments.table.supplier")}</TableHead>
+                  <TableHead>{t("shipments.route")}</TableHead>
+                  <TableHead>{t("shipments.table.status")}</TableHead>
+                  <TableHead>{t("shipments.eta")}</TableHead>
+                  {isAdmin && <TableHead className="text-right">{t("shipments.table.actions")}</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -227,7 +226,7 @@ export function ShipmentsModule() {
                         <Button
                           size="sm"
                           variant="outline"
-                          aria-label={`Update shipment ${s.trackingNumber}`}
+                          aria-label={t("shipments.common.editItem", { values: { trackingNumber: s.trackingNumber } })}
                           onClick={() => openEdit(s)}
                         >
                           <Pencil className="h-3.5 w-3.5" />
@@ -242,11 +241,10 @@ export function ShipmentsModule() {
         </>
       )}
 
-      {/* Update Shipment dialog */}
       <Dialog
         open={editing !== null}
         onClose={() => setEditing(null)}
-        title="Update Shipment"
+        title={t("shipments.updateShipment")}
       >
         <form
           className="space-y-4"
@@ -257,7 +255,7 @@ export function ShipmentsModule() {
         >
           <InputWrapper>
             <InputLabel htmlFor="ship-tracking">
-              Tracking Number <span className="text-destructive" aria-hidden="true">*</span>
+              {t("shipments.trackingNumber")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Input
               id="ship-tracking"
@@ -267,7 +265,7 @@ export function ShipmentsModule() {
             />
           </InputWrapper>
           <div className="space-y-2">
-            <InputLabel htmlFor="ship-status">Status</InputLabel>
+            <InputLabel htmlFor="ship-status">{t("shipments.table.status")}</InputLabel>
             <Select
               value={editStatus}
               onValueChange={(v) => setEditStatus(v as ShipmentStatus)}
@@ -276,28 +274,27 @@ export function ShipmentsModule() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="IN_TRANSIT">In Transit</SelectItem>
-                <SelectItem value="DELIVERED">Delivered</SelectItem>
-                <SelectItem value="DELAYED">Delayed</SelectItem>
+                <SelectItem value="PENDING">{t("shipments.statusOptions.pending")}</SelectItem>
+                <SelectItem value="IN_TRANSIT">{t("shipments.statusOptions.inTransit")}</SelectItem>
+                <SelectItem value="DELIVERED">{t("shipments.statusOptions.delivered")}</SelectItem>
+                <SelectItem value="DELAYED">{t("shipments.statusOptions.delayed")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           {editError && <InputError role="alert">{editError}</InputError>}
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => setEditing(null)}>{t("common.cancel")}</Button>
             <Button type="submit" disabled={updateMutation.isPending}>
-              {updateMutation.isPending ? "Saving…" : "Save Changes"}
+              {updateMutation.isPending ? t("common.saving") : t("shipments.saveChanges")}
             </Button>
           </div>
         </form>
       </Dialog>
 
-      {/* Create Shipment dialog */}
       <Dialog
         open={creating}
         onClose={() => setCreating(false)}
-        title="New Shipment"
+        title={t("shipments.newShipment")}
       >
         <form
           className="space-y-4"
@@ -308,7 +305,7 @@ export function ShipmentsModule() {
         >
           <div className="space-y-2">
             <InputLabel htmlFor="create-po">
-              Purchase Order <span className="text-destructive" aria-hidden="true">*</span>
+              {t("shipments.purchaseOrder")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Select
               required
@@ -316,7 +313,7 @@ export function ShipmentsModule() {
               onValueChange={(v) => setCreateForm({ ...createForm, purchaseOrderId: v })}
             >
               <SelectTrigger id="create-po">
-                <SelectValue placeholder="Select purchase order" />
+                <SelectValue placeholder={t("shipments.selectPO")} />
               </SelectTrigger>
               <SelectContent>
                 {purchaseOrders.map((po) => (
@@ -329,44 +326,44 @@ export function ShipmentsModule() {
           </div>
           <InputWrapper>
             <InputLabel htmlFor="create-tracking">
-              Tracking Number <span className="text-destructive" aria-hidden="true">*</span>
+              {t("shipments.trackingNumber")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Input
               id="create-tracking"
               required
               value={createForm.trackingNumber}
               onChange={(e) => setCreateForm({ ...createForm, trackingNumber: e.target.value })}
-              placeholder="e.g. SHP-2026-0042"
+              placeholder={t("shipments.trackingPlaceholder")}
             />
           </InputWrapper>
           <InputWrapper>
             <InputLabel htmlFor="create-origin">
-              Origin <span className="text-destructive" aria-hidden="true">*</span>
+              {t("shipments.origin")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Input
               id="create-origin"
               required
               value={createForm.origin}
               onChange={(e) => setCreateForm({ ...createForm, origin: e.target.value })}
-              placeholder="e.g. Kuala Lumpur, Malaysia"
+              placeholder={t("shipments.originPlaceholder")}
             />
           </InputWrapper>
           <InputWrapper>
             <InputLabel htmlFor="create-destination">
-              Destination <span className="text-destructive" aria-hidden="true">*</span>
+              {t("shipments.destination")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Input
               id="create-destination"
               required
               value={createForm.destination}
               onChange={(e) => setCreateForm({ ...createForm, destination: e.target.value })}
-              placeholder="e.g. Ho Chi Minh City, Vietnam"
+              placeholder={t("shipments.destinationPlaceholder")}
             />
           </InputWrapper>
           <InputWrapper>
             <InputLabel htmlFor="create-eta">
-              Estimated Arrival{" "}
-              <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+              {t("shipments.estimatedArrival")}{" "}
+              <span className="text-xs font-normal text-muted-foreground">({t("common.optional")})</span>
             </InputLabel>
             <Input
               id="create-eta"
@@ -378,10 +375,10 @@ export function ShipmentsModule() {
           {createError && <InputError role="alert">{createError}</InputError>}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setCreating(false)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending ? "Creating…" : "Create Shipment"}
+              {createMutation.isPending ? t("shipments.creating") : t("shipments.createShipment")}
             </Button>
           </div>
         </form>

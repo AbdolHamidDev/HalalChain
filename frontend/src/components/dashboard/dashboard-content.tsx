@@ -10,6 +10,7 @@ import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { PageHeader } from "@/components/layout/page-header";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import { EmptyState, ErrorState } from "@/components/shared/state-blocks";
 import { api } from "@/lib/api";
 
 export function DashboardContent() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [from, setFrom] = useState(() => {
     const date = new Date();
@@ -39,7 +41,7 @@ export function DashboardContent() {
   if (user?.role === "STAFF") {
     return (
       <div className="space-y-6">
-        <PageHeader title="Warehouse Operations" description="Quick access to inbound and outbound stock movements" />
+        <PageHeader title={t("dashboard.warehouseOpsTitle")} description={t("dashboard.warehouseOpsDescription")} />
         <Card>
           <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
@@ -47,13 +49,13 @@ export function DashboardContent() {
                 <Warehouse className="h-5 w-5 text-primary" />
               </div>
               <div className="min-w-0">
-                <p className="font-semibold">Warehouse Operations</p>
-                <p className="text-sm text-muted-foreground">Process inbound receipts and outbound dispatch orders</p>
+                <p className="font-semibold">{t("dashboard.warehouseOpsCardTitle")}</p>
+                <p className="text-sm text-muted-foreground">{t("dashboard.warehouseOpsCardDescription")}</p>
               </div>
             </div>
             <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
               <Link href="/dashboard/inventory">
-                Go to Inventory <ArrowRight className="h-3.5 w-3.5" />
+                {t("dashboard.goToInventory")} <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </Button>
           </CardContent>
@@ -65,8 +67,8 @@ export function DashboardContent() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Operations Dashboard"
-        description="Monitor inventory, procurement, shipments, and halal certification compliance"
+        title={t("dashboard.pageTitle")}
+        description={t("dashboard.pageDescription")}
         action={
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2">
@@ -79,7 +81,7 @@ export function DashboardContent() {
       />
 
       {stats.isLoading && <DashboardSkeleton />}
-      {stats.isError && <ErrorState message="Failed to load dashboard analytics" onRetry={() => stats.refetch()} />}
+      {stats.isError && <ErrorState message={t("dashboard.errors.loadFailed")} onRetry={() => stats.refetch()} />}
       {stats.data && (
         <>
           <KpiCards data={stats.data} />
@@ -88,7 +90,7 @@ export function DashboardContent() {
           {canViewActivity && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Recent Activity</CardTitle>
+                <CardTitle className="text-base">{t("dashboard.recentActivity")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ActivityFeed />
@@ -119,6 +121,7 @@ function DashboardSkeleton() {
 }
 
 function OperationalWidgets({ data }: { data: Awaited<ReturnType<typeof api.dashboardStats>> }) {
+  const { t } = useTranslation();
   const widgets = data?.widgets;
   const lowStockAlerts = widgets?.lowStockAlerts ?? [];
   const expiringCertificates = widgets?.expiringCertificates ?? [];
@@ -126,9 +129,9 @@ function OperationalWidgets({ data }: { data: Awaited<ReturnType<typeof api.dash
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
-      <WidgetCard title="Low Stock Alerts">
+      <WidgetCard title={t("dashboard.widgets.lowStockAlerts")}>
         {lowStockAlerts.length === 0 ? (
-          <EmptyState title="Stock levels are healthy" description="No tracked inventory is below its reorder level." />
+          <EmptyState title={t("dashboard.widgets.stockHealthy")} description={t("dashboard.widgets.stockHealthyDesc")} />
         ) : (
           lowStockAlerts.map((item) => (
             <WidgetRow key={item.id} title={item.productName} meta={`${item.warehouseName} · ${item.sku}`}>
@@ -138,9 +141,9 @@ function OperationalWidgets({ data }: { data: Awaited<ReturnType<typeof api.dash
         )}
       </WidgetCard>
 
-      <WidgetCard title="Expiring Certificates">
+      <WidgetCard title={t("dashboard.widgets.expiringCertificates")}>
         {expiringCertificates.length === 0 ? (
-          <EmptyState title="No upcoming expiries" description="No certificates expire within the selected watch window." />
+          <EmptyState title={t("dashboard.widgets.noExpiries")} description={t("dashboard.widgets.noExpiriesDesc")} />
         ) : (
           expiringCertificates.map((item) => (
             <WidgetRow key={item.id} title={item.supplierName} meta={item.certificateNumber}>
@@ -150,13 +153,13 @@ function OperationalWidgets({ data }: { data: Awaited<ReturnType<typeof api.dash
         )}
       </WidgetCard>
 
-      <WidgetCard title="Shipment Delays">
+      <WidgetCard title={t("dashboard.widgets.shipmentDelays")}>
         {shipmentDelays.length === 0 ? (
-          <EmptyState title="No delayed shipments" description="All active shipments are currently on track." />
+          <EmptyState title={t("dashboard.widgets.noDelays")} description={t("dashboard.widgets.noDelaysDesc")} />
         ) : (
           shipmentDelays.map((item) => (
             <WidgetRow key={item.id} title={item.trackingNumber} meta={`${item.poNumber} · ${item.supplierName}`}>
-              <Badge variant="danger">Delayed</Badge>
+              <Badge variant="danger">{t("dashboard.widgets.delayed")}</Badge>
             </WidgetRow>
           ))
         )}

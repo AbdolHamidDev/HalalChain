@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { api, Product } from "@/lib/api";
 import { countryFlag } from "@/lib/countryFlag";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -54,6 +55,7 @@ function downloadQrCode(qrCodeUrl: string, productId: string) {
 }
 
 export function ProductsModule() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const qc = useQueryClient();
   const isAdmin = user?.role === "ADMIN";
@@ -101,23 +103,27 @@ export function ProductsModule() {
       setEditing(null);
       setForm(empty);
       setFormError(null);
-      toast.success(editing ? "Product updated" : "Product created", {
-        description: editing
-          ? `${form.name} has been updated.`
-          : `${form.name} (${form.sku}) has been added to your catalog.`,
-      });
+      if (editing) {
+        toast.success(t("products.productSaved"), {
+          description: t("products.productUpdated", { values: { name: form.name } }),
+        });
+      } else {
+        toast.success(t("products.productCreated"), {
+          description: t("products.productAdded", { values: { name: form.name, sku: form.sku } }),
+        });
+      }
     },
     onError: (e: Error) => setFormError(e.message),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteProduct(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["products"] });
-      toast.success("Product deleted");
+      toast.success(t("products.productDeleted"));
     },
     onError: (e: Error) => {
-      toast.error("Failed to delete product", { description: e.message });
+      toast.error(t("products.productDeleteFailed"), { description: e.message });
     },
   });
 
@@ -159,7 +165,7 @@ export function ProductsModule() {
       {!editing && (
         <div className="space-y-2">
           <InputLabel htmlFor="product-supplier">
-            Supplier <span className="text-destructive" aria-hidden="true">*</span>
+            {t("products.form.supplier")} <span className="text-destructive" aria-hidden="true">*</span>
           </InputLabel>
           <Select
             required
@@ -167,7 +173,7 @@ export function ProductsModule() {
             onValueChange={(v) => setForm({ ...form, supplierId: v })}
           >
             <SelectTrigger id="product-supplier">
-              <SelectValue placeholder="Select supplier" />
+              <SelectValue placeholder={t("products.form.selectSupplier")} />
             </SelectTrigger>
             <SelectContent>
               {(suppliersData?.suppliers ?? []).map((s) => (
@@ -181,58 +187,58 @@ export function ProductsModule() {
       )}
       <InputWrapper>
         <InputLabel htmlFor="product-name">
-          Name <span className="text-destructive" aria-hidden="true">*</span>
+          {t("products.form.name")} <span className="text-destructive" aria-hidden="true">*</span>
         </InputLabel>
         <Input
           id="product-name"
           required
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
-          placeholder="e.g. Halal Chicken Breast"
+          placeholder={t("products.form.namePlaceholder")}
         />
       </InputWrapper>
       <div className="grid grid-cols-2 gap-4">
         <InputWrapper>
           <InputLabel htmlFor="product-sku">
-            SKU <span className="text-destructive" aria-hidden="true">*</span>
+            {t("products.form.sku")} <span className="text-destructive" aria-hidden="true">*</span>
           </InputLabel>
           <Input
             id="product-sku"
             required
             value={form.sku}
             onChange={(e) => setForm({ ...form, sku: e.target.value })}
-            placeholder="e.g. HCB-001"
+            placeholder={t("products.form.skuPlaceholder")}
           />
         </InputWrapper>
         <InputWrapper>
           <InputLabel htmlFor="product-category">
-            Category <span className="text-destructive" aria-hidden="true">*</span>
+            {t("products.form.category")} <span className="text-destructive" aria-hidden="true">*</span>
           </InputLabel>
           <Input
             id="product-category"
             required
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
-            placeholder="e.g. Poultry"
+            placeholder={t("products.form.categoryPlaceholder")}
           />
         </InputWrapper>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <InputWrapper>
           <InputLabel htmlFor="product-unit">
-            Unit <span className="text-destructive" aria-hidden="true">*</span>
+            {t("products.form.unit")} <span className="text-destructive" aria-hidden="true">*</span>
           </InputLabel>
           <Input
             id="product-unit"
             required
             value={form.unit}
             onChange={(e) => setForm({ ...form, unit: e.target.value })}
-            placeholder="e.g. kg"
+            placeholder={t("products.form.unitPlaceholder")}
           />
         </InputWrapper>
         <InputWrapper>
           <InputLabel htmlFor="product-price">
-            Unit Price (USD) <span className="text-destructive" aria-hidden="true">*</span>
+            {t("products.form.unitPrice")} <span className="text-destructive" aria-hidden="true">*</span>
           </InputLabel>
           <Input
             id="product-price"
@@ -254,12 +260,12 @@ export function ProductsModule() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Product Management"
-        description="Halal product catalog by SKU, category, unit and linked supplier"
+        title={t("products.pageTitle")}
+        description={t("products.pageDescription")}
         action={
           isAdmin ? (
             <Button onClick={openCreate}>
-              <Plus className="h-4 w-4" /> Add Product
+              <Plus className="h-4 w-4" /> {t("products.addProduct")}
             </Button>
           ) : undefined
         }
@@ -268,7 +274,7 @@ export function ProductsModule() {
       {isLoading && <TableSkeleton columns={isAdmin ? 10 : 8} rows={5} />}
       {isError && (
         <ErrorState
-          message="Failed to load products"
+          message={t("products.errors.loadFailed")}
           onRetry={() => refetch()}
         />
       )}
@@ -296,36 +302,36 @@ export function ProductsModule() {
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                   <span>{p.category}</span>
                   <span>{p.supplier?.name}</span>
-                  <span>{p.unit} · <span className="font-medium text-foreground">{stockTotal(p)}</span> in stock</span>
+                  <span>{p.unit} · <span className="font-medium text-foreground">{stockTotal(p)}</span> {t("products.table.stock").toLowerCase()}</span>
                 </div>
                 <div className="flex flex-wrap gap-2 pt-1 border-t">
                   {canViewTraceability && (
                     <Button size="sm" variant="outline" className="flex-1" asChild>
                       <Link href={`/dashboard/products/${p.id}/traceability`}>
-                        <GitBranch className="h-3.5 w-3.5 mr-1" /> Traceability
+                        <GitBranch className="h-3.5 w-3.5 mr-1" /> {t("products.table.traceability")}
                       </Link>
                     </Button>
                   )}
                   {canViewQr && (
                     <Button size="sm" variant="outline" className="flex-1" onClick={() => setQrProductId(p.id)}>
-                      <QrCode className="h-3.5 w-3.5 mr-1" /> QR Code
+                      <QrCode className="h-3.5 w-3.5 mr-1" /> {t("products.table.qrCode")}
                     </Button>
                   )}
                   {isAdmin && (
                     <>
-                      <Button size="sm" variant="outline" aria-label={`Edit ${p.name}`} onClick={() => openEdit(p)}>
+                      <Button size="sm" variant="outline" aria-label={t("products.common.editItem", { values: { name: p.name }})} onClick={() => openEdit(p)}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
-                        aria-label={`Delete ${p.name}`}
+                        aria-label={t("products.common.deleteItem", { values: { name: p.name }})}
                         onClick={async () => {
                           const ok = await dialog.confirm({
                             type: "destructive",
-                            title: "Delete product?",
-                            description: `This will permanently remove "${p.name}" (${p.sku}) and all associated inventory records. This cannot be undone.`,
-                            confirmLabel: "Delete Product",
+                            title: t("products.deleteConfirm"),
+                            description: t("products.deleteDescription", { values: { name: p.name, sku: p.sku } }),
+                            confirmLabel: t("products.deleteProduct"),
                           });
                           if (ok) deleteMutation.mutate(p.id);
                         }}
@@ -344,16 +350,16 @@ export function ProductsModule() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Unit</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Stock</TableHead>
-                  {canViewTraceability && <TableHead>Traceability</TableHead>}
-                  {canViewQr && <TableHead>QR Code</TableHead>}
-                  {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                  <TableHead>{t("products.table.sku")}</TableHead>
+                  <TableHead>{t("products.table.name")}</TableHead>
+                  <TableHead>{t("products.table.category")}</TableHead>
+                  <TableHead>{t("products.table.supplier")}</TableHead>
+                  <TableHead>{t("products.table.unit")}</TableHead>
+                  <TableHead>{t("products.table.price")}</TableHead>
+                  <TableHead>{t("products.table.stock")}</TableHead>
+                  {canViewTraceability && <TableHead>{t("products.table.traceability")}</TableHead>}
+                  {canViewQr && <TableHead>{t("products.table.qrCode")}</TableHead>}
+                  {isAdmin && <TableHead className="text-right">{t("products.table.actions")}</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -371,10 +377,10 @@ export function ProductsModule() {
                         <Button size="sm" variant="outline" asChild>
                           <Link
                             href={`/dashboard/products/${p.id}/traceability`}
-                            aria-label={`View traceability for ${p.name}`}
+                            aria-label={t("products.common.viewTraceability", { values: { name: p.name }})}
                           >
                             <GitBranch className="h-3.5 w-3.5" />
-                            <span className="ml-1 hidden sm:inline">Trace</span>
+                            <span className="ml-1 hidden sm:inline">{t("products.table.trace")}</span>
                           </Link>
                         </Button>
                       </TableCell>
@@ -384,11 +390,11 @@ export function ProductsModule() {
                         <Button
                           size="sm"
                           variant="outline"
-                          aria-label={`View QR code for ${p.name}`}
+                          aria-label={t("products.common.viewQrCode", { values: { name: p.name }})}
                           onClick={() => setQrProductId(p.id)}
                         >
                           <QrCode className="h-3.5 w-3.5" />
-                          <span className="ml-1 hidden sm:inline">QR</span>
+                          <span className="ml-1 hidden sm:inline">{t("products.table.qr")}</span>
                         </Button>
                       </TableCell>
                     )}
@@ -398,7 +404,7 @@ export function ProductsModule() {
                           <Button
                             size="sm"
                             variant="outline"
-                            aria-label={`Edit ${p.name}`}
+                            aria-label={t("products.common.editItem", { values: { name: p.name }})}
                             onClick={() => openEdit(p)}
                           >
                             <Pencil className="h-3.5 w-3.5" />
@@ -406,13 +412,13 @@ export function ProductsModule() {
                           <Button
                             size="sm"
                             variant="destructive"
-                            aria-label={`Delete ${p.name}`}
+                            aria-label={t("products.common.deleteItem", { values: { name: p.name }})}
                             onClick={async () => {
                               const ok = await dialog.confirm({
                                 type: "destructive",
-                                title: "Delete product?",
-                                description: `This will permanently remove "${p.name}" (${p.sku}) and all associated inventory records. This cannot be undone.`,
-                                confirmLabel: "Delete Product",
+                                title: t("products.deleteConfirm"),
+                                description: t("products.deleteDescription", { values: { name: p.name, sku: p.sku } }),
+                                confirmLabel: t("products.deleteProduct"),
                               });
                               if (ok) deleteMutation.mutate(p.id);
                             }}
@@ -434,7 +440,7 @@ export function ProductsModule() {
       <Dialog
         open={qrProductId !== null}
         onClose={() => setQrProductId(null)}
-        title="QR Code"
+        title={t("products.qrDialog.title")}
       >
         <div className="flex flex-col items-center gap-4 py-2">
           {isLoadingQr && <LoadingState />}
@@ -442,20 +448,20 @@ export function ProductsModule() {
             <>
               <img
                 src={productDetail.qrCodeUrl}
-                alt={`QR Code for ${productDetail.product.name}`}
+                alt={t("products.common.qrCodeFor", { values: { name: productDetail.product.name }})}
                 width={256}
                 height={256}
                 className="rounded-lg"
               />
               <p className="text-sm text-center font-medium">{productDetail.product.name}</p>
               <p className="text-xs text-muted-foreground text-center">
-                Scan to view halal supply chain traceability
+                {t("products.qrDialog.scanDescription")}
               </p>
               <Button
                 onClick={() => downloadQrCode(productDetail.qrCodeUrl, productDetail.product.id)}
               >
                 <Download className="h-4 w-4 mr-2" />
-                Download QR
+                {t("products.qrDialog.download")}
               </Button>
             </>
           )}
@@ -466,23 +472,23 @@ export function ProductsModule() {
       <Sheet
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
-        title={editing ? "Edit Product" : "New Product"}
+        title={editing ? t("products.editProduct") : t("products.newProduct")}
         description={
           editing
-            ? "Update product details. SKU and supplier cannot be changed after creation."
-            : "Add a new halal product to your catalog."
+            ? t("products.form.editProductDescription")
+            : t("products.form.newProductDescription")
         }
         footer={
           <>
             <Button type="button" variant="outline" onClick={() => setSheetOpen(false)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
               form="product-form"
               disabled={saveMutation.isPending}
             >
-              {saveMutation.isPending ? "Saving…" : editing ? "Save Changes" : "Add Product"}
+              {saveMutation.isPending ? t("common.saving") : editing ? t("products.saveChanges") : t("products.addProduct")}
             </Button>
           </>
         }

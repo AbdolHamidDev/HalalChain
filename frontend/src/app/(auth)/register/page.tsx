@@ -1,5 +1,4 @@
 import Image from "next/image";
-
 import {
   Card,
   CardContent,
@@ -25,7 +24,7 @@ export default function RegisterPage() {
 
         <div className="space-y-1">
           <CardTitle className="text-2xl font-semibold tracking-tight">
-            Create account
+            HalalChain
           </CardTitle>
 
           <p className="text-sm text-muted-foreground">

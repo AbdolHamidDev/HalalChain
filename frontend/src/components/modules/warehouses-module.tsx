@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2, Warehouse as WarehouseIcon } from "lucide-react";
 import { toast } from "sonner";
 import { api, Warehouse } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -20,6 +21,7 @@ type FormData = { name: string; location: string };
 const empty: FormData = { name: "", location: "" };
 
 export function WarehousesModule() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const qc = useQueryClient();
   const isAdmin = user?.role === "ADMIN";
@@ -40,11 +42,15 @@ export function WarehousesModule() {
         : api.createWarehouse(form),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["warehouses"] });
-      toast.success(editing ? "Warehouse updated" : "Warehouse created", {
-        description: editing
-          ? `${form.name} has been updated.`
-          : `${form.name} has been added.`,
-      });
+      if (editing) {
+        toast.success(t("warehouses.warehouseUpdated"), {
+          description: t("warehouses.warehouseEdited", { values: { name: form.name } }),
+        });
+      } else {
+        toast.success(t("warehouses.warehouseCreated"), {
+          description: t("warehouses.warehouseAdded", { values: { name: form.name } }),
+        });
+      }
       setOpen(false);
       setEditing(null);
       setForm(empty);
@@ -57,10 +63,10 @@ export function WarehousesModule() {
     mutationFn: (id: string) => api.deleteWarehouse(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["warehouses"] });
-      toast.success("Warehouse deleted");
+      toast.success(t("warehouses.warehouseDeleted"));
     },
     onError: (e: Error) => {
-      toast.error("Cannot delete warehouse", { description: e.message });
+      toast.error(t("warehouses.warehouseDeleteFailed"), { description: e.message });
     },
   });
 
@@ -83,12 +89,12 @@ export function WarehousesModule() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Warehouse Management"
-        description="Manage storage locations for halal inventory"
+        title={t("warehouses.pageTitle")}
+        description={t("warehouses.pageDescription")}
         action={
           isAdmin ? (
             <Button onClick={openCreate}>
-              <Plus className="h-4 w-4" /> Add Warehouse
+              <Plus className="h-4 w-4" /> {t("warehouses.addWarehouse")}
             </Button>
           ) : undefined
         }
@@ -96,7 +102,7 @@ export function WarehousesModule() {
 
       {isLoading && <TableSkeleton columns={isAdmin ? 4 : 3} rows={4} />}
       {isError && (
-        <ErrorState message="Failed to load warehouses" onRetry={() => refetch()} />
+        <ErrorState message={t("warehouses.errors.loadFailed")} onRetry={() => refetch()} />
       )}
 
       {!isLoading && !isError && warehouses.length === 0 && (
@@ -105,7 +111,6 @@ export function WarehousesModule() {
 
       {warehouses.length > 0 && (
         <>
-          {/* Mobile card view */}
           <div className="grid gap-3 sm:hidden">
             {warehouses.map((w) => (
               <div key={w.id} className="rounded-xl border bg-card p-4 space-y-3">
@@ -119,14 +124,14 @@ export function WarehousesModule() {
                   </div>
                   {w._count !== undefined && (
                     <span className="text-xs text-muted-foreground shrink-0">
-                      {w._count.inventory} SKUs
+                      {w._count.inventory} {t("warehouses.table.items")}
                     </span>
                   )}
                 </div>
                 {isAdmin && (
                   <div className="flex gap-2 pt-1 border-t">
                     <Button size="sm" variant="outline" className="flex-1" onClick={() => openEdit(w)}>
-                      <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
+                      <Pencil className="h-3.5 w-3.5 mr-1" /> {t("common.edit")}
                     </Button>
                     <Button
                       size="sm"
@@ -135,14 +140,14 @@ export function WarehousesModule() {
                       onClick={async () => {
                         const ok = await dialog.confirm({
                           type: "destructive",
-                          title: "Delete warehouse?",
-                          description: `"${w.name}" will be permanently removed. This will fail if the warehouse still has active inventory.`,
-                          confirmLabel: "Delete Warehouse",
+                          title: t("warehouses.deleteConfirm"),
+                          description: t("warehouses.deleteDescription", { values: { name: w.name } }),
+                          confirmLabel: t("warehouses.deleteWarehouse"),
                         });
                         if (ok) deleteMutation.mutate(w.id);
                       }}
                     >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> {t("common.delete")}
                     </Button>
                   </div>
                 )}
@@ -150,15 +155,14 @@ export function WarehousesModule() {
             ))}
           </div>
 
-          {/* Desktop table view */}
           <div className="hidden sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Active SKUs</TableHead>
-                  {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                  <TableHead>{t("warehouses.table.name")}</TableHead>
+                  <TableHead>{t("warehouses.table.location")}</TableHead>
+                  <TableHead>{t("warehouses.table.items")}</TableHead>
+                  {isAdmin && <TableHead className="text-right">{t("warehouses.table.actions")}</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -178,7 +182,7 @@ export function WarehousesModule() {
                           <Button
                             size="sm"
                             variant="outline"
-                            aria-label={`Edit ${w.name}`}
+                            aria-label={t("warehouses.common.editItem", { values: { name: w.name } })}
                             onClick={() => openEdit(w)}
                           >
                             <Pencil className="h-3.5 w-3.5" />
@@ -186,13 +190,13 @@ export function WarehousesModule() {
                           <Button
                             size="sm"
                             variant="destructive"
-                            aria-label={`Delete ${w.name}`}
+                            aria-label={t("warehouses.common.deleteItem", { values: { name: w.name } })}
                             onClick={async () => {
                               const ok = await dialog.confirm({
                                 type: "destructive",
-                                title: "Delete warehouse?",
-                                description: `"${w.name}" will be permanently removed. This will fail if the warehouse still has active inventory.`,
-                                confirmLabel: "Delete Warehouse",
+                                title: t("warehouses.deleteConfirm"),
+                                description: t("warehouses.deleteDescription", { values: { name: w.name } }),
+                                confirmLabel: t("warehouses.deleteWarehouse"),
                               });
                               if (ok) deleteMutation.mutate(w.id);
                             }}
@@ -210,11 +214,10 @@ export function WarehousesModule() {
         </>
       )}
 
-      {/* Create / Edit dialog */}
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        title={editing ? "Edit Warehouse" : "New Warehouse"}
+        title={editing ? t("warehouses.editWarehouse") : t("warehouses.newWarehouse")}
       >
         <form
           className="space-y-4"
@@ -225,39 +228,35 @@ export function WarehousesModule() {
         >
           <InputWrapper>
             <InputLabel htmlFor="wh-name">
-              Name <span className="text-destructive" aria-hidden="true">*</span>
+              {t("warehouses.form.name")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Input
               id="wh-name"
               required
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="e.g. KL Central Hub"
+              placeholder={t("warehouses.form.namePlaceholder")}
             />
           </InputWrapper>
           <InputWrapper>
             <InputLabel htmlFor="wh-location">
-              Location <span className="text-destructive" aria-hidden="true">*</span>
+              {t("warehouses.form.location")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Input
               id="wh-location"
               required
               value={form.location}
               onChange={(e) => setForm({ ...form, location: e.target.value })}
-              placeholder="e.g. Kuala Lumpur, Malaysia"
+              placeholder={t("warehouses.form.locationPlaceholder")}
             />
           </InputWrapper>
           {formError && <InputError role="alert">{formError}</InputError>}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button type="submit" disabled={saveMutation.isPending}>
-              {saveMutation.isPending
-                ? "Saving…"
-                : editing
-                  ? "Save Changes"
-                  : "Add Warehouse"}
+              {saveMutation.isPending ? t("common.saving") : editing ? t("warehouses.saveChanges") : t("warehouses.addWarehouse")}
             </Button>
           </div>
         </form>

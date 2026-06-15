@@ -1,0 +1,980 @@
+{
+  "common": {
+    "save": "Lưu",
+    "saving": "Đang lưu…",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "unsavedChanges": "Có thay đổi chưa lưu",
+    "unsavedChangesDesc": "Bạn có thay đổi chưa lưu. Nếu rời khỏi trang này, các thay đổi sẽ bị mất.",
+    "leave": "Rời đi",
+    "stay": "Ở lại",
+    "updated": "đã cập nhật",
+    "added": "đã thêm",
+    "edit": "Sửa",
+    "create": "Tạo",
+    "add": "Thêm",
+    "remove": "Xóa bỏ",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "clear": "Xóa",
+    "confirm": "Xác nhận",
+    "close": "Đóng",
+    "back": "Quay lại",
+    "next": "Tiếp",
+    "previous": "Trước",
+    "loading": "Đang tải…",
+    "retry": "Thử lại",
+    "noResults": "Không tìm thấy kết quả.",
+    "noData": "Không có dữ liệu.",
+    "actions": "Thao tác",
+    "status": "Trạng thái",
+    "all": "Tất cả",
+    "none": "Không",
+    "required": "Bắt buộc",
+    "optional": "Tùy chọn",
+    "yes": "Có",
+    "no": "Không",
+    "or": "hoặc",
+    "and": "và",
+    "more": "Thêm",
+    "less": "Ít hơn",
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "thisWeek": "Tuần này",
+    "thisMonth": "Tháng này",
+    "from": "Từ",
+    "to": "Đến",
+    "export": "Xuất",
+    "import": "Nhập",
+    "download": "Tải xuống",
+    "upload": "Tải lên",
+    "print": "In",
+    "view": "Xem",
+    "show": "Hiển thị",
+    "hide": "Ẩn",
+    "expand": "Mở rộng",
+    "collapse": "Thu gọn",
+    "toggle": "Chuyển đổi",
+    "role": "Vai trò",
+    "openMenu": "Mở menu",
+    "closeMenu": "Đóng menu",
+    "errors": {
+      "generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
+      "network": "Lỗi mạng. Vui lòng kiểm tra kết nối.",
+      "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+      "notFound": "Không tìm thấy tài nguyên.",
+      "forbidden": "Bạn không có quyền thực hiện thao tác này.",
+      "validation": "Vui lòng sửa các lỗi bên dưới."
+    }
+  },
+  "navigation": {
+    "title": "Điều hướng",
+    "dashboard": "Tổng quan",
+    "suppliers": "Nhà cung cấp",
+    "products": "Sản phẩm",
+    "inventory": "Tồn kho",
+    "warehouses": "Kho hàng",
+    "purchaseOrders": "Đơn đặt hàng",
+    "shipments": "Vận chuyển",
+    "certificates": "Chứng chỉ",
+    "reports": "Báo cáo",
+    "analytics": "Phân tích",
+    "userManagement": "Quản lý người dùng",
+    "settings": "Cài đặt",
+    "traceability": "Truy xuất"
+  },
+  "auth": {
+    "signIn": "Đăng nhập",
+    "signingIn": "Đang đăng nhập…",
+    "signOut": "Đăng xuất",
+    "signUp": "Đăng ký",
+    "register": "Đăng ký",
+    "createAccount": "Tạo tài khoản",
+    "getStarted": "Bắt đầu",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "currentPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "name": "Họ tên",
+    "forgotPassword": "Quên mật khẩu?",
+    "rememberMe": "Ghi nhớ đăng nhập",
+    "noAccount": "Chưa có tài khoản?",
+    "hasAccount": "Đã có tài khoản?",
+    "signInToContinue": "Đăng nhập để tiếp tục",
+    "halalChainTitle": "HalalChain",
+    "errors": {
+      "emailRequired": "Vui lòng nhập email",
+      "emailInvalid": "Vui lòng nhập email hợp lệ",
+      "passwordRequired": "Vui lòng nhập mật khẩu",
+      "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+      "passwordMismatch": "Mật khẩu không khớp",
+      "nameRequired": "Vui lòng nhập họ tên",
+      "signInFailed": "Đăng nhập thất bại. Vui lòng kiểm tra thông tin.",
+      "signUpFailed": "Đăng ký thất bại. Vui lòng thử lại."
+    }
+  },
+  "landing": {
+    "header": {
+      "features": "Tính năng",
+      "workflow": "Quy trình",
+      "architecture": "Kiến trúc",
+      "techStack": "Công nghệ",
+      "signIn": "Đăng nhập",
+      "getStarted": "Bắt đầu",
+      "toggleMenu": "Chuyển menu"
+    },
+    "hero": {
+      "badge": "Được tin tưởng bởi các doanh nghiệp chuỗi cung ứng halal trên khắp Đông Nam Á",
+      "title": "Chuỗi Cung Ứng Halal",
+      "titleAccent": "Toàn Diện",
+      "subtitle": "Theo dõi sản phẩm, nhà cung cấp, chứng chỉ, tồn kho và lô hàng thông qua một nền tảng thống nhất dành cho doanh nghiệp halal hiện đại.",
+      "getStarted": "Bắt đầu",
+      "viewDemo": "Xem Demo",
+      "dashboardPreview": "app.halalchain.io/dashboard",
+      "sidebar": {
+        "dashboard": "Tổng quan",
+        "products": "Sản phẩm",
+        "suppliers": "Nhà cung cấp",
+        "shipments": "Vận chuyển",
+        "certifications": "Chứng nhận",
+        "reports": "Báo cáo"
+      },
+      "stats": {
+        "products": "Sản phẩm",
+        "suppliers": "Nhà cung cấp",
+        "shipments": "Lô hàng"
+      },
+      "activity": {
+        "title": "Hoạt động gần đây",
+        "today": "Hôm nay",
+        "newShipment": "Lô hàng mới đã nhận",
+        "certificateExpiring": "Chứng chỉ sắp hết hạn",
+        "inventoryAdjusted": "Đã điều chỉnh tồn kho",
+        "minutesAgo": "phút trước",
+        "hourAgo": "giờ trước"
+      }
+    },
+    "features": {
+      "title": "Mọi thứ bạn cần để quản lý chuỗi cung ứng halal",
+      "subtitle": "Nền tảng thống nhất được thiết kế cho doanh nghiệp halal hiện đại để theo dõi, xác minh và tối ưu hóa từng bước trong chuỗi cung ứng.",
+      "items": {
+        "traceability": {
+          "title": "Truy xuất sản phẩm",
+          "description": "Theo dõi từ nguyên liệu thô đến thành phẩm với xác minh mã QR ở mọi giai đoạn."
+        },
+        "suppliers": {
+          "title": "Quản lý nhà cung cấp",
+          "description": "Quản lý hồ sơ nhà cung cấp, chứng chỉ, điểm hiệu suất và tài liệu tuân thủ tại một nơi."
+        },
+        "inventory": {
+          "title": "Kiểm soát tồn kho",
+          "description": "Theo dõi tồn kho thời gian thực trên nhiều kho hàng với cảnh báo tồn kho tự động."
+        },
+        "shipments": {
+          "title": "Theo dõi lô hàng",
+          "description": "Giám sát lô hàng thời gian thực với cập nhật trạng thái, theo dõi vị trí và xác nhận giao hàng."
+        },
+        "certifications": {
+          "title": "Chứng nhận Halal",
+          "description": "Tập trung quản lý chứng nhận với giám sát hết hạn, lưu trữ tài liệu và nhật ký kiểm toán."
+        },
+        "analytics": {
+          "title": "Phân tích & Báo cáo",
+          "description": "Bảng điều khiển toàn diện và báo cáo có thể xuất bao gồm mọi khía cạnh hoạt động chuỗi cung ứng."
+        }
+      }
+    },
+    "workflow": {
+      "title": "Cách HalalChain Hoạt Động",
+      "subtitle": "Từ đăng ký nhà cung cấp đến xác minh người tiêu dùng, mỗi bước đều được theo dõi và ghi lại trên nhật ký kiểm toán bất biến.",
+      "steps": {
+        "supplier": {
+          "label": "Nhà cung cấp",
+          "description": "Đăng ký và xác minh nhà cung cấp halal"
+        },
+        "product": {
+          "label": "Sản phẩm",
+          "description": "Nhập sản phẩm với số lô và thành phần"
+        },
+        "certification": {
+          "label": "Chứng nhận",
+          "description": "Đính kèm chứng chỉ halal và theo dõi hết hạn"
+        },
+        "warehouse": {
+          "label": "Kho hàng",
+          "description": "Quản lý tồn kho trên nhiều địa điểm"
+        },
+        "shipment": {
+          "label": "Vận chuyển",
+          "description": "Theo dõi lô hàng với cập nhật trạng thái thời gian thực"
+        },
+        "consumer": {
+          "label": "Người tiêu dùng",
+          "description": "Khách hàng xác minh tính xác thực qua mã QR"
+        }
+      },
+      "explanation": {
+        "title": "Minh bạch chuỗi cung ứng toàn diện",
+        "p1": "HalalChain tạo ra một kết nối kỹ thuật số liên kết mọi thực thể trong chuỗi cung ứng của bạn. Mỗi lô sản phẩm nhận được một định danh duy nhất theo dõi từ nguyên liệu thô đến người tiêu dùng cuối.",
+        "p2": "Nhà cung cấp được đăng ký với chứng nhận halal đã xác minh. Sản phẩm được nhập với danh sách thành phần đầy đủ. Chứng chỉ được đính kèm kỹ thuật số và giám sát hết hạn.",
+        "p3": "Nhân viên kho quét lô hàng đến và đi, cập nhật tồn kho thời gian thực. Khi sản phẩm được gửi đi, khách hàng nhận thông tin theo dõi và có thể xác minh tính xác thực bằng cách quét mã QR trên bao bì."
+      }
+    },
+    "verificationDemo": {
+      "title": "Xác Minh Mã QR",
+      "subtitle": "Khách hàng có thể xác minh ngay tính xác thực của sản phẩm bằng cách quét mã QR trên bao bì. Thử demo bên dưới.",
+      "scanPlaceholder": "Quét mã QR để xác minh",
+      "verified": "Sản phẩm đã được xác minh",
+      "notFound": "Không tìm thấy sản phẩm",
+      "tryAgain": "Quét lại"
+    },
+    "architecture": {
+      "title": "Kiến Trúc Nền Tảng",
+      "subtitle": "Được xây dựng trên nền tảng công nghệ hiện đại, có thể mở rộng cho quản lý chuỗi cung ứng halal doanh nghiệp.",
+      "frontend": "Giao diện",
+      "backend": "Backend",
+      "database": "Cơ sở dữ liệu",
+      "deployment": "Triển khai"
+    },
+    "stats": {
+      "title": "Năng lực nền tảng cấp doanh nghiệp",
+      "subtitle": "Được xây dựng cho doanh nghiệp yêu cầu khả năng hiển thị và kiểm soát hoàn toàn hoạt động chuỗi cung ứng halal.",
+      "notifications": "Thông báo thời gian thực",
+      "auditLogging": "Nhật ký kiểm toán",
+      "multiRoleAccess": "Đa quyền truy cập",
+      "secureAuth": "Xác thực an toàn",
+      "qrVerification": "Xác minh QR",
+      "reportingExports": "Xuất báo cáo",
+      "suffixPercent": "%",
+      "suffixRoles": "+ vai trò",
+      "suffixFormats": "+ định dạng"
+    },
+    "screenshots": {
+      "title": "Xem HalalChain Hoạt Động",
+      "subtitle": "Giao diện trực quan được thiết kế cho hiệu quả trên tất cả hoạt động chuỗi cung ứng."
+    },
+    "techStack": {
+      "title": "Xây Dựng Với Công Nghệ Hiện Đại",
+      "subtitle": "Công cụ và framework cấp doanh nghiệp cung cấp năng lượng cho nền tảng HalalChain."
+    },
+    "cta": {
+      "title": "Sẵn Sàng Hiện Đại Hóa",
+      "titleAccent": "Chuỗi Cung Ứng Halal",
+      "titleSuffix": "Của Bạn?",
+      "subtitle": "Tham gia cùng các doanh nghiệp halal tiến bộ tin tưởng HalalChain để truy xuất nguồn gốc và quản lý tuân thủ.",
+      "exploreDemo": "Khám phá Demo",
+      "signIn": "Đăng nhập"
+    },
+    "footer": {
+      "description": "Nền tảng truy xuất nguồn gốc chuỗi cung ứng halal toàn diện cho doanh nghiệp halal hiện đại trên khắp Đông Nam Á.",
+      "product": "Sản phẩm",
+      "resources": "Tài nguyên",
+      "company": "Công ty",
+      "features": "Tính năng",
+      "workflow": "Quy trình",
+      "architecture": "Kiến trúc",
+      "techStack": "Công nghệ",
+      "apiDocs": "Tài liệu API",
+      "traceabilityDemo": "Demo Truy xuất",
+      "status": "Trạng thái",
+      "about": "Giới thiệu",
+      "privacy": "Riêng tư",
+      "terms": "Điều khoản",
+      "copyright": "Đã đăng ký bản quyền.",
+      "privacyPolicy": "Chính sách bảo mật",
+      "termsOfService": "Điều khoản dịch vụ"
+    }
+  },
+  "dashboard": {
+    "pageTitle": "Bảng điều khiển",
+    "pageDescription": "Giám sát tồn kho, mua hàng, vận chuyển và tuân thủ chứng nhận halal",
+    "warehouseOpsTitle": "Vận hành kho",
+    "warehouseOpsDescription": "Truy cập nhanh vào các giao dịch nhập/xuất kho",
+    "warehouseOpsCardTitle": "Vận hành kho",
+    "warehouseOpsCardDescription": "Xử lý phiếu nhập kho và lệnh xuất kho",
+    "goToInventory": "Đến tồn kho",
+    "recentActivity": "Hoạt động gần đây",
+    "kpis": {
+      "totalProducts": "Tổng sản phẩm",
+      "activeSuppliers": "Nhà cung cấp",
+      "totalSuppliers": "Tổng NCC",
+      "activeCertificates": "Chứng chỉ",
+      "expiringCertificates": "Sắp hết hạn",
+      "inventoryValue": "Giá trị tồn kho",
+      "openPOs": "Đơn hàng mở",
+      "delayedShipments": "Trễ",
+      "pendingShipments": "Chờ xử lý"
+    },
+    "widgets": {
+      "lowStockAlerts": "Cảnh báo tồn thấp",
+      "expiringCertificates": "Chứng chỉ sắp hết hạn",
+      "shipmentDelays": "Lô hàng trễ",
+      "stockHealthy": "Mức tồn kho ổn định",
+      "stockHealthyDesc": "Không có hàng tồn kho nào dưới mức đặt hàng lại.",
+      "noExpiries": "Không có hết hạn sắp tới",
+      "noExpiriesDesc": "Không có chứng chỉ nào hết hạn trong khung thời gian đã chọn.",
+      "noDelays": "Không có lô hàng trễ",
+      "noDelaysDesc": "Tất cả lô hàng đang đúng tiến độ.",
+      "delayed": "Trễ"
+    },
+    "errors": {
+      "loadFailed": "Không thể tải dữ liệu bảng điều khiển"
+    }
+  },
+  "products": {
+    "pageTitle": "Quản lý sản phẩm",
+    "pageDescription": "Danh mục sản phẩm halal theo SKU, danh mục, đơn vị và nhà cung cấp",
+    "addProduct": "Thêm sản phẩm",
+    "newProduct": "Sản phẩm mới",
+    "editProduct": "Sửa sản phẩm",
+    "deleteProduct": "Xóa sản phẩm",
+    "deleteConfirm": "Xóa sản phẩm?",
+    "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn \"{{name}}\" ({{sku}}) và tất cả bản ghi tồn kho liên quan. Không thể hoàn tác.",
+    "saveChanges": "Lưu thay đổi",
+    "productSaved": "Đã cập nhật sản phẩm",
+    "productCreated": "Đã tạo sản phẩm",
+    "productUpdated": "{{name}} đã được cập nhật.",
+    "productAdded": "{{name}} ({{sku}}) đã được thêm vào danh mục.",
+    "productDeleted": "Đã xóa sản phẩm",
+    "productDeleteFailed": "Không thể xóa sản phẩm",
+    "form": {
+      "supplier": "Nhà cung cấp",
+      "name": "Tên sản phẩm",
+      "namePlaceholder": "VD: Ức gà Halal",
+      "sku": "Mã SKU",
+      "skuPlaceholder": "VD: HCB-001",
+      "category": "Danh mục",
+      "categoryPlaceholder": "VD: Gia cầm",
+      "unit": "Đơn vị",
+      "unitPlaceholder": "VD: kg",
+      "unitPrice": "Đơn giá (USD)",
+      "selectSupplier": "Chọn nhà cung cấp",
+      "newProductDescription": "Thêm sản phẩm halal mới vào danh mục.",
+      "editProductDescription": "Cập nhật thông tin sản phẩm. SKU và nhà cung cấp không thể thay đổi sau khi tạo."
+    },
+    "table": {
+      "sku": "Mã SKU",
+      "name": "Tên",
+      "category": "Danh mục",
+      "supplier": "NCC",
+      "unit": "ĐVT",
+      "price": "Đơn giá",
+      "stock": "Tồn kho",
+      "traceability": "Truy xuất",
+      "qrCode": "Mã QR",
+      "actions": "Thao tác",
+      "trace": "Truy xuất",
+      "qr": "QR"
+    },
+    "qrDialog": {
+      "title": "Mã QR",
+      "scanDescription": "Quét để xem truy xuất nguồn gốc chuỗi cung ứng halal",
+      "download": "Tải QR"
+    },
+    "empty": {
+      "title": "Chưa có sản phẩm",
+      "description": "Thêm sản phẩm halal đầu tiên để bắt đầu theo dõi SKU, giá cả và tồn kho."
+    },
+    "common": {
+      "editItem": "Sửa {{name}}",
+      "deleteItem": "Xóa {{name}}",
+      "viewTraceability": "Xem truy xuất nguồn gốc của {{name}}",
+      "viewQrCode": "Xem mã QR của {{name}}",
+      "qrCodeFor": "Mã QR cho {{name}}"
+    },
+    "errors": {
+      "loadFailed": "Không thể tải danh sách sản phẩm"
+    }
+  },
+  "suppliers": {
+    "pageTitle": "Quản lý nhà cung cấp",
+    "pageDescription": "Quản lý nhà cung cấp halal tại Malaysia, Indonesia, Thái Lan và Đông Nam Á",
+    "addSupplier": "Thêm NCC",
+    "newSupplier": "NCC mới",
+    "editSupplier": "Sửa NCC",
+    "deleteSupplier": "Xóa NCC",
+    "saveChanges": "Lưu thay đổi",
+    "supplierUpdated": "Đã cập nhật NCC",
+    "supplierCreated": "Đã tạo NCC",
+    "supplierEdited": "{{name}} đã được cập nhật.",
+    "supplierAdded": "{{name}} đã được thêm vào mạng lưới nhà cung cấp.",
+    "supplierDeleted": "Đã xóa NCC",
+    "supplierDeleteFailed": "Không thể xóa NCC",
+    "deleteConfirm": "Xóa nhà cung cấp?",
+    "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn \"{{name}}\" và không thể hoàn tác. Sản phẩm và chứng chỉ liên quan có thể bị ảnh hưởng.",
+    "form": {
+      "name": "Tên",
+      "country": "Quốc gia",
+      "email": "Email",
+      "phone": "Điện thoại",
+      "status": "Trạng thái",
+      "optional": "tùy chọn",
+      "namePlaceholder": "VD: Công ty Thực phẩm Halal Indonesia",
+      "countryPlaceholder": "VD: Malaysia",
+      "emailPlaceholder": "lienhe@nhacungcap.com",
+      "phonePlaceholder": "+60 3-XXXX XXXX",
+      "statusActive": "Hoạt động",
+      "statusInactive": "Ngừng hoạt động"
+    },
+    "table": {
+      "name": "Tên",
+      "country": "Quốc gia",
+      "contact": "Liên hệ",
+      "status": "Trạng thái",
+      "products": "Sản phẩm",
+      "certificates": "Chứng chỉ",
+      "actions": "Thao tác"
+    },
+    "common": {
+      "editItem": "Sửa {{name}}",
+      "deleteItem": "Xóa {{name}}"
+    },
+    "empty": {
+      "title": "Chưa có nhà cung cấp",
+      "description": "Thêm nhà cung cấp halal đầu tiên để xây dựng mạng lưới cung ứng tại Đông Nam Á."
+    },
+    "errors": {
+      "loadFailed": "Không thể tải danh sách nhà cung cấp"
+    }
+  },
+  "inventory": {
+    "pageTitle": "Quản lý tồn kho",
+    "pageDescription": "Giao dịch nhập/xuất kho theo kho với cảnh báo tồn thấp",
+    "inbound": "Nhập kho",
+    "outbound": "Xuất kho",
+    "adjustment": "Điều chỉnh",
+    "movements": "Giao dịch",
+    "recordInbound": "Ghi nhận nhập kho",
+    "recordOutbound": "Ghi nhận xuất kho",
+    "confirmInbound": "Xác nhận nhập",
+    "confirmOutbound": "Xác nhận xuất",
+    "inboundRecorded": "Đã ghi nhận nhập kho",
+    "outboundRecorded": "Đã ghi nhận xuất kho",
+    "movementRecorded": "{{quantity}} đơn vị {{productName}} {{action}} thành công.",
+    "actionReceived": "đã nhận",
+    "actionDispatched": "đã xuất",
+    "recording": "Đang ghi nhận…",
+    "filters": "Bộ lọc",
+    "allWarehouses": "Tất cả kho",
+    "allProducts": "Tất cả sản phẩm",
+    "lowStockOnly": "Hiện tồn thấp",
+    "lowStockActive": "⚠ Chỉ tồn thấp",
+    "clearFilters": "Xóa lọc",
+    "clear": "Xóa",
+    "noMatchFilters": "Không có bản ghi tồn kho nào khớp với bộ lọc.",
+    "showingRecords": "Hiển thị {{count}} bản ghi",
+    "lowStock": "Tồn thấp",
+    "stockOk": "OK",
+    "value": "Giá trị",
+    "date": "Ngày",
+    "type": "Loại",
+    "by": "Người",
+    "qty": "SL",
+    "note": "Ghi chú",
+    "notePlaceholderInbound": "VD: Nhận từ nhà cung cấp",
+    "notePlaceholderOutbound": "VD: Xuất cho khách hàng",
+    "optional": "tùy chọn",
+    "enterQuantity": "Nhập số lượng",
+    "recentMovements": "Giao dịch gần đây",
+    "table": {
+      "product": "Sản phẩm",
+      "sku": "SKU",
+      "warehouse": "Kho",
+      "quantity": "Số lượng",
+      "reorderLevel": "Mức đặt hàng",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "empty": {
+      "title": "Chưa có bản ghi tồn kho",
+      "description": "Bản ghi tồn kho được tạo khi xử lý giao dịch. Thêm sản phẩm và xử lý nhập kho để bắt đầu.",
+      "movementsTitle": "Chưa có giao dịch",
+      "movementsDescription": "Giao dịch tồn kho sẽ xuất hiện khi xử lý nhập/xuất kho."
+    },
+    "errors": {
+      "loadFailed": "Không thể tải dữ liệu tồn kho"
+    }
+  },
+  "warehouses": {
+    "pageTitle": "Quản lý kho hàng",
+    "pageDescription": "Quản lý địa điểm lưu trữ trên mạng lưới phân phối",
+    "addWarehouse": "Thêm kho",
+    "newWarehouse": "Kho mới",
+    "editWarehouse": "Sửa kho",
+    "deleteWarehouse": "Xóa kho",
+    "saveChanges": "Lưu thay đổi",
+    "warehouseUpdated": "Đã cập nhật kho",
+    "warehouseCreated": "Đã tạo kho",
+    "warehouseEdited": "{{name}} đã được cập nhật.",
+    "warehouseAdded": "{{name}} đã được thêm.",
+    "warehouseDeleted": "Đã xóa kho",
+    "warehouseDeleteFailed": "Không thể xóa kho",
+    "deleteConfirm": "Xóa kho?",
+    "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn \"{{name}}\". Tất cả bản ghi tồn kho trong kho này có thể bị ảnh hưởng.",
+    "form": {
+      "name": "Tên kho",
+      "namePlaceholder": "VD: Kho chính Jakarta",
+      "location": "Địa điểm",
+      "locationPlaceholder": "VD: Jakarta, Indonesia"
+    },
+    "table": {
+      "name": "Tên",
+      "location": "Địa điểm",
+      "items": "Mặt hàng",
+      "actions": "Thao tác"
+    },
+    "common": {
+      "editItem": "Sửa {{name}}",
+      "deleteItem": "Xóa {{name}}"
+    },
+    "empty": {
+      "title": "Chưa có kho hàng",
+      "description": "Thêm kho đầu tiên để bắt đầu theo dõi tồn kho theo địa điểm."
+    },
+    "errors": {
+      "loadFailed": "Không thể tải danh sách kho"
+    }
+  },
+  "purchaseOrders": {
+    "pageTitle": "Đơn đặt hàng",
+    "pageDescription": "Quy trình mua hàng: NHÁP → ĐÃ DUYỆT → ĐANG GIAO → ĐÃ NHẬN",
+    "newPO": "Đơn mới",
+    "createPO": "Tạo PO",
+    "creating": "Đang tạo…",
+    "editPO": "Sửa đơn hàng",
+    "poCreated": "Đã tạo đơn đặt hàng",
+    "poCreatedDesc": "{{poNumber}} đã được tạo dưới dạng nháp.",
+    "poDeleted": "Đã xóa đơn đặt hàng",
+    "poDeleteFailed": "Không thể xóa đơn đặt hàng",
+    "statusUpdated": "Đã cập nhật trạng thái",
+    "statusUpdatedDesc": "Đơn đặt hàng đã được chuyển sang {{status}}.",
+    "statusUpdateFailed": "Không thể cập nhật trạng thái",
+    "deleteConfirm": "Xóa đơn đặt hàng?",
+    "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn PO \"{{poNumber}}\". Chỉ đơn ở trạng thái NHÁP mới có thể xóa.",
+    "deletePO": "Xóa PO",
+    "amount": "Số tiền",
+    "shipments": "Lô hàng",
+    "created": "Ngày tạo",
+    "addItem": "Thêm mặt hàng",
+    "removeItem": "Xóa mặt hàng",
+    "total": "Tổng",
+    "items": "Mặt hàng",
+    "qty": "SL",
+    "price": "Đơn giá",
+    "status": {
+      "draft": "Nháp",
+      "approved": "Đã duyệt",
+      "shipping": "Đang giao",
+      "received": "Đã nhận",
+      "cancelled": "Đã hủy",
+      "partial": "Một phần"
+    },
+    "table": {
+      "poNumber": "Số PO",
+      "supplier": "NCC",
+      "status": "Trạng thái",
+      "totalAmount": "Tổng tiền",
+      "createdAt": "Ngày tạo",
+      "actions": "Thao tác"
+    },
+    "common": {
+      "editItem": "Sửa {{poNumber}}",
+      "deleteItem": "Xóa {{poNumber}}"
+    },
+    "empty": {
+      "title": "Chưa có đơn đặt hàng",
+      "description": "Đơn đặt hàng theo dõi quy trình mua hàng từ NHÁP → ĐÃ DUYỆT → ĐANG GIAO → ĐÃ NHẬN. Tạo đơn đầu tiên để bắt đầu."
+    },
+    "errors": {
+      "loadFailed": "Không thể tải đơn đặt hàng"
+    }
+  },
+  "shipments": {
+    "pageTitle": "Theo dõi vận chuyển",
+    "pageDescription": "Theo dõi lô hàng nhập từ cảng xuất phát đến trung tâm phân phối",
+    "createShipment": "Tạo lô hàng",
+    "newShipment": "Lô hàng mới",
+    "creating": "Đang tạo…",
+    "shipmentCreated": "Đã tạo lô hàng",
+    "shipmentCreatedDesc": "Mã theo dõi {{trackingNumber}} đang được giám sát.",
+    "shipmentUpdated": "Đã cập nhật lô hàng",
+    "shipmentUpdatedDesc": "Mã theo dõi {{trackingNumber}} đã cập nhật sang {{status}}.",
+    "updateShipment": "Cập nhật lô hàng",
+    "saveChanges": "Lưu thay đổi",
+    "route": "Lộ trình",
+    "eta": "Dự kiến",
+    "createDescription": "Chưa có lô hàng. Bạn có thể tạo thủ công hoặc duyệt đơn đặt hàng để tự động tạo lô hàng.",
+    "newShipmentCta": "Lô hàng mới",
+    "purchaseOrder": "Đơn đặt hàng",
+    "selectPO": "Chọn đơn đặt hàng",
+    "trackingNumber": "Mã theo dõi",
+    "origin": "Nơi đi",
+    "destination": "Nơi đến",
+    "estimatedArrival": "Dự kiến đến",
+    "originPlaceholder": "VD: Kuala Lumpur, Malaysia",
+    "destinationPlaceholder": "VD: Hồ Chí Minh, Việt Nam",
+    "trackingPlaceholder": "VD: SHP-2026-0042",
+    "statusOptions": {
+      "pending": "Chờ xử lý",
+      "inTransit": "Đang vận chuyển",
+      "delivered": "Đã giao",
+      "delayed": "Bị trễ"
+    },
+    "table": {
+      "trackingNumber": "Mã theo dõi",
+      "poNumber": "Số PO",
+      "origin": "Nơi đi",
+      "destination": "Nơi đến",
+      "status": "Trạng thái",
+      "estimatedArrival": "Dự kiến",
+      "supplier": "NCC",
+      "actions": "Thao tác"
+    },
+    "common": {
+      "editItem": "Cập nhật lô hàng {{trackingNumber}}"
+    },
+    "empty": {
+      "title": "Chưa có lô hàng",
+      "description": "Lô hàng được tạo tự động khi đơn đặt hàng được duyệt. Duyệt đơn để tạo lô hàng đầu tiên."
+    },
+    "errors": {
+      "loadFailed": "Không thể tải danh sách lô hàng"
+    }
+  },
+  "certificates": {
+    "pageTitle": "Chứng chỉ Halal",
+    "pageDescription": "Quản lý chứng nhận halal và giám sát tuân thủ",
+    "addCertificate": "Thêm chứng chỉ",
+    "newCertificate": "Chứng chỉ mới",
+    "editCertificate": "Sửa chứng chỉ",
+    "deleteCertificate": "Xóa chứng chỉ",
+    "saveChanges": "Lưu thay đổi",
+    "uploadDocument": "Tải tài liệu lên",
+    "certificateUpdated": "Đã cập nhật chứng chỉ",
+    "certificateCreated": "Đã thêm chứng chỉ",
+    "certificateDeleted": "Đã xóa chứng chỉ",
+    "certificateDeleteFailed": "Không thể xóa chứng chỉ",
+    "deleteConfirm": "Xóa chứng chỉ?",
+    "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn chứng chỉ \"{{certificateNumber}}\" của {{supplierName}}.",
+    "status": {
+      "valid": "Hiệu lực",
+      "expiringSoon": "Sắp hết hạn",
+      "expired": "Hết hạn"
+    },
+    "form": {
+      "certificateNumber": "Số chứng chỉ",
+      "issuedBy": "Cấp bởi",
+      "issueDate": "Ngày cấp",
+      "expiryDate": "Ngày hết hạn",
+      "supplier": "NCC",
+      "certificateNumberPlaceholder": "VD: JAKIM-2024-001",
+      "issuedByPlaceholder": "VD: JAKIM",
+      "newCertificateDescription": "Thêm chứng nhận halal mới để theo dõi tuân thủ.",
+      "editCertificateDescription": "Cập nhật thông tin chứng chỉ và ngày hết hạn."
+    },
+    "table": {
+      "certificateNumber": "Số CC",
+      "supplier": "NCC",
+      "issuedBy": "Cấp bởi",
+      "issueDate": "Ngày cấp",
+      "expiryDate": "Hết hạn",
+      "status": "Trạng thái",
+      "document": "Tài liệu",
+      "actions": "Thao tác"
+    },
+    "common": {
+      "editItem": "Sửa {{certificateNumber}}",
+      "deleteItem": "Xóa {{certificateNumber}}"
+    },
+    "empty": {
+      "title": "Chưa có chứng chỉ",
+      "description": "Theo dõi chứng nhận JAKIM, MUI, CICOT và các chứng nhận halal khác tại đây."
+    },
+    "errors": {
+      "loadFailed": "Không thể tải danh sách chứng chỉ"
+    }
+  },
+  "analytics": {
+    "pageTitle": "Phân tích nâng cao",
+    "pageDescription": "Phân tích sâu tồn kho, mua hàng, vận chuyển và tuân thủ chứng nhận halal",
+    "loadFailed": "Không thể tải dữ liệu phân tích. Vui lòng thử lại.",
+    "purchaseOrders": {
+      "title": "Đơn đặt hàng",
+      "approvalRate": "Tỷ lệ duyệt",
+      "approvalRateNote": "Đã duyệt / tổng PO",
+      "fulfillmentRate": "Tỷ lệ hoàn thành",
+      "fulfillmentRateNote": "Đã nhận hoặc một phần",
+      "avgProcessingTime": "Thời gian xử lý TB",
+      "avgProcessingTimeNote": "Nháp → Đã nhận",
+      "notEnoughData": "Chưa đủ dữ liệu",
+      "statusBreakdown": "Phân bổ trạng thái",
+      "statusBreakdownNote": "Các trạng thái đang hoạt động",
+      "ordersPerMonth": "Đơn hàng theo tháng",
+      "statusDistribution": "Phân bổ trạng thái PO"
+    },
+    "shipments": {
+      "title": "Vận chuyển",
+      "onTimeDelivery": "Tỷ lệ giao đúng hạn",
+      "onTimeDeliveryNote": "Đã giao / tổng trong khoảng",
+      "delayedRate": "Tỷ lệ lô hàng trễ",
+      "delayedRateNote": "TRỄ / tổng trong khoảng",
+      "statusDistribution": "Phân bổ trạng thái",
+      "statusDistributionNote": "Tất cả lô hàng trong khoảng",
+      "volumeTrend": "Xu hướng số lượng vận chuyển",
+      "shipmentStatusDistribution": "Phân bổ trạng thái lô hàng"
+    },
+    "inventory": {
+      "title": "Tồn kho",
+      "valueTrend": "Xu hướng giá trị tồn kho",
+      "inboundOutbound": "Giao dịch Nhập vs Xuất",
+      "byWarehouse": "Tồn kho theo kho",
+      "topStocked": "Sản phẩm tồn nhiều nhất",
+      "fastMoving": "Sản phẩm bán nhanh",
+      "slowMoving": "Sản phẩm bán chậm",
+      "product": "Sản phẩm",
+      "qty": "SL",
+      "value": "Giá trị",
+      "unitsOut": "Đơn vị xuất",
+      "noOutbound": "Không có giao dịch xuất trong khoảng đã chọn"
+    },
+    "certificates": {
+      "title": "Tuân thủ chứng chỉ",
+      "active": "Chứng chỉ hiệu lực",
+      "activeNote": "Chưa hết hạn",
+      "expiring": "Sắp hết hạn trong 90 ngày",
+      "expiringNote": "Cần chú ý",
+      "expired": "Chứng chỉ hết hạn",
+      "expiredNote": "Cần gia hạn",
+      "supplierScore": "Điểm tuân thủ NCC",
+      "score": "Điểm",
+      "activeCerts": "Hiệu lực",
+      "totalCerts": "Tổng",
+      "noSupplierData": "Chưa có dữ liệu NCC"
+    }
+  },
+  "reports": {
+    "pageTitle": "Báo cáo & Phân tích",
+    "pageDescription": "Xuất và phân tích dữ liệu chuỗi cung ứng",
+    "export": "Xuất báo cáo",
+    "format": {
+      "csv": "CSV",
+      "xlsx": "Excel",
+      "pdf": "PDF"
+    },
+    "summary": {
+      "title": "Tóm tắt báo cáo"
+    },
+    "empty": {
+      "title": "Chưa có dữ liệu báo cáo",
+      "description": "Dữ liệu báo cáo sẽ xuất hiện khi có nhà cung cấp, sản phẩm, tồn kho và đơn đặt hàng."
+    },
+    "errors": {
+      "loadFailed": "Không thể tải dữ liệu báo cáo"
+    }
+  },
+  "users": {
+    "pageTitle": "Quản lý người dùng",
+    "pageDescription": "Quản lý tài khoản, vai trò và quyền hạn",
+    "totalUsers": "Tổng người dùng",
+    "activeUsers": "Đang hoạt động",
+    "suspendedUsers": "Đình chỉ",
+    "unverifiedUsers": "Chưa xác minh",
+    "byRole": "Theo vai trò",
+    "admins": "Quản trị viên",
+    "managers": "Quản lý",
+    "staff": "Nhân viên",
+    "searchPlaceholder": "Tìm người dùng…",
+    "allRoles": "Tất cả vai trò",
+    "allStatuses": "Tất cả trạng thái",
+    "invitations": "Lời mời",
+    "manage": "Quản lý",
+    "noUsers": "Không tìm thấy người dùng.",
+    "noInvitations": "Không có lời mời chờ xử lý.",
+    "inviteUser": "Mời người dùng",
+    "emailLabel": "Email",
+    "roleLabel": "Vai trò",
+    "sendInvite": "Gửi lời mời",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "send": "Gửi",
+    "invited": "Đã gửi lời mời",
+    "invitedDesc": "Email lời mời đã được gửi đến {{email}}.",
+    "sendFailed": "Không thể gửi lời mời",
+    "revoke": "Thu hồi",
+    "revoked": "Đã thu hồi lời mời",
+    "revokeFailed": "Không thể thu hồi lời mời",
+    "userDetails": "Chi tiết người dùng",
+    "displayName": "Tên hiển thị",
+    "saveName": "Lưu tên",
+    "nameUpdated": "Đã cập nhật tên.",
+    "nameUpdateFailed": "Không thể cập nhật tên.",
+    "nameEmpty": "Tên không được để trống.",
+    "nameMinLength": "Tên phải có ít nhất 2 ký tự.",
+    "role": "Vai trò",
+    "saveRole": "Lưu vai trò",
+    "roleUpdated": "Đã cập nhật vai trò.",
+    "roleUpdateFailed": "Không thể cập nhật vai trò.",
+    "changeRole": "Đổi vai trò?",
+    "changeRoleDesc": "Đặt vai trò của {{name}} thành {{role}}?",
+    "change": "Đổi",
+    "verificationStatus": "Trạng thái xác minh",
+    "verifiedUser": "Đã xác minh",
+    "notVerified": "Chưa xác minh",
+    "verifiedDesc": "Huy hiệu xác minh hiển thị trên thanh bên.",
+    "verifyUser": "Xác minh người dùng?",
+    "removeVerification": "Bỏ xác minh?",
+    "verifyDesc": "Đánh dấu {{name}} là người dùng đã xác minh.",
+    "unverifyDesc": "Bỏ huy hiệu xác minh của {{name}}.",
+    "verify": "Xác minh",
+    "unverify": "Bỏ xác minh",
+    "verificationUpdated": "Đã cập nhật xác minh.",
+    "verificationUpdateFailed": "Không thể cập nhật xác minh.",
+    "resetPassword": "Đặt lại mật khẩu",
+    "resetPasswordDesc": "Đặt mật khẩu mới cho người dùng này. Họ sẽ cần dùng mật khẩu mới khi đăng nhập.",
+    "resetPasswordConfirm": "Đặt lại mật khẩu?",
+    "resetPasswordConfirmDesc": "Thao tác này sẽ ngay lập tức thay đổi mật khẩu của {{name}}. Họ sẽ cần đăng nhập lại.",
+    "reset": "Đặt lại",
+    "passwordReset": "Đã đặt lại mật khẩu thành công.",
+    "passwordResetFailed": "Không thể đặt lại mật khẩu.",
+    "accountStatus": "Trạng thái tài khoản",
+    "accountActive": "Tài khoản hoạt động",
+    "accountSuspended": "Tài khoản bị đình chỉ",
+    "activeDesc": "Người dùng có thể đăng nhập và sử dụng hệ thống.",
+    "suspendedDesc": "Người dùng không thể đăng nhập khi bị đình chỉ.",
+    "reactivate": "Kích hoạt lại",
+    "suspend": "Đình chỉ",
+    "reactivateConfirm": "Kích hoạt lại tài khoản?",
+    "reactivateDesc": "{{name}} sẽ có thể đăng nhập lại.",
+    "suspendConfirm": "Đình chỉ tài khoản?",
+    "suspendDesc": "{{name}} sẽ ngay lập tức mất quyền truy cập và không thể đăng nhập.",
+    "accountUpdated": "Đã cập nhật trạng thái tài khoản.",
+    "accountUpdateFailed": "Không thể cập nhật trạng thái tài khoản.",
+    "userId": "ID người dùng",
+    "joined": "Tham gia",
+    "statusActive": "Hoạt động",
+    "statusSuspended": "Đình chỉ",
+    "actions": "Thao tác"
+  },
+  "settings": {
+    "pageTitle": "Cài đặt",
+    "navigation": {
+      "profile": "Hồ sơ",
+      "security": "Bảo mật",
+      "notifications": "Thông báo",
+      "preferences": "Tùy chọn"
+    },
+    "profile": {
+      "title": "Cài đặt hồ sơ",
+      "description": "Quản lý thông tin cá nhân và ảnh đại diện",
+      "nameLabel": "Họ và tên",
+      "emailLabel": "Địa chỉ Email",
+      "roleLabel": "Vai trò",
+      "avatarLabel": "Ảnh đại diện",
+      "uploadAvatar": "Tải ảnh lên",
+      "removeAvatar": "Xóa",
+      "saved": "Đã cập nhật hồ sơ",
+      "saveFailed": "Không thể cập nhật hồ sơ"
+    },
+    "security": {
+      "title": "Cài đặt bảo mật",
+      "description": "Cập nhật mật khẩu và bảo mật tài khoản",
+      "currentPassword": "Mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu mới",
+      "changePassword": "Đổi mật khẩu",
+      "passwordChanged": "Đã đổi mật khẩu thành công",
+      "changeFailed": "Không thể đổi mật khẩu"
+    },
+    "notifications": {
+      "title": "Tùy chỉnh thông báo",
+      "description": "Kiểm soát thông báo bạn nhận được",
+      "certificateAlerts": "Cảnh báo chứng chỉ",
+      "certificateAlertsDesc": "Nhận thông báo khi chứng chỉ sắp hết hạn",
+      "inventoryAlerts": "Cảnh báo tồn kho",
+      "inventoryAlertsDesc": "Nhận thông báo khi tồn kho thấp",
+      "shipmentAlerts": "Cảnh báo vận chuyển",
+      "shipmentAlertsDesc": "Nhận thông báo về thay đổi trạng thái lô hàng",
+      "invitationEmails": "Email mời",
+      "invitationEmailsDesc": "Nhận email thông báo lời mời tham gia nhóm",
+      "saved": "Đã lưu tùy chỉnh thông báo",
+      "saveFailed": "Không thể lưu tùy chỉnh thông báo"
+    },
+    "preferences": {
+      "title": "Tùy chọn",
+      "description": "Tùy chỉnh trải nghiệm ứng dụng",
+      "language": "Ngôn ngữ",
+      "languageDescription": "Chọn ngôn ngữ ưa thích cho giao diện",
+      "theme": "Giao diện",
+      "themeDescription": "Chọn bảng màu ưa thích"
+    },
+    "errors": {
+      "loadFailed": "Không thể tải cài đặt"
+    }
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "unread": "{{count}} chưa đọc",
+    "markAllRead": "Đánh dấu đã đọc",
+    "noNotifications": "Chưa có thông báo.",
+    "types": {
+      "lowStock": "Tồn thấp",
+      "certificateExpiring": "Sắp hết hạn",
+      "shipmentDelayed": "Trễ",
+      "system": "Hệ thống"
+    }
+  },
+  "userMenu": {
+    "myProfile": "Hồ sơ của tôi",
+    "accountSettings": "Cài đặt tài khoản",
+    "changePassword": "Đổi mật khẩu",
+    "signOut": "Đăng xuất",
+    "roles": {
+      "admin": "Quản trị viên",
+      "manager": "Quản lý vận hành",
+      "staff": "Nhân viên kho"
+    }
+  },
+  "sidebar": {
+    "navigation": "Điều hướng",
+    "closeMenu": "Đóng menu",
+    "expandSidebar": "Mở rộng thanh bên",
+    "collapseSidebar": "Thu gọn thanh bên",
+    "brand": "HalalChain",
+    "platform": "Nền tảng truy xuất"
+  },
+  "traceability": {
+    "pageTitle": "Truy xuất sản phẩm",
+    "pageDescription": "Truy xuất nguồn gốc chuỗi cung ứng toàn diện cho sản phẩm halal",
+    "timeline": "Dòng thời gian",
+    "productInfo": "Thông tin sản phẩm",
+    "productName": "Tên sản phẩm",
+    "sku": "Mã SKU",
+    "supplier": "Nhà cung cấp",
+    "category": "Danh mục",
+    "manufacturedAt": "Sản xuất tại",
+    "shippedFrom": "Gửi từ",
+    "shippedTo": "Gửi đến",
+    "verifiedBy": "Xác minh bởi",
+    "verificationDate": "Ngày xác minh",
+    "certificate": "Chứng chỉ",
+    "noData": "Không có dữ liệu truy xuất cho sản phẩm này."
+  },
+  "demo": {
+    "title": "Demo HalalChain",
+    "description": "Khám phá năng lực nền tảng qua bản demo tương tác."
+  },
+  "acceptInvite": {
+    "title": "Chấp nhận lời mời",
+    "description": "Tạo tài khoản để tham gia tổ chức.",
+    "submit": "Chấp nhận & Tạo tài khoản",
+    "errors": {
+      "invalidToken": "Liên kết mời không hợp lệ hoặc đã hết hạn."
+    }
+  },
+  "errors": {
+    "notFound": "Không tìm thấy trang",
+    "notFoundDescription": "Trang bạn đang tìm không tồn tại.",
+    "goHome": "Về trang chủ"
+  }
+}

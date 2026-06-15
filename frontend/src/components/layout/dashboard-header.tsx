@@ -6,9 +6,11 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { navItems } from "@/lib/navigation";
 import { useNotificationStream } from "@/lib/useNotificationStream";
 import { useMobileNav } from "@/components/layout/mobile-nav-provider";
+import { useTranslation } from "@/i18n/hooks";
 import {
   type Notification,
   fetchNotifications,
@@ -17,13 +19,14 @@ import { NotificationDropdown } from "@/components/layout/notification-dropdown"
 import { UserMenu } from "@/components/layout/user-menu";
 
 function useBreadcrumb() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const current = navItems.find(
     (item) =>
       pathname === item.href ||
       (item.href !== "/dashboard" && pathname.startsWith(item.href))
   );
-  return current?.label ?? "Dashboard";
+  return current ? t(current.translationKey) : t("navigation.dashboard");
 }
 
 export function DashboardHeader() {
@@ -70,6 +73,7 @@ export function DashboardHeader() {
             notifications={notifications}
             unreadCount={unreadCount}
           />
+          <LanguageSwitcher />
           <ThemeToggle />
           <UserMenu />
         </div>

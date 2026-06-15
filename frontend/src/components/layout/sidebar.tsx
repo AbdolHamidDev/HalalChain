@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useMobileNav } from "@/components/layout/mobile-nav-provider";
 import { useSidebar } from "@/components/layout/sidebar-provider";
+import { useTranslation } from "@/i18n/hooks";
 import Image from "next/image";
 
 import {
@@ -21,11 +22,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const roleLabels: Record<string, string> = {
-  ADMIN: "Administrator",
-  MANAGER: "Operations Manager",
-  STAFF: "Warehouse Staff",
-};
 
 function getInitials(name: string): string {
   return name
@@ -81,6 +77,7 @@ function SidebarPanel({
   onToggleCollapse,
   className,
 }: SidebarPanelProps) {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const items = user ? getNavItemsForRole(user.role) : [];
@@ -113,9 +110,9 @@ function SidebarPanel({
             <Image src="/icon1.png" alt="HalalChain" width={32} height={32} className="shrink-0" />
             <div className="min-w-0">
               <h2 className="font-display text-sm font-semibold text-foreground leading-tight">
-                HalalChain
+                {t("sidebar.brand")}
               </h2>
-              <p className="text-[10px] text-muted-foreground">Traceability Platform</p>
+              <p className="text-[10px] text-muted-foreground">{t("sidebar.platform")}</p>
             </div>
           </div>
 
@@ -139,10 +136,10 @@ function SidebarPanel({
        ) : null}
         </div>
 {onToggleCollapse && (
-  <button
-    type="button"
-    onClick={onToggleCollapse}
-    aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            aria-label={collapsed ? t("sidebar.expandSidebar") : t("sidebar.collapseSidebar")}
     className="
       absolute
       top-16
@@ -172,7 +169,7 @@ function SidebarPanel({
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4">
           {!collapsed && (
-            <p className="text-overline mb-2 px-2 text-neutral">Navigation</p>
+            <p className="text-overline mb-2 px-2 text-neutral">{t("sidebar.navigation")}</p>
           )}
           <ul className="space-y-0.5">
             {items.map((item) => {
@@ -206,7 +203,7 @@ function SidebarPanel({
 
                   {!collapsed && (
                     <>
-                      <span className="truncate">{item.label}</span>
+                      <span className="truncate">{t(item.translationKey)}</span>
                       {active && (
                         <ChevronRight className="ml-auto h-3 w-3 shrink-0 opacity-60" />
                       )}
@@ -221,7 +218,7 @@ function SidebarPanel({
                     <Tooltip>
                       <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
                       <TooltipContent side="right" className="text-xs">
-                        {item.label}
+                        {t(item.translationKey)}
                       </TooltipContent>
                     </Tooltip>
                   ) : (

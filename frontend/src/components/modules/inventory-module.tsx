@@ -6,6 +6,7 @@ import { ArrowDownToLine, ArrowUpFromLine, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -38,22 +39,20 @@ const emptyMovement: MovementForm = {
 };
 
 export function InventoryModule() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const qc = useQueryClient();
   const canMove = user?.role === "ADMIN" || user?.role === "STAFF";
 
-  // Filter state
   const [filterWarehouseId, setFilterWarehouseId] = useState<string>("");
   const [filterProductId, setFilterProductId] = useState<string>("");
   const [filterBelowReorder, setFilterBelowReorder] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Movement dialog state
   const [dialogType, setDialogType] = useState<"inbound" | "outbound" | null>(null);
   const [form, setForm] = useState<MovementForm>(emptyMovement);
   const [error, setError] = useState<string | null>(null);
 
-  // Build query key including filters so refetch triggers on filter change
   const inventoryQueryKey = [
     "inventory",
     { warehouseId: filterWarehouseId, productId: filterProductId, belowReorder: filterBelowReorder },
@@ -103,10 +102,11 @@ export function InventoryModule() {
       qc.invalidateQueries({ queryKey: ["inventory-movements"] });
       const product = productsData?.products.find((p) => p.id === form.productId);
       const productName = product?.name ?? "product";
+      const action = dialogType === "inbound" ? t("inventory.actionReceived") : t("inventory.actionDispatched");
       toast.success(
-        dialogType === "inbound" ? "Inbound movement recorded" : "Outbound movement recorded",
+        dialogType === "inbound" ? t("inventory.inboundRecorded") : t("inventory.outboundRecorded"),
         {
-          description: `${form.quantity} units of ${productName} ${dialogType === "inbound" ? "received" : "dispatched"} successfully.`,
+          description: t("inventory.movementRecorded", { values: { quantity: form.quantity, productName, action } }),
         }
       );
       setDialogType(null);
@@ -137,23 +137,22 @@ export function InventoryModule() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Inventory Management"
-        description="Inbound / outbound stock movements per warehouse with reorder alerts"
+        title={t("inventory.pageTitle")}
+        description={t("inventory.pageDescription")}
         action={
           canMove ? (
             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
               <Button variant="secondary" onClick={() => openMovement("inbound")}>
-                <ArrowDownToLine className="h-4 w-4" /> Inbound
+                <ArrowDownToLine className="h-4 w-4" /> {t("inventory.inbound")}
               </Button>
               <Button onClick={() => openMovement("outbound")}>
-                <ArrowUpFromLine className="h-4 w-4" /> Outbound
+                <ArrowUpFromLine className="h-4 w-4" /> {t("inventory.outbound")}
               </Button>
             </div>
           ) : undefined
         }
       />
 
-      {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-2">
         <Button
           variant={showFilters ? "default" : "outline"}
@@ -161,7 +160,7 @@ export function InventoryModule() {
           onClick={() => setShowFilters((v) => !v)}
         >
           <Filter className="h-3.5 w-3.5 mr-1.5" />
-          Filters
+          {t("inventory.filters")}
           {hasActiveFilters && (
             <span className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-foreground text-primary text-xs font-bold">
               {[filterWarehouseId, filterProductId, filterBelowReorder].filter(Boolean).length}
@@ -171,87 +170,82 @@ export function InventoryModule() {
 
         {showFilters && (
           <>
-            {/* Warehouse filter */}
             <Select
               value={filterWarehouseId || "__all__"}
               onValueChange={(v) => setFilterWarehouseId(v === "__all__" ? "" : v)}
             >
               <SelectTrigger className="h-8 w-48 text-xs">
-                <SelectValue placeholder="All warehouses" />
+                <SelectValue placeholder={t("inventory.allWarehouses")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">All warehouses</SelectItem>
+                <SelectItem value="__all__">{t("inventory.allWarehouses")}</SelectItem>
                 {warehouses.map((w) => (
                   <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            {/* Product filter */}
             <Select
               value={filterProductId || "__all__"}
               onValueChange={(v) => setFilterProductId(v === "__all__" ? "" : v)}
             >
               <SelectTrigger className="h-8 w-48 text-xs">
-                <SelectValue placeholder="All products" />
+                <SelectValue placeholder={t("inventory.allProducts")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">All products</SelectItem>
+                <SelectItem value="__all__">{t("inventory.allProducts")}</SelectItem>
                 {products.map((p) => (
                   <SelectItem key={p.id} value={p.id}>{p.sku} — {p.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            {/* Below reorder filter */}
             <Button
               size="sm"
               variant={filterBelowReorder ? "destructive" : "outline"}
               className="h-8 text-xs"
               onClick={() => setFilterBelowReorder((v) => !v)}
             >
-              {filterBelowReorder ? "⚠ Low stock only" : "Show low stock only"}
+              {filterBelowReorder ? t("inventory.lowStockActive") : t("inventory.lowStockOnly")}
             </Button>
 
             {hasActiveFilters && (
               <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={clearFilters}>
-                Clear filters
+                {t("inventory.clearFilters")}
               </Button>
             )}
           </>
         )}
 
-        {/* Active filter chips when filters collapsed */}
         {!showFilters && hasActiveFilters && (
           <div className="flex flex-wrap gap-1.5">
             {filterWarehouseId && (
               <Badge variant="default" className="text-xs">
-                {warehouses.find((w) => w.id === filterWarehouseId)?.name ?? "Warehouse"}
+                {warehouses.find((w) => w.id === filterWarehouseId)?.name ?? ""}
               </Badge>
             )}
             {filterProductId && (
               <Badge variant="default" className="text-xs">
-                {products.find((p) => p.id === filterProductId)?.name ?? "Product"}
+                {products.find((p) => p.id === filterProductId)?.name ?? ""}
               </Badge>
             )}
             {filterBelowReorder && (
-              <Badge variant="warning" className="text-xs">Low stock</Badge>
+              <Badge variant="warning" className="text-xs">{t("inventory.lowStock")}</Badge>
             )}
             <button
               className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
               onClick={clearFilters}
             >
-              Clear
+              {t("inventory.clear")}
             </button>
           </div>
         )}
       </div>
 
-      {/* Stock levels */}
       {isLoading && <TableSkeleton columns={7} rows={5} />}
       {isError && (
         <ErrorState
-          message="Failed to load inventory"
+          message={t("inventory.errors.loadFailed")}
           onRetry={() => refetch()}
         />
       )}
@@ -260,7 +254,7 @@ export function InventoryModule() {
           variant="inventory"
           description={
             hasActiveFilters
-              ? "No inventory records match the current filters."
+              ? t("inventory.noMatchFilters")
               : undefined
           }
         />
@@ -268,15 +262,13 @@ export function InventoryModule() {
 
       {inventory.length > 0 && (
         <>
-          {/* Result count */}
           {hasActiveFilters && (
             <p className="text-xs text-muted-foreground">
-              Showing {inventory.length} record{inventory.length !== 1 ? "s" : ""}
+              {t("inventory.showingRecords", { values: { count: inventory.length, plural: inventory.length !== 1 ? "s" : "" } })}
               {data?.total && data.total > inventory.length ? ` of ${data.total}` : ""}
             </p>
           )}
 
-          {/* Mobile card view */}
           <div className="grid gap-3 sm:hidden">
             {inventory.map((row) => {
               const low = row.quantity <= row.reorderLevel;
@@ -289,32 +281,31 @@ export function InventoryModule() {
                       <p className="font-mono text-xs text-muted-foreground">{row.product.sku}</p>
                     </div>
                     <Badge variant={low ? "warning" : "success"} className="shrink-0">
-                      {low ? "Low Stock" : "OK"}
+                      {low ? t("inventory.lowStock") : t("inventory.stockOk")}
                     </Badge>
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     <span>{row.warehouse.name}</span>
-                    <span>Qty: <span className="font-medium text-foreground">{row.quantity} {row.product.unit}</span></span>
-                    <span>Reorder: <span className="font-medium text-foreground">{row.reorderLevel}</span></span>
-                    <span>Value: <span className="font-medium text-foreground">${value.toLocaleString()}</span></span>
+                    <span>{t("inventory.qty")}: <span className="font-medium text-foreground">{row.quantity} {row.product.unit}</span></span>
+                    <span>{t("inventory.table.reorderLevel")}: <span className="font-medium text-foreground">{row.reorderLevel}</span></span>
+                    <span>{t("inventory.value")}: <span className="font-medium text-foreground">${value.toLocaleString()}</span></span>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Desktop table view */}
           <div className="hidden sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Warehouse</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Reorder Level</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Value</TableHead>
+                  <TableHead>{t("inventory.table.product")}</TableHead>
+                  <TableHead>{t("inventory.table.sku")}</TableHead>
+                  <TableHead>{t("inventory.table.warehouse")}</TableHead>
+                  <TableHead>{t("inventory.table.quantity")}</TableHead>
+                  <TableHead>{t("inventory.table.reorderLevel")}</TableHead>
+                  <TableHead>{t("inventory.table.status")}</TableHead>
+                  <TableHead>{t("inventory.value")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -330,7 +321,7 @@ export function InventoryModule() {
                       <TableCell>{row.reorderLevel}</TableCell>
                       <TableCell>
                         <Badge variant={low ? "warning" : "success"}>
-                          {low ? "Low Stock" : "OK"}
+                          {low ? t("inventory.lowStock") : t("inventory.stockOk")}
                         </Badge>
                       </TableCell>
                       <TableCell>${value.toLocaleString()}</TableCell>
@@ -343,19 +334,16 @@ export function InventoryModule() {
         </>
       )}
 
-      {/* Recent Movements */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold">Recent Movements</h2>
+        <h2 className="mb-4 text-lg font-semibold">{t("inventory.recentMovements")}</h2>
 
         {isLoadingMovements && <TableSkeleton columns={6} rows={4} />}
-
         {!isLoadingMovements && movements.length === 0 && (
           <EmptyState variant="inventory-movements" />
         )}
 
         {movements.length > 0 && (
           <>
-            {/* Mobile card view */}
             <div className="grid gap-3 sm:hidden">
               {movements.map((m) => (
                 <div key={m.id} className="rounded-xl border bg-card p-4 space-y-2">
@@ -370,25 +358,24 @@ export function InventoryModule() {
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     <span>{m.warehouse.name}</span>
-                    <span>Qty: <span className="font-medium text-foreground">{m.quantity}</span></span>
-                    {m.user?.name && <span>By: {m.user.name}</span>}
+                    <span>{t("inventory.qty")}: <span className="font-medium text-foreground">{m.quantity}</span></span>
+                    {m.user?.name && <span>{t("inventory.by")}: {m.user.name}</span>}
                     <span>{new Date(m.createdAt).toLocaleString()}</span>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Desktop table view */}
             <div className="hidden sm:block">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Warehouse</TableHead>
-                    <TableHead>Qty</TableHead>
-                    <TableHead>By</TableHead>
+                    <TableHead>{t("inventory.date")}</TableHead>
+                    <TableHead>{t("inventory.type")}</TableHead>
+                    <TableHead>{t("inventory.table.product")}</TableHead>
+                    <TableHead>{t("inventory.table.warehouse")}</TableHead>
+                    <TableHead>{t("inventory.qty")}</TableHead>
+                    <TableHead>{t("inventory.by")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -415,11 +402,10 @@ export function InventoryModule() {
         )}
       </div>
 
-      {/* Inbound / Outbound dialog */}
       <Dialog
         open={dialogType !== null}
         onClose={() => setDialogType(null)}
-        title={dialogType === "inbound" ? "Record Inbound Stock" : "Record Outbound Dispatch"}
+        title={dialogType === "inbound" ? t("inventory.recordInbound") : t("inventory.recordOutbound")}
       >
         <form
           className="space-y-4"
@@ -430,7 +416,7 @@ export function InventoryModule() {
         >
           <div className="space-y-2">
             <InputLabel htmlFor="move-product">
-              Product <span className="text-destructive" aria-hidden="true">*</span>
+              {t("inventory.table.product")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Select
               required
@@ -438,7 +424,7 @@ export function InventoryModule() {
               onValueChange={(v) => setForm({ ...form, productId: v })}
             >
               <SelectTrigger id="move-product">
-                <SelectValue placeholder="Select product" />
+                <SelectValue placeholder={t("products.form.selectSupplier")} />
               </SelectTrigger>
               <SelectContent>
                 {products.map((p) => (
@@ -449,7 +435,7 @@ export function InventoryModule() {
           </div>
           <div className="space-y-2">
             <InputLabel htmlFor="move-warehouse">
-              Warehouse <span className="text-destructive" aria-hidden="true">*</span>
+              {t("inventory.table.warehouse")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Select
               required
@@ -457,7 +443,7 @@ export function InventoryModule() {
               onValueChange={(v) => setForm({ ...form, warehouseId: v })}
             >
               <SelectTrigger id="move-warehouse">
-                <SelectValue placeholder="Select warehouse" />
+                <SelectValue placeholder={t("inventory.allWarehouses")} />
               </SelectTrigger>
               <SelectContent>
                 {warehouses.map((w) => (
@@ -468,7 +454,7 @@ export function InventoryModule() {
           </div>
           <InputWrapper>
             <InputLabel htmlFor="move-quantity">
-              Quantity <span className="text-destructive" aria-hidden="true">*</span>
+              {t("inventory.qty")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Input
               id="move-quantity"
@@ -477,19 +463,19 @@ export function InventoryModule() {
               required
               value={form.quantity}
               onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-              placeholder="Enter quantity"
+              placeholder={t("inventory.enterQuantity")}
             />
           </InputWrapper>
           <InputWrapper>
             <InputLabel htmlFor="move-note">
-              Note{" "}
-              <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+              {t("inventory.note")}{" "}
+              <span className="text-xs font-normal text-muted-foreground">({t("inventory.optional")})</span>
             </InputLabel>
             <Input
               id="move-note"
               value={form.note}
               onChange={(e) => setForm({ ...form, note: e.target.value })}
-              placeholder={dialogType === "inbound" ? "e.g. Received from supplier" : "e.g. Dispatched to customer"}
+              placeholder={dialogType === "inbound" ? t("inventory.notePlaceholderInbound") : t("inventory.notePlaceholderOutbound")}
             />
           </InputWrapper>
           {error && (
@@ -497,14 +483,14 @@ export function InventoryModule() {
           )}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setDialogType(null)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button type="submit" disabled={moveMutation.isPending}>
               {moveMutation.isPending
-                ? "Recording…"
+                ? t("inventory.recording")
                 : dialogType === "inbound"
-                  ? "Confirm Inbound"
-                  : "Confirm Outbound"}
+                  ? t("inventory.confirmInbound")
+                  : t("inventory.confirmOutbound")}
             </Button>
           </div>
         </form>

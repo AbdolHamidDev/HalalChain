@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { I18nProvider } from "@/i18n/provider";
 import { UltraDialogHost } from "@/components/ui/confirm-dialog";
 import "./globals.css";
 
@@ -59,19 +60,21 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <QueryProvider>
-            <AuthProvider>{children}</AuthProvider>
-          </QueryProvider>
-          <UltraDialogHost />
-          <Toaster
-            position="top-center"
-            expand
-            gap={8}
-            offset={16}
-            toastOptions={{
-              duration: 4000,
-            }}
-          />
+          <I18nProvider>
+            <QueryProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </QueryProvider>
+            <UltraDialogHost />
+            <Toaster
+              position="top-center"
+              expand
+              gap={8}
+              offset={16}
+              toastOptions={{
+                duration: 4000,
+              }}
+            />
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>

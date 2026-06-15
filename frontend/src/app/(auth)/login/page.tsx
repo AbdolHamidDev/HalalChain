@@ -1,12 +1,11 @@
 import Image from "next/image";
-
+import { LoginForm } from "@/components/auth/login-form";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
@@ -27,7 +26,6 @@ export default function LoginPage() {
           <CardTitle className="text-2xl font-semibold tracking-tight">
             HalalChain
           </CardTitle>
-
           <p className="text-sm text-muted-foreground">
             Sign in to continue
           </p>

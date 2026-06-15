@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { api, type User, type UserRole, type UserStatus, type UserStats } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,10 +36,6 @@ import { UserDetailDrawer } from "@/components/modules/user-detail-drawer";
 import { InviteUserDialog } from "@/components/modules/invite-user-dialog";
 import { useDebounce } from "@/lib/useDebounce";
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 function getInitials(name: string) {
   return name
     .split(" ")
@@ -48,20 +45,11 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-const roleLabels: Record<UserRole, string> = {
-  ADMIN: "Administrator",
-  MANAGER: "Operations Manager",
-  STAFF: "Warehouse Staff",
-};
-
 function roleBadgeVariant(role: UserRole): BadgeProps["variant"] {
   switch (role) {
-    case "ADMIN":
-      return "info";
-    case "MANAGER":
-      return "warning";
-    default:
-      return "outline";
+    case "ADMIN": return "info";
+    case "MANAGER": return "warning";
+    default: return "outline";
   }
 }
 
@@ -77,182 +65,107 @@ function SkeletonRow() {
   );
 }
 
-function StatCard({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color?: "emerald" | "red" | "amber";
-}) {
-  const colorMap = {
-    emerald: "text-emerald-500",
-    red: "text-red-500",
-    amber: "text-amber-500",
-  };
+function StatCard({ label, value, color }: { label: string; value: number; color?: "emerald" | "red" | "amber" }) {
+  const colorMap = { emerald: "text-emerald-500", red: "text-red-500", amber: "text-amber-500" };
   return (
     <div className="rounded-xl border border-border bg-card px-4 py-3">
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={`mt-1 text-2xl font-semibold tabular-nums ${color ? colorMap[color] : ""}`}>
-        {value}
-      </p>
+      <p className={`mt-1 text-2xl font-semibold tabular-nums ${color ? colorMap[color] : ""}`}>{value}</p>
     </div>
   );
 }
 
 const PAGE_LIMIT = 10;
 
-// ---------------------------------------------------------------------------
-// Page
-// ---------------------------------------------------------------------------
-
 export default function UsersPage() {
   const { user: currentUser } = useAuth();
+  const { t } = useTranslation();
 
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
-
-  // Stats
   const [stats, setStats] = useState<UserStats | null>(null);
-
-  // Filters
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<UserRole | "ALL">("ALL");
   const [statusFilter, setStatusFilter] = useState<UserStatus | "ALL">("ALL");
-
   const debouncedSearch = useDebounce(search, 300);
-
-  // Drawer
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  // Invite dialog
   const [inviteOpen, setInviteOpen] = useState(false);
 
-  // ---------------------------------------------------------------------------
-  // Load
-  // ---------------------------------------------------------------------------
+  const roleLabels: Record<UserRole, string> = {
+    ADMIN: t("userMenu.roles.admin"),
+    MANAGER: t("userMenu.roles.manager"),
+    STAFF: t("userMenu.roles.staff"),
+  };
 
   const loadUsers = useCallback(async (p: number) => {
     setLoading(true);
     try {
-      const res = await api.adminListUsers({
-        page: p,
-        limit: PAGE_LIMIT,
-        search: debouncedSearch || undefined,
-        role: roleFilter !== "ALL" ? roleFilter : undefined,
-        status: statusFilter !== "ALL" ? statusFilter : undefined,
-      });
+      const res = await api.adminListUsers({ page: p, limit: PAGE_LIMIT, search: debouncedSearch || undefined, role: roleFilter !== "ALL" ? roleFilter : undefined, status: statusFilter !== "ALL" ? statusFilter : undefined });
       setUsers(res.users);
       setTotal(res.total);
       setTotalPages(res.totalPages);
     } catch {
-      toast.error("Failed to load users.");
+      toast.error(t("common.errors.generic"));
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, roleFilter, statusFilter]);
+  }, [debouncedSearch, roleFilter, statusFilter, t]);
 
-  // Refresh stats whenever users change (after update/suspend/etc)
   const loadStats = useCallback(async () => {
     try {
       const { stats: data } = await api.adminGetUserStats();
       setStats(data);
-    } catch {
-      // non-critical
-    }
+    } catch { /* non-critical */ }
   }, []);
 
-  useEffect(() => {
-    loadStats();
-  }, [loadStats]);
+  useEffect(() => { loadStats(); }, [loadStats]);
+  useEffect(() => { setPage(1); }, [debouncedSearch, roleFilter, statusFilter]);
+  useEffect(() => { loadUsers(page); }, [loadUsers, page]);
 
-  // Reset to page 1 whenever filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, roleFilter, statusFilter]);
-
-  useEffect(() => {
-    loadUsers(page);
-  }, [loadUsers, page]);
-
-  // ---------------------------------------------------------------------------
-  // Drawer
-  // ---------------------------------------------------------------------------
-
-  function openDrawer(user: User) {
-    setSelectedUser(user);
-    setDrawerOpen(true);
-  }
-
-  function closeDrawer() {
-    setDrawerOpen(false);
-  }
-
-  function handleUserUpdated(updated: User) {
-    setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
-    setSelectedUser(updated);
-    // Refresh aggregate stats after any user change
-    loadStats();
-  }
-
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
+  function openDrawer(user: User) { setSelectedUser(user); setDrawerOpen(true); }
+  function closeDrawer() { setDrawerOpen(false); }
+  function handleUserUpdated(updated: User) { setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u))); setSelectedUser(updated); loadStats(); }
 
   return (
     <>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">User Management</h1>
+            <h1 className="text-2xl font-semibold">{t("users.pageTitle")}</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {total > 0 ? `${total} user${total === 1 ? "" : "s"} total` : "Manage accounts, roles, and access."}
+              {total > 0 ? `${total} ${t("users.totalUsers").toLowerCase()}` : t("users.pageDescription")}
             </p>
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => { loadUsers(page); loadStats(); }}
-              disabled={loading}
-              className="gap-2"
-            >
+            <Button variant="outline" size="sm" onClick={() => { loadUsers(page); loadStats(); }} disabled={loading} className="gap-2">
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-              Refresh
+              {t("common.retry")}
             </Button>
-            <Button
-              size="sm"
-              onClick={() => setInviteOpen(true)}
-              className="gap-2"
-            >
+            <Button size="sm" onClick={() => setInviteOpen(true)} className="gap-2">
               <UserPlus className="h-3.5 w-3.5" />
-              Invite User
+              {t("users.inviteUser")}
             </Button>
           </div>
         </div>
 
-        {/* Stat cards */}
         {stats && (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <StatCard label="Total Users"   value={stats.total}     />
-            <StatCard label="Active"        value={stats.active}    color="emerald" />
-            <StatCard label="Suspended"     value={stats.suspended} color="red" />
-            <StatCard label="Unverified"    value={stats.unverified} color="amber" />
+            <StatCard label={t("users.totalUsers")} value={stats.total} />
+            <StatCard label={t("users.activeUsers")} value={stats.active} color="emerald" />
+            <StatCard label={t("users.suspendedUsers")} value={stats.suspended} color="red" />
+            <StatCard label={t("users.unverifiedUsers")} value={stats.unverified} color="amber" />
           </div>
         )}
 
-        {/* Filters row */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="w-full max-w-xs">
             <Input
               leftIcon={<Search className="h-4 w-4" />}
-              placeholder="Search by name or email…"
+              placeholder={t("users.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -260,49 +173,44 @@ export default function UsersPage() {
 
           <Select value={roleFilter} onValueChange={(v) => setRoleFilter(v as UserRole | "ALL")}>
             <SelectTrigger className="w-44">
-              <SelectValue placeholder="All roles" />
+              <SelectValue placeholder={t("users.allRoles")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">All roles</SelectItem>
-              <SelectItem value="ADMIN">Administrator</SelectItem>
-              <SelectItem value="MANAGER">Operations Manager</SelectItem>
-              <SelectItem value="STAFF">Warehouse Staff</SelectItem>
+              <SelectItem value="ALL">{t("users.allRoles")}</SelectItem>
+              <SelectItem value="ADMIN">{roleLabels.ADMIN}</SelectItem>
+              <SelectItem value="MANAGER">{roleLabels.MANAGER}</SelectItem>
+              <SelectItem value="STAFF">{roleLabels.STAFF}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as UserStatus | "ALL")}>
             <SelectTrigger className="w-36">
-              <SelectValue placeholder="All statuses" />
+              <SelectValue placeholder={t("users.allStatuses")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">All statuses</SelectItem>
-              <SelectItem value="ACTIVE">Active</SelectItem>
-              <SelectItem value="SUSPENDED">Suspended</SelectItem>
+              <SelectItem value="ALL">{t("users.allStatuses")}</SelectItem>
+              <SelectItem value="ACTIVE">{t("users.statusActive")}</SelectItem>
+              <SelectItem value="SUSPENDED">{t("users.statusSuspended")}</SelectItem>
             </SelectContent>
           </Select>
 
           {(search || roleFilter !== "ALL" || statusFilter !== "ALL") && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => { setSearch(""); setRoleFilter("ALL"); setStatusFilter("ALL"); }}
-            >
-              Clear filters
+            <Button variant="ghost" size="sm" onClick={() => { setSearch(""); setRoleFilter("ALL"); setStatusFilter("ALL"); }}>
+              {t("common.clear")}
             </Button>
           )}
         </div>
 
-        {/* Table */}
         <div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Last Login</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("users.displayName")}</TableHead>
+                <TableHead>{t("settings.profile.emailLabel")}</TableHead>
+                <TableHead>{t("users.role")}</TableHead>
+                <TableHead>{t("common.status")}</TableHead>
+                <TableHead>{t("users.joined")}</TableHead>
+                <TableHead className="text-right">{t("users.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -310,106 +218,52 @@ export default function UsersPage() {
                 Array.from({ length: PAGE_LIMIT }).map((_, i) => <SkeletonRow key={i} />)
               ) : users.length === 0 ? (
                 <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="py-10 text-center text-sm text-muted-foreground"
-                  >
+                  <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
                     {search || roleFilter !== "ALL" || statusFilter !== "ALL"
-                      ? "No users match your filters."
-                      : "No users found."}
+                      ? t("common.noResults")
+                      : t("users.noUsers")}
                   </TableCell>
                 </TableRow>
               ) : (
                 users.map((u) => {
                   const isSelf = u.id === currentUser?.id;
                   const isSuspended = u.status === "SUSPENDED";
-
                   return (
-                    <TableRow
-                      key={u.id}
-                      className={`cursor-pointer ${isSuspended ? "opacity-60" : ""}`}
-                      onClick={() => openDrawer(u)}
-                    >
-                      {/* User */}
+                    <TableRow key={u.id} className={`cursor-pointer ${isSuspended ? "opacity-60" : ""}`} onClick={() => openDrawer(u)}>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8 shrink-0">
-                            {u.avatarUrl && (
-                              <AvatarImage src={u.avatarUrl} alt={u.name} />
-                            )}
-                            <AvatarFallback className="text-[11px]">
-                              {getInitials(u.name)}
-                            </AvatarFallback>
+                            {u.avatarUrl && <AvatarImage src={u.avatarUrl} alt={u.name} />}
+                            <AvatarFallback className="text-[11px]">{getInitials(u.name)}</AvatarFallback>
                           </Avatar>
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <p className="truncate text-sm font-medium leading-tight">
-                                {u.name}
-                              </p>
-                              {u.isVerified && (
-                                <img src="/verified.png" alt="Verified" className="h-3.5 w-3.5 shrink-0" />
-                              )}
-                              {isSelf && (
-                                <span className="text-xs text-muted-foreground">(you)</span>
-                              )}
+                              <p className="truncate text-sm font-medium leading-tight">{u.name}</p>
+                              {u.isVerified && <img src="/verified.png" alt="Verified" className="h-3.5 w-3.5 shrink-0" />}
+                              {isSelf && <span className="text-xs text-muted-foreground">(you)</span>}
                             </div>
                             <p className="truncate text-xs text-muted-foreground">
-                              Joined{" "}
-                              {new Date(u.createdAt).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })}
+                              {new Date(u.createdAt).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
                       </TableCell>
-
-                      {/* Email */}
-                      <TableCell className="text-sm text-muted-foreground">
-                        {u.email}
-                      </TableCell>
-
-                      {/* Role */}
-                      <TableCell>
-                        <Badge variant={roleBadgeVariant(u.role)}>
-                          {roleLabels[u.role]}
-                        </Badge>
-                      </TableCell>
-
-                      {/* Status */}
+                      <TableCell className="text-sm text-muted-foreground">{u.email}</TableCell>
+                      <TableCell><Badge variant={roleBadgeVariant(u.role)}>{roleLabels[u.role]}</Badge></TableCell>
                       <TableCell>
                         {isSuspended ? (
-                          <Badge variant="danger">Suspended</Badge>
+                          <Badge variant="danger">{t("users.statusSuspended")}</Badge>
                         ) : (
-                          <Badge variant="success">Active</Badge>
+                          <Badge variant="success">{t("users.statusActive")}</Badge>
                         )}
                       </TableCell>
-
-                      {/* Last Login */}
                       <TableCell className="text-sm text-muted-foreground">
-                        {u.lastLoginAt
-                          ? new Date(u.lastLoginAt).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })
-                          : <span className="text-xs italic">Never</span>}
+                        {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString() : <span className="text-xs italic">Never</span>}
                       </TableCell>
-
-                      {/* Actions */}
                       <TableCell className="text-right">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openDrawer(u);
-                          }}
-                          className="gap-1.5"
-                        >
+                        <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); openDrawer(u); }} className="gap-1.5">
                           <UserCog className="h-3.5 w-3.5" />
-                          Manage
+                          {t("users.manage")}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -420,31 +274,18 @@ export default function UsersPage() {
           </Table>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>
-              Page {page} of {totalPages} · {total} user{total === 1 ? "" : "s"}
+              {t("common.previous")} {page} / {totalPages} · {total} {t("users.totalUsers").toLowerCase()}
             </span>
             <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1 || loading}
-                className="gap-1"
-              >
+              <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1 || loading} className="gap-1">
                 <ChevronLeft className="h-3.5 w-3.5" />
-                Prev
+                {t("common.previous")}
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages || loading}
-                className="gap-1"
-              >
-                Next
+              <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page >= totalPages || loading} className="gap-1">
+                {t("common.next")}
                 <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -452,20 +293,8 @@ export default function UsersPage() {
         )}
       </div>
 
-      {/* User detail drawer */}
-      <UserDetailDrawer
-        user={selectedUser}
-        currentUserId={currentUser?.id ?? ""}
-        open={drawerOpen}
-        onClose={closeDrawer}
-        onUserUpdated={handleUserUpdated}
-      />
-
-      {/* Invite user dialog */}
-      <InviteUserDialog
-        open={inviteOpen}
-        onClose={() => setInviteOpen(false)}
-      />
+      <UserDetailDrawer user={selectedUser} currentUserId={currentUser?.id ?? ""} open={drawerOpen} onClose={closeDrawer} onUserUpdated={handleUserUpdated} />
+      <InviteUserDialog open={inviteOpen} onClose={() => setInviteOpen(false)} />
     </>
   );
 }

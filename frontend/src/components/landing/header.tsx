@@ -4,19 +4,22 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-
-const navLinks = [
-  { label: "Features", href: "#features" },
-  { label: "Workflow", href: "#workflow" },
-  { label: "Architecture", href: "#architecture" },
-  { label: "Tech Stack", href: "#tech-stack" },
-];
+import { useTranslation } from "@/i18n/hooks";
 
 export function LandingHeader() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+
+  const navLinks = [
+    { label: t("landing.header.features"), href: "#features" },
+    { label: t("landing.header.workflow"), href: "#workflow" },
+    { label: t("landing.header.architecture"), href: "#architecture" },
+    { label: t("landing.header.techStack"), href: "#tech-stack" },
+  ];
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
@@ -53,19 +56,20 @@ export function LandingHeader() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">Sign In</Link>
+              <Link href="/login">{t("landing.header.signIn")}</Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href="/register">Get Started</Link>
+              <Link href="/register">{t("landing.header.getStarted")}</Link>
             </Button>
           </div>
           <button
             className="md:hidden p-2 -mr-2 rounded-lg hover:bg-accent transition-colors"
             onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
+            aria-label={t("landing.header.toggleMenu")}
           >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -92,10 +96,10 @@ export function LandingHeader() {
           ))}
           <div className="pt-2 flex flex-col gap-2">
             <Button variant="ghost" size="sm" asChild className="w-full justify-center">
-              <Link href="/login">Sign In</Link>
+              <Link href="/login">{t("landing.header.signIn")}</Link>
             </Button>
             <Button size="sm" asChild className="w-full justify-center">
-              <Link href="/register">Get Started</Link>
+              <Link href="/register">{t("landing.header.getStarted")}</Link>
             </Button>
           </div>
         </div>

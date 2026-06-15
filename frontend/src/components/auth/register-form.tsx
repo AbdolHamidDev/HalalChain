@@ -9,22 +9,24 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 
 const schema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    name: z.string().min(2, "auth.errors.nameRequired"),
+    email: z.string().email("auth.errors.emailInvalid"),
+    password: z.string().min(8, "auth.errors.passwordMinLength"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "auth.errors.passwordMismatch",
     path: ["confirmPassword"],
   });
 
 type FormData = z.infer<typeof schema>;
 
 export function RegisterForm() {
+  const { t } = useTranslation();
   const { register: registerUser } = useAuth();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -43,14 +45,14 @@ export function RegisterForm() {
       await registerUser(data.name, data.email, data.password);
       router.push("/dashboard");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Registration failed. Please try again.");
+      setError(e instanceof Error ? e.message : t("auth.errors.signUpFailed"));
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <InputWrapper error={!!errors.name}>
-        <InputLabel htmlFor="name">Full Name</InputLabel>
+        <InputLabel htmlFor="name">{t("auth.name")}</InputLabel>
         <Input
           id="name"
           autoComplete="name"
@@ -59,12 +61,12 @@ export function RegisterForm() {
           {...register("name")}
         />
         {errors.name && (
-          <InputError id="name-error" role="alert">{errors.name.message}</InputError>
+          <InputError id="name-error" role="alert">{t(errors.name.message as any)}</InputError>
         )}
       </InputWrapper>
 
       <InputWrapper error={!!errors.email}>
-        <InputLabel htmlFor="email">Email</InputLabel>
+        <InputLabel htmlFor="email">{t("auth.email")}</InputLabel>
         <Input
           id="email"
           type="email"
@@ -74,12 +76,12 @@ export function RegisterForm() {
           {...register("email")}
         />
         {errors.email && (
-          <InputError id="email-error" role="alert">{errors.email.message}</InputError>
+          <InputError id="email-error" role="alert">{t(errors.email.message as any)}</InputError>
         )}
       </InputWrapper>
 
       <InputWrapper error={!!errors.password}>
-        <InputLabel htmlFor="password">Password</InputLabel>
+        <InputLabel htmlFor="password">{t("auth.password")}</InputLabel>
         <Input
           id="password"
           type="password"
@@ -89,12 +91,12 @@ export function RegisterForm() {
           {...register("password")}
         />
         {errors.password && (
-          <InputError id="password-error" role="alert">{errors.password.message}</InputError>
+          <InputError id="password-error" role="alert">{t(errors.password.message as any)}</InputError>
         )}
       </InputWrapper>
 
       <InputWrapper error={!!errors.confirmPassword}>
-        <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
+        <InputLabel htmlFor="confirmPassword">{t("auth.confirmPassword")}</InputLabel>
         <Input
           id="confirmPassword"
           type="password"
@@ -104,7 +106,7 @@ export function RegisterForm() {
           {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
-          <InputError id="confirm-password-error" role="alert">{errors.confirmPassword.message}</InputError>
+          <InputError id="confirm-password-error" role="alert">{t(errors.confirmPassword.message as any)}</InputError>
         )}
       </InputWrapper>
 
@@ -113,13 +115,13 @@ export function RegisterForm() {
       )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Creating account…" : "Create Account"}
+        {isSubmitting ? t("auth.signingIn") : t("auth.createAccount")}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
+        {t("auth.hasAccount")}{" "}
         <Link href="/login" className="font-medium text-primary hover:underline">
-          Sign in
+          {t("auth.signIn")}
         </Link>
       </p>
     </form>

@@ -6,6 +6,7 @@ import { Plus, ChevronRight, Trash2, Loader2, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { api, PurchaseOrder, PurchaseOrderStatus } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -31,9 +32,9 @@ const NEXT_STATUS: Partial<Record<PurchaseOrderStatus, PurchaseOrderStatus>> = {
 };
 
 const STATUS_LABEL: Partial<Record<PurchaseOrderStatus, string>> = {
-  APPROVED: "Approve",
-  SHIPPING: "Mark Shipping",
-  RECEIVED: "Mark Received",
+  APPROVED: "purchaseOrders.status.approved",
+  SHIPPING: "purchaseOrders.status.shipping",
+  RECEIVED: "purchaseOrders.status.received",
 };
 
 type OrderItem = { productId: string; quantity: string; unitPrice: string };
@@ -42,6 +43,7 @@ type FormData = { supplierId: string; items: OrderItem[] };
 const emptyItem = (): OrderItem => ({ productId: "", quantity: "1", unitPrice: "" });
 
 export function PurchaseOrdersModule() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const qc = useQueryClient();
   const isAdmin = user?.role === "ADMIN";
@@ -82,8 +84,8 @@ export function PurchaseOrdersModule() {
       setOpen(false);
       setForm({ supplierId: "", items: [emptyItem()] });
       setError(null);
-      toast.success("Purchase order created", {
-        description: `${result.purchaseOrder.poNumber} has been created as a draft.`,
+      toast.success(t("purchaseOrders.poCreated"), {
+        description: t("purchaseOrders.poCreatedDesc", { values: { poNumber: result.purchaseOrder.poNumber } }),
       });
     },
     onError: (e: Error) => setError(e.message),
@@ -98,25 +100,25 @@ export function PurchaseOrdersModule() {
       qc.invalidateQueries({ queryKey: ["purchase-orders"] });
       qc.invalidateQueries({ queryKey: ["shipments"] });
       setPendingStatusId(null);
-      const statusLabel = status.charAt(0) + status.slice(1).toLowerCase().replace("_", " ");
-      toast.success("Status updated", {
-        description: `Purchase order has been moved to ${statusLabel}.`,
+      const statusLabel = t(`purchaseOrders.status.${status.toLowerCase()}` as any);
+      toast.success(t("purchaseOrders.statusUpdated"), {
+        description: t("purchaseOrders.statusUpdatedDesc", { values: { status: statusLabel } }),
       });
     },
     onError: (e: Error) => {
       setPendingStatusId(null);
-      toast.error("Failed to update status", { description: e.message });
+      toast.error(t("purchaseOrders.statusUpdateFailed"), { description: e.message });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deletePurchaseOrder(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["purchase-orders"] });
-      toast.success("Purchase order deleted");
+      toast.success(t("purchaseOrders.poDeleted"));
     },
     onError: (e: Error) => {
-      toast.error("Failed to delete purchase order", { description: e.message });
+      toast.error(t("purchaseOrders.poDeleteFailed"), { description: e.message });
     },
   });
 
@@ -125,12 +127,12 @@ export function PurchaseOrdersModule() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Purchase Orders"
-        description="Procurement workflow: DRAFT → APPROVED → SHIPPING → RECEIVED"
+        title={t("purchaseOrders.pageTitle")}
+        description={t("purchaseOrders.pageDescription")}
         action={
           isAdmin ? (
             <Button onClick={() => { setOpen(true); setError(null); }}>
-              <Plus className="h-4 w-4" /> New PO
+              <Plus className="h-4 w-4" /> {t("purchaseOrders.newPO")}
             </Button>
           ) : undefined
         }
@@ -139,7 +141,7 @@ export function PurchaseOrdersModule() {
       {isLoading && <TableSkeleton columns={isAdmin ? 7 : 6} rows={5} />}
       {isError && (
         <ErrorState
-          message="Failed to load purchase orders"
+          message={t("purchaseOrders.errors.loadFailed")}
           onRetry={() => refetch()}
         />
       )}
@@ -153,7 +155,6 @@ export function PurchaseOrdersModule() {
 
       {purchaseOrders.length > 0 && (
         <>
-          {/* Mobile card view */}
           <div className="grid gap-3 sm:hidden">
             {purchaseOrders.map((po: PurchaseOrder) => {
               const next = NEXT_STATUS[po.status];
@@ -168,8 +169,8 @@ export function PurchaseOrdersModule() {
                     <Badge variant={statusVariant(po.status)} className="shrink-0">{po.status}</Badge>
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    <span>Amount: <span className="font-medium text-foreground">${Number(po.totalAmount).toLocaleString()}</span></span>
-                    <span>Shipments: <span className="font-medium text-foreground">{po.shipments?.length ?? 0}</span></span>
+                    <span>{t("purchaseOrders.amount")}: <span className="font-medium text-foreground">${Number(po.totalAmount).toLocaleString()}</span></span>
+                    <span>{t("purchaseOrders.shipments")}: <span className="font-medium text-foreground">{po.shipments?.length ?? 0}</span></span>
                     <span>{new Date(po.createdAt).toLocaleDateString()}</span>
                   </div>
                   {isAdmin && (next || po.status === "DRAFT") && (
@@ -187,7 +188,7 @@ export function PurchaseOrdersModule() {
                           ) : (
                             <ChevronRight className="h-3.5 w-3.5 mr-1" />
                           )}
-                          {STATUS_LABEL[next] ?? next}
+                          {t(STATUS_LABEL[next] as any)}
                         </Button>
                       )}
                       {po.status === "DRAFT" && (
@@ -195,13 +196,13 @@ export function PurchaseOrdersModule() {
                           size="sm"
                           variant="destructive"
                           className={next ? "" : "flex-1"}
-                          aria-label={`Delete purchase order ${po.poNumber}`}
+                          aria-label={t("purchaseOrders.common.deleteItem", { values: { poNumber: po.poNumber } })}
                           onClick={async () => {
                             const ok = await dialog.confirm({
                               type: "destructive",
-                              title: "Delete purchase order?",
-                              description: `This will permanently remove PO "${po.poNumber}". Only DRAFT orders can be deleted.`,
-                              confirmLabel: "Delete PO",
+                              title: t("purchaseOrders.deleteConfirm"),
+                              description: t("purchaseOrders.deleteDescription", { values: { poNumber: po.poNumber } }),
+                              confirmLabel: t("purchaseOrders.deletePO"),
                             });
                             if (ok) deleteMutation.mutate(po.id);
                           }}
@@ -216,18 +217,17 @@ export function PurchaseOrdersModule() {
             })}
           </div>
 
-          {/* Desktop table view */}
           <div className="hidden sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>PO Number</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Shipments</TableHead>
-                  <TableHead>Created</TableHead>
-                  {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                  <TableHead>{t("purchaseOrders.table.poNumber")}</TableHead>
+                  <TableHead>{t("purchaseOrders.table.supplier")}</TableHead>
+                  <TableHead>{t("purchaseOrders.amount")}</TableHead>
+                  <TableHead>{t("purchaseOrders.table.status")}</TableHead>
+                  <TableHead>{t("purchaseOrders.shipments")}</TableHead>
+                  <TableHead>{t("purchaseOrders.created")}</TableHead>
+                  {isAdmin && <TableHead className="text-right">{t("purchaseOrders.table.actions")}</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -251,27 +251,27 @@ export function PurchaseOrdersModule() {
                                 variant="secondary"
                                 disabled={isAdvancing}
                                 onClick={() => statusMutation.mutate({ id: po.id, status: next })}
-                                aria-label={`${STATUS_LABEL[next] ?? next} ${po.poNumber}`}
+                                aria-label={`${t(STATUS_LABEL[next] as any)} ${po.poNumber}`}
                               >
                                 {isAdvancing ? (
                                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                 ) : (
                                   <ChevronRight className="h-3.5 w-3.5" />
                                 )}
-                                {STATUS_LABEL[next] ?? next}
+                                {t(STATUS_LABEL[next] as any)}
                               </Button>
                             )}
                             {po.status === "DRAFT" && (
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                aria-label={`Delete purchase order ${po.poNumber}`}
+                                aria-label={t("purchaseOrders.common.deleteItem", { values: { poNumber: po.poNumber } })}
                                 onClick={async () => {
                                   const ok = await dialog.confirm({
                                     type: "destructive",
-                                    title: "Delete purchase order?",
-                                    description: `This will permanently remove PO "${po.poNumber}". Only DRAFT orders can be deleted.`,
-                                    confirmLabel: "Delete PO",
+                                    title: t("purchaseOrders.deleteConfirm"),
+                                    description: t("purchaseOrders.deleteDescription", { values: { poNumber: po.poNumber } }),
+                                    confirmLabel: t("purchaseOrders.deletePO"),
                                   });
                                   if (ok) deleteMutation.mutate(po.id);
                                 }}
@@ -291,13 +291,11 @@ export function PurchaseOrdersModule() {
         </>
       )}
 
-      {/* Create dialog */}
-      <Dialog open={open} onClose={() => setOpen(false)} title="New Purchase Order">
+      <Dialog open={open} onClose={() => setOpen(false)} title={t("purchaseOrders.createPO")}>
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }}>
-          {/* Supplier */}
           <div className="space-y-2">
             <InputLabel htmlFor="po-supplier">
-              Supplier <span className="text-destructive" aria-hidden="true">*</span>
+              {t("purchaseOrders.table.supplier")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <Select
               required
@@ -305,7 +303,7 @@ export function PurchaseOrdersModule() {
               onValueChange={(v) => setForm({ ...form, supplierId: v })}
             >
               <SelectTrigger id="po-supplier">
-                <SelectValue placeholder="Select supplier" />
+                <SelectValue placeholder={t("products.form.selectSupplier")} />
               </SelectTrigger>
               <SelectContent>
                 {(suppliersData?.suppliers ?? []).map((s) => (
@@ -315,10 +313,9 @@ export function PurchaseOrdersModule() {
             </Select>
           </div>
 
-          {/* Items */}
           <div className="space-y-2">
             <InputLabel>
-              Items <span className="text-destructive" aria-hidden="true">*</span>
+              {t("purchaseOrders.items")} <span className="text-destructive" aria-hidden="true">*</span>
             </InputLabel>
             <div className="space-y-2">
               {form.items.map((item, idx) => (
@@ -334,7 +331,7 @@ export function PurchaseOrdersModule() {
                     }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Product" />
+                      <SelectValue placeholder={t("purchaseOrders.items")} />
                     </SelectTrigger>
                     <SelectContent>
                       {(productsData?.products ?? []).map((p) => (
@@ -346,7 +343,7 @@ export function PurchaseOrdersModule() {
                     type="number"
                     min="1"
                     required
-                    placeholder="Qty"
+                    placeholder={t("purchaseOrders.qty")}
                     value={item.quantity}
                     onChange={(e) => {
                       const updated = form.items.map((it, i) =>
@@ -360,7 +357,7 @@ export function PurchaseOrdersModule() {
                     min="0.01"
                     step="0.01"
                     required
-                    placeholder="Price"
+                    placeholder={t("purchaseOrders.price")}
                     value={item.unitPrice}
                     onChange={(e) => {
                       const updated = form.items.map((it, i) =>
@@ -374,7 +371,7 @@ export function PurchaseOrdersModule() {
                     size="sm"
                     variant="ghost"
                     disabled={form.items.length === 1}
-                    aria-label="Remove item"
+                    aria-label={t("purchaseOrders.removeItem")}
                     onClick={() => setForm({ ...form, items: form.items.filter((_, i) => i !== idx) })}
                   >
                     <Minus className="h-3.5 w-3.5" />
@@ -388,14 +385,13 @@ export function PurchaseOrdersModule() {
               variant="outline"
               onClick={() => setForm({ ...form, items: [...form.items, emptyItem()] })}
             >
-              <Plus className="h-3.5 w-3.5 mr-1" /> Add Item
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("purchaseOrders.addItem")}
             </Button>
           </div>
 
-          {/* Total preview */}
           {form.items.some((it) => it.quantity && it.unitPrice) && (
             <p className="text-sm text-muted-foreground text-right">
-              Total:{" "}
+              {t("purchaseOrders.total")}:{" "}
               <span className="font-medium text-foreground">
                 ${form.items.reduce((sum, it) => sum + (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0), 0).toFixed(2)}
               </span>
@@ -404,14 +400,13 @@ export function PurchaseOrdersModule() {
 
           {error && <InputError role="alert">{error}</InputError>}
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
             <Button type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending ? "Creating…" : "Create PO"}
+              {createMutation.isPending ? t("purchaseOrders.creating") : t("purchaseOrders.createPO")}
             </Button>
           </div>
         </form>
       </Dialog>
-
     </div>
   );
 }

@@ -19,6 +19,7 @@ import {
 } from "recharts";
 import { CalendarDays, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { api } from "@/lib/api";
+import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -55,8 +56,6 @@ function renderPieLabel(props: unknown) {
   return `${name ?? ""} ${(percent * 100).toFixed(0)}%`;
 }
 
-// ─── Rate badge ───────────────────────────────────────────────────────────────
-
 function RateBadge({ value, invert = false }: { value: number; invert?: boolean }) {
   const good = invert ? value <= 10 : value >= 75;
   const warn = invert ? value <= 25 : value >= 50;
@@ -66,8 +65,6 @@ function RateBadge({ value, invert = false }: { value: number; invert?: boolean 
     </Badge>
   );
 }
-
-// ─── Chart card wrapper ───────────────────────────────────────────────────────
 
 function ChartCard({
   title,
@@ -92,15 +89,11 @@ function ChartCard({
   );
 }
 
-// ─── Section heading ──────────────────────────────────────────────────────────
-
 function SectionHeading({ title }: { title: string }) {
   return (
     <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
   );
 }
-
-// ─── Skeleton ────────────────────────────────────────────────────────────────
 
 function AnalyticsSkeleton() {
   return (
@@ -119,9 +112,8 @@ function AnalyticsSkeleton() {
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
-
 export function AnalyticsModule() {
+  const { t } = useTranslation();
   const [from, setFrom] = useState(() => {
     const d = new Date();
     d.setMonth(d.getMonth() - 5);
@@ -168,25 +160,15 @@ export function AnalyticsModule() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Advanced Analytics"
-        description="Deep-dive into inventory, procurement, shipments, and halal certificate compliance"
+        title={t("analytics.pageTitle")}
+        description={t("analytics.pageDescription")}
         action={
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2">
               <CalendarDays className="h-4 w-4 text-muted-foreground" />
-              <Input
-                type="date"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                className="h-9 w-full sm:w-36"
-              />
+              <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-full sm:w-36" />
             </div>
-            <Input
-              type="date"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              className="h-9 w-full sm:w-36"
-            />
+            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-full sm:w-36" />
           </div>
         }
       />
@@ -194,7 +176,7 @@ export function AnalyticsModule() {
       {isLoading && <AnalyticsSkeleton />}
       {isError && (
         <ErrorState
-          message="Failed to load analytics data. Please try again."
+          message={t("analytics.loadFailed")}
           onRetry={() => {
             void inventory.refetch();
             void purchaseOrders.refetch();
@@ -207,34 +189,33 @@ export function AnalyticsModule() {
       {!isLoading && !isError && inv && po && ship && cert && (
         <div className="space-y-10">
 
-          {/* ── Purchase Order KPI row ───────────────────────────────────── */}
           <section className="space-y-4">
-            <SectionHeading title="Purchase Orders" />
+            <SectionHeading title={t("analytics.purchaseOrders.title")} />
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <KpiCard
-                title="Approval Rate"
+                title={t("analytics.purchaseOrders.approvalRate")}
                 value={<RateBadge value={po.approvalRate} />}
-                note="Approved / total POs"
+                note={t("analytics.purchaseOrders.approvalRateNote")}
                 icon={<TrendingUp className="h-4 w-4" />}
               />
               <KpiCard
-                title="Fulfillment Rate"
+                title={t("analytics.purchaseOrders.fulfillmentRate")}
                 value={<RateBadge value={po.fulfillmentRate} />}
-                note="Received or partial POs"
+                note={t("analytics.purchaseOrders.fulfillmentRateNote")}
                 icon={<TrendingUp className="h-4 w-4" />}
               />
               <KpiCard
-                title="Avg. Processing Time"
+                title={t("analytics.purchaseOrders.avgProcessingTime")}
                 value={
                   po.averageProcessingTimeDays != null
                     ? <span className="text-2xl font-semibold">{po.averageProcessingTimeDays}d</span>
-                    : <span className="text-sm text-muted-foreground">Not enough data</span>
+                    : <span className="text-sm text-muted-foreground">{t("analytics.purchaseOrders.notEnoughData")}</span>
                 }
-                note="Draft → Received"
+                note={t("analytics.purchaseOrders.avgProcessingTimeNote")}
                 icon={<Minus className="h-4 w-4" />}
               />
               <KpiCard
-                title="Status Breakdown"
+                title={t("analytics.purchaseOrders.statusBreakdown")}
                 value={
                   <div className="flex flex-wrap gap-1">
                     {po.statusBreakdown.slice(0, 3).map((s) => (
@@ -244,13 +225,13 @@ export function AnalyticsModule() {
                     ))}
                   </div>
                 }
-                note="Active statuses"
+                note={t("analytics.purchaseOrders.statusBreakdownNote")}
                 icon={<Minus className="h-4 w-4" />}
               />
             </div>
 
             <div className="grid gap-4 xl:grid-cols-2">
-              <ChartCard title="Orders per Month">
+              <ChartCard title={t("analytics.purchaseOrders.ordersPerMonth")}>
                 <BarChart data={po.ordersPerMonth}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="month" tickMargin={8} tick={{ fontSize: 11 }} />
@@ -260,7 +241,7 @@ export function AnalyticsModule() {
                 </BarChart>
               </ChartCard>
 
-              <ChartCard title="PO Status Distribution">
+              <ChartCard title={t("analytics.purchaseOrders.statusDistribution")}>
                 <PieChart>
                   <Pie
                     data={po.statusBreakdown}
@@ -283,24 +264,23 @@ export function AnalyticsModule() {
             </div>
           </section>
 
-          {/* ── Shipment KPI row ─────────────────────────────────────────── */}
           <section className="space-y-4">
-            <SectionHeading title="Shipments" />
+            <SectionHeading title={t("analytics.shipments.title")} />
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               <KpiCard
-                title="On-Time Delivery Rate"
+                title={t("analytics.shipments.onTimeDelivery")}
                 value={<RateBadge value={ship.onTimeDeliveryRate} />}
-                note="Delivered / total in range"
+                note={t("analytics.shipments.onTimeDeliveryNote")}
                 icon={<TrendingUp className="h-4 w-4" />}
               />
               <KpiCard
-                title="Delayed Shipment Rate"
+                title={t("analytics.shipments.delayedRate")}
                 value={<RateBadge value={ship.delayedShipmentRate} invert />}
-                note="DELAYED / total in range"
+                note={t("analytics.shipments.delayedRateNote")}
                 icon={<TrendingDown className="h-4 w-4" />}
               />
               <KpiCard
-                title="Status Distribution"
+                title={t("analytics.shipments.statusDistribution")}
                 value={
                   <div className="flex flex-wrap gap-1">
                     {ship.statusBreakdown.map((s) => (
@@ -310,40 +290,25 @@ export function AnalyticsModule() {
                     ))}
                   </div>
                 }
-                note="All shipments in range"
+                note={t("analytics.shipments.statusDistributionNote")}
                 icon={<Minus className="h-4 w-4" />}
               />
             </div>
 
             <div className="grid gap-4 xl:grid-cols-2">
-              <ChartCard title="Shipment Volume Trend">
+              <ChartCard title={t("analytics.shipments.volumeTrend")}>
                 <LineChart data={ship.shipmentVolumeTrend}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="month" tickMargin={8} tick={{ fontSize: 11 }} />
                   <YAxis allowDecimals={false} />
                   <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="shipments"
-                    stroke="#0284c7"
-                    strokeWidth={2}
-                    dot={{ fill: "#0284c7" }}
-                  />
+                  <Line type="monotone" dataKey="shipments" stroke="#0284c7" strokeWidth={2} dot={{ fill: "#0284c7" }} />
                 </LineChart>
               </ChartCard>
 
-              <ChartCard title="Shipment Status Distribution">
+              <ChartCard title={t("analytics.shipments.shipmentStatusDistribution")}>
                 <PieChart>
-                  <Pie
-                    data={ship.statusBreakdown}
-                    dataKey="count"
-                    nameKey="status"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={90}
-                    label={renderPieLabel}
-                    labelLine={false}
-                  >
+                  <Pie data={ship.statusBreakdown} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={90} label={renderPieLabel} labelLine={false}>
                     {ship.statusBreakdown.map((_, index) => (
                       <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                     ))}
@@ -355,28 +320,21 @@ export function AnalyticsModule() {
             </div>
           </section>
 
-          {/* ── Inventory section ─────────────────────────────────────────── */}
           <section className="space-y-4">
-            <SectionHeading title="Inventory" />
+            <SectionHeading title={t("analytics.inventory.title")} />
 
             <div className="grid gap-4 xl:grid-cols-2">
-              <ChartCard title="Inventory Value Trend">
+              <ChartCard title={t("analytics.inventory.valueTrend")}>
                 <LineChart data={inv.inventoryValueTrend}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="month" tickMargin={8} tick={{ fontSize: 11 }} />
                   <YAxis tickFormatter={(v) => `$${(v as number / 1000).toFixed(0)}k`} />
                   <Tooltip formatter={(v) => money.format(v as number)} />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#0d6e4f"
-                    strokeWidth={2}
-                    dot={{ fill: "#0d6e4f" }}
-                  />
+                  <Line type="monotone" dataKey="value" stroke="#0d6e4f" strokeWidth={2} dot={{ fill: "#0d6e4f" }} />
                 </LineChart>
               </ChartCard>
 
-              <ChartCard title="Inbound vs Outbound Movement">
+              <ChartCard title={t("analytics.inventory.inboundOutbound")}>
                 <BarChart
                   data={inv.inboundTrend.map((row, i) => ({
                     month: row.month,
@@ -396,16 +354,11 @@ export function AnalyticsModule() {
             </div>
 
             <div className="grid gap-4 xl:grid-cols-2">
-              <ChartCard title="Inventory by Warehouse">
+              <ChartCard title={t("analytics.inventory.byWarehouse")}>
                 <BarChart data={inv.inventoryByWarehouse} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis type="number" tickFormatter={(v) => `$${(v as number / 1000).toFixed(0)}k`} />
-                  <YAxis
-                    type="category"
-                    dataKey="warehouseName"
-                    width={110}
-                    tick={{ fontSize: 11 }}
-                  />
+                  <YAxis type="category" dataKey="warehouseName" width={110} tick={{ fontSize: 11 }} />
                   <Tooltip formatter={(v) => money.format(v as number)} />
                   <Bar dataKey="totalValue" fill="#0284c7" radius={[0, 4, 4, 0]} />
                 </BarChart>
@@ -413,15 +366,15 @@ export function AnalyticsModule() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Top Stocked Products</CardTitle>
+                  <CardTitle className="text-base">{t("analytics.inventory.topStocked")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Product</TableHead>
-                        <TableHead className="text-right">Qty</TableHead>
-                        <TableHead className="text-right">Value</TableHead>
+                        <TableHead>{t("analytics.inventory.product")}</TableHead>
+                        <TableHead className="text-right">{t("analytics.inventory.qty")}</TableHead>
+                        <TableHead className="text-right">{t("analytics.inventory.value")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -444,21 +397,21 @@ export function AnalyticsModule() {
             <div className="grid gap-4 xl:grid-cols-2">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Fast-Moving Products</CardTitle>
+                  <CardTitle className="text-base">{t("analytics.inventory.fastMoving")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Product</TableHead>
-                        <TableHead className="text-right">Units Out</TableHead>
+                        <TableHead>{t("analytics.inventory.product")}</TableHead>
+                        <TableHead className="text-right">{t("analytics.inventory.unitsOut")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {inv.fastMovingProducts.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={2} className="text-center text-sm text-muted-foreground py-6">
-                            No outbound movements in selected range
+                            {t("analytics.inventory.noOutbound")}
                           </TableCell>
                         </TableRow>
                       ) : (
@@ -479,14 +432,14 @@ export function AnalyticsModule() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Slow-Moving Products</CardTitle>
+                  <CardTitle className="text-base">{t("analytics.inventory.slowMoving")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Product</TableHead>
-                        <TableHead className="text-right">Units Out</TableHead>
+                        <TableHead>{t("analytics.inventory.product")}</TableHead>
+                        <TableHead className="text-right">{t("analytics.inventory.unitsOut")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -506,58 +459,55 @@ export function AnalyticsModule() {
             </div>
           </section>
 
-          {/* ── Certificate section ───────────────────────────────────────── */}
           <section className="space-y-4">
-            <SectionHeading title="Certificate Compliance" />
+            <SectionHeading title={t("analytics.certificates.title")} />
             <div className="grid gap-4 sm:grid-cols-3">
               <KpiCard
-                title="Active Certificates"
+                title={t("analytics.certificates.active")}
                 value={<span className="text-2xl font-semibold text-success">{cert.activeCertificates}</span>}
-                note="Not yet expired"
+                note={t("analytics.certificates.activeNote")}
                 icon={<TrendingUp className="h-4 w-4 text-success" />}
               />
               <KpiCard
-                title="Expiring within 90 days"
+                title={t("analytics.certificates.expiring")}
                 value={<span className="text-2xl font-semibold text-warning">{cert.expiringCertificates}</span>}
-                note="Requires attention"
+                note={t("analytics.certificates.expiringNote")}
                 icon={<TrendingDown className="h-4 w-4 text-warning" />}
               />
               <KpiCard
-                title="Expired Certificates"
+                title={t("analytics.certificates.expired")}
                 value={<span className="text-2xl font-semibold text-destructive">{cert.expiredCertificates}</span>}
-                note="Must be renewed"
+                note={t("analytics.certificates.expiredNote")}
                 icon={<TrendingDown className="h-4 w-4 text-destructive" />}
               />
             </div>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Supplier Compliance Score</CardTitle>
+                <CardTitle className="text-base">{t("analytics.certificates.supplierScore")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Supplier</TableHead>
-                      <TableHead className="text-right">Score</TableHead>
-                      <TableHead className="text-right">Active</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
+                      <TableHead>{t("suppliers.pageTitle")}</TableHead>
+                      <TableHead className="text-right">{t("analytics.certificates.score")}</TableHead>
+                      <TableHead className="text-right">{t("analytics.certificates.activeCerts")}</TableHead>
+                      <TableHead className="text-right">{t("analytics.certificates.totalCerts")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {cert.supplierComplianceScore.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={4} className="text-center text-sm text-muted-foreground py-6">
-                          No supplier data available
+                          {t("analytics.certificates.noSupplierData")}
                         </TableCell>
                       </TableRow>
                     ) : (
                       cert.supplierComplianceScore.map((row) => (
                         <TableRow key={row.supplierId}>
                           <TableCell className="font-medium">{row.supplierName}</TableCell>
-                          <TableCell className="text-right">
-                            <RateBadge value={row.score} />
-                          </TableCell>
+                          <TableCell className="text-right"><RateBadge value={row.score} /></TableCell>
                           <TableCell className="text-right tabular-nums">{row.activeCertificates}</TableCell>
                           <TableCell className="text-right tabular-nums">{row.totalCertificates}</TableCell>
                         </TableRow>
@@ -574,8 +524,6 @@ export function AnalyticsModule() {
     </div>
   );
 }
-
-// ─── Small KPI card ───────────────────────────────────────────────────────────
 
 function KpiCard({
   title,

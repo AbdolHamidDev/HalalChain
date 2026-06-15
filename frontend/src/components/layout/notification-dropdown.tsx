@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/i18n/hooks";
 import { type Notification } from "@/components/layout/notification-bell";
 
 interface NotificationDropdownProps {
@@ -31,11 +32,11 @@ const typeVariant: Record<
   SYSTEM: "default",
 };
 
-const typeLabel: Record<Notification["type"], string> = {
-  LOW_STOCK: "Low Stock",
-  CERTIFICATE_EXPIRING: "Cert Expiring",
-  SHIPMENT_DELAYED: "Delayed",
-  SYSTEM: "System",
+const typeKeys: Record<Notification["type"], string> = {
+  LOW_STOCK: "notifications.types.lowStock",
+  CERTIFICATE_EXPIRING: "notifications.types.certificateExpiring",
+  SHIPMENT_DELAYED: "notifications.types.shipmentDelayed",
+  SYSTEM: "notifications.types.system",
 };
 
 async function markAllRead(): Promise<{ updated: number }> {
@@ -51,6 +52,7 @@ export function NotificationDropdown({
   notifications,
   unreadCount,
 }: NotificationDropdownProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { mutate: markAll, isPending } = useMutation({
@@ -60,7 +62,6 @@ export function NotificationDropdown({
     },
   });
 
-  // Show only the 10 most recent
   const recent = notifications.slice(0, 10);
 
   return (
@@ -70,7 +71,7 @@ export function NotificationDropdown({
           variant="ghost"
           size="icon"
           className="relative"
-          aria-label="Notifications"
+          aria-label={t("notifications.title")}
         >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
@@ -82,13 +83,12 @@ export function NotificationDropdown({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] max-w-80 sm:w-80">
-        {/* Header */}
         <div className="flex items-center justify-between px-2 py-1.5">
           <DropdownMenuLabel className="px-0 py-0">
-            Notifications
+            {t("notifications.title")}
             {unreadCount > 0 && (
               <span className="ml-1.5 text-xs font-normal text-muted-foreground">
-                ({unreadCount} unread)
+                ({t("notifications.unread", { values: { count: unreadCount } })})
               </span>
             )}
           </DropdownMenuLabel>
@@ -102,17 +102,16 @@ export function NotificationDropdown({
               className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
             >
               <CheckCheck className="h-3 w-3" />
-              Mark all as read
+              {t("notifications.markAllRead")}
             </button>
           )}
         </div>
 
         <DropdownMenuSeparator />
 
-        {/* Notification items */}
         {recent.length === 0 ? (
           <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-            No notifications yet.
+            {t("notifications.noNotifications")}
           </div>
         ) : (
           recent.map((notification) => (
@@ -120,7 +119,6 @@ export function NotificationDropdown({
               key={notification.id}
               className="relative flex cursor-default flex-col items-start gap-1 px-3 py-2.5 focus:bg-accent"
             >
-              {/* Title row */}
               <div className="flex w-full items-center justify-between gap-2">
                 <span
                   className={
@@ -135,23 +133,20 @@ export function NotificationDropdown({
                   variant={typeVariant[notification.type]}
                   className="shrink-0 text-[10px]"
                 >
-                  {typeLabel[notification.type]}
+                  {t(typeKeys[notification.type] as any)}
                 </Badge>
               </div>
 
-              {/* Message */}
               <p className="line-clamp-2 text-xs text-muted-foreground">
                 {notification.message}
               </p>
 
-              {/* Relative timestamp using date-fns */}
               <span className="text-[10px] text-muted-foreground/70">
                 {formatDistanceToNow(new Date(notification.createdAt), {
                   addSuffix: true,
                 })}
               </span>
 
-              {/* Unread dot indicator */}
               {!notification.isRead && (
                 <span className="absolute right-2 top-3 h-1.5 w-1.5 rounded-full bg-primary" />
               )}

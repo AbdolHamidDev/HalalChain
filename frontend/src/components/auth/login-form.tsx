@@ -9,15 +9,17 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 
 const schema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().email("auth.errors.emailInvalid"),
+  password: z.string().min(1, "auth.errors.passwordRequired"),
 });
 
 type FormData = z.infer<typeof schema>;
 
 export function LoginForm() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -36,14 +38,14 @@ export function LoginForm() {
       await login(data.email, data.password);
       router.push("/dashboard");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sign in failed. Please check your credentials.");
+      setError(e instanceof Error ? e.message : t("auth.errors.signInFailed"));
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <InputWrapper error={!!errors.email}>
-        <InputLabel htmlFor="email">Email</InputLabel>
+        <InputLabel htmlFor="email">{t("auth.email")}</InputLabel>
         <Input
           id="email"
           type="email"
@@ -53,12 +55,12 @@ export function LoginForm() {
           {...register("email")}
         />
         {errors.email && (
-          <InputError id="email-error" role="alert">{errors.email.message}</InputError>
+          <InputError id="email-error" role="alert">{t(errors.email.message as any)}</InputError>
         )}
       </InputWrapper>
 
       <InputWrapper error={!!errors.password}>
-        <InputLabel htmlFor="password">Password</InputLabel>
+        <InputLabel htmlFor="password">{t("auth.password")}</InputLabel>
         <Input
           id="password"
           type="password"
@@ -68,7 +70,7 @@ export function LoginForm() {
           {...register("password")}
         />
         {errors.password && (
-          <InputError id="password-error" role="alert">{errors.password.message}</InputError>
+          <InputError id="password-error" role="alert">{t(errors.password.message as any)}</InputError>
         )}
       </InputWrapper>
 
@@ -77,13 +79,13 @@ export function LoginForm() {
       )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Signing in…" : "Sign In"}
+        {isSubmitting ? t("auth.signingIn") : t("auth.signIn")}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
+        {t("auth.noAccount")}{" "}
         <Link href="/register" className="font-medium text-primary hover:underline">
-          Create account
+          {t("auth.createAccount")}
         </Link>
       </p>
     </form>

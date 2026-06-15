@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { api, Supplier, SupplierStatus } from "@/lib/api";
 import { countryFlag } from "@/lib/countryFlag";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -42,6 +43,7 @@ const empty: FormData = {
 };
 
 export function SuppliersModule() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const qc = useQueryClient();
   const isAdmin = user?.role === "ADMIN";
@@ -67,23 +69,27 @@ export function SuppliersModule() {
       setEditing(null);
       setForm(empty);
       setError(null);
-      toast.success(editing ? "Supplier updated" : "Supplier created", {
-        description: editing
-          ? `${form.name} has been updated.`
-          : `${form.name} has been added to your supplier network.`,
-      });
+      if (editing) {
+        toast.success(t("suppliers.supplierUpdated"), {
+          description: t("suppliers.supplierEdited", { values: { name: form.name } }),
+        });
+      } else {
+        toast.success(t("suppliers.supplierCreated"), {
+          description: t("suppliers.supplierAdded", { values: { name: form.name } }),
+        });
+      }
     },
     onError: (e: Error) => setError(e.message),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteSupplier(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["suppliers"] });
-      toast.success("Supplier deleted");
+      toast.success(t("suppliers.supplierDeleted"));
     },
     onError: (e: Error) => {
-      toast.error("Failed to delete supplier", { description: e.message });
+      toast.error(t("suppliers.supplierDeleteFailed"), { description: e.message });
     },
   });
 
@@ -112,12 +118,12 @@ export function SuppliersModule() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Supplier Management"
-        description="Manage halal-certified suppliers across Malaysia, Indonesia, Thailand and SEA"
+        title={t("suppliers.pageTitle")}
+        description={t("suppliers.pageDescription")}
         action={
           isAdmin ? (
             <Button onClick={openCreate}>
-              <Plus className="h-4 w-4" /> Add Supplier
+              <Plus className="h-4 w-4" /> {t("suppliers.addSupplier")}
             </Button>
           ) : undefined
         }
@@ -126,7 +132,7 @@ export function SuppliersModule() {
       {isLoading && <TableSkeleton columns={isAdmin ? 7 : 6} rows={5} />}
       {isError && (
         <ErrorState
-          message="Failed to load suppliers"
+          message={t("suppliers.errors.loadFailed")}
           onRetry={() => refetch()}
         />
       )}
@@ -140,7 +146,6 @@ export function SuppliersModule() {
 
       {suppliers.length > 0 && (
         <>
-          {/* Mobile card view */}
           <div className="grid gap-3 sm:hidden">
             {suppliers.map((s) => (
               <div key={s.id} className="rounded-xl border bg-card p-4 space-y-3">
@@ -160,13 +165,13 @@ export function SuppliersModule() {
                   </div>
                 )}
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span><span className="font-medium text-foreground">{s._count?.products ?? 0}</span> products</span>
-                  <span><span className="font-medium text-foreground">{s._count?.halalCertificates ?? 0}</span> certs</span>
+                  <span><span className="font-medium text-foreground">{s._count?.products ?? 0}</span> {t("suppliers.table.products").toLowerCase()}</span>
+                  <span><span className="font-medium text-foreground">{s._count?.halalCertificates ?? 0}</span> {t("suppliers.table.certificates").toLowerCase()}</span>
                 </div>
                 {isAdmin && (
                   <div className="flex gap-2 pt-1 border-t">
                     <Button size="sm" variant="outline" className="flex-1" onClick={() => openEdit(s)}>
-                      <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
+                      <Pencil className="h-3.5 w-3.5 mr-1" /> {t("common.edit")}
                     </Button>
                     <Button
                       size="sm"
@@ -175,14 +180,14 @@ export function SuppliersModule() {
                       onClick={async () => {
                         const ok = await dialog.confirm({
                           type: "destructive",
-                          title: "Delete supplier?",
-                          description: `This will permanently remove "${s.name}" and cannot be undone. Products and certificates linked to this supplier may be affected.`,
-                          confirmLabel: "Delete Supplier",
+                          title: t("suppliers.deleteConfirm"),
+                          description: t("suppliers.deleteDescription", { values: { name: s.name } }),
+                          confirmLabel: t("suppliers.deleteSupplier"),
                         });
                         if (ok) deleteMutation.mutate(s.id);
                       }}
                     >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> {t("common.delete")}
                     </Button>
                   </div>
                 )}
@@ -190,18 +195,17 @@ export function SuppliersModule() {
             ))}
           </div>
 
-          {/* Desktop table view */}
           <div className="hidden sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Country</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Products</TableHead>
-                  <TableHead>Certs</TableHead>
-                  {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                  <TableHead>{t("suppliers.table.name")}</TableHead>
+                  <TableHead>{t("suppliers.table.country")}</TableHead>
+                  <TableHead>{t("suppliers.table.contact")}</TableHead>
+                  <TableHead>{t("suppliers.table.status")}</TableHead>
+                  <TableHead>{t("suppliers.table.products")}</TableHead>
+                  <TableHead>{t("suppliers.table.certificates")}</TableHead>
+                  {isAdmin && <TableHead className="text-right">{t("suppliers.table.actions")}</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -228,7 +232,7 @@ export function SuppliersModule() {
                           <Button
                             size="sm"
                             variant="outline"
-                            aria-label={`Edit ${s.name}`}
+                            aria-label={t("suppliers.common.editItem", { values: { name: s.name } })}
                             onClick={() => openEdit(s)}
                           >
                             <Pencil className="h-3.5 w-3.5" />
@@ -236,13 +240,13 @@ export function SuppliersModule() {
                           <Button
                             size="sm"
                             variant="destructive"
-                            aria-label={`Delete ${s.name}`}
+                            aria-label={t("suppliers.common.deleteItem", { values: { name: s.name } })}
                             onClick={async () => {
                               const ok = await dialog.confirm({
                                 type: "destructive",
-                                title: "Delete supplier?",
-                                description: `This will permanently remove "${s.name}" and cannot be undone. Products and certificates linked to this supplier may be affected.`,
-                                confirmLabel: "Delete Supplier",
+                                title: t("suppliers.deleteConfirm"),
+                                description: t("suppliers.deleteDescription", { values: { name: s.name } }),
+                                confirmLabel: t("suppliers.deleteSupplier"),
                               });
                               if (ok) deleteMutation.mutate(s.id);
                             }}
@@ -260,11 +264,10 @@ export function SuppliersModule() {
         </>
       )}
 
-      {/* Create / Edit dialog */}
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        title={editing ? "Edit Supplier" : "New Supplier"}
+        title={editing ? t("suppliers.editSupplier") : t("suppliers.newSupplier")}
       >
         <form
           className="space-y-4"
@@ -274,46 +277,46 @@ export function SuppliersModule() {
           }}
         >
           <InputWrapper>
-            <InputLabel htmlFor="supplier-name">Name <span className="text-destructive" aria-hidden="true">*</span></InputLabel>
+            <InputLabel htmlFor="supplier-name">{t("suppliers.form.name")} <span className="text-destructive" aria-hidden="true">*</span></InputLabel>
             <Input
               id="supplier-name"
               required
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="e.g. Al-Barakah Food Co."
+              placeholder={t("suppliers.form.namePlaceholder")}
             />
           </InputWrapper>
           <InputWrapper>
-            <InputLabel htmlFor="supplier-country">Country <span className="text-destructive" aria-hidden="true">*</span></InputLabel>
+            <InputLabel htmlFor="supplier-country">{t("suppliers.form.country")} <span className="text-destructive" aria-hidden="true">*</span></InputLabel>
             <Input
               id="supplier-country"
               required
               value={form.country}
               onChange={(e) => setForm({ ...form, country: e.target.value })}
-              placeholder="e.g. Malaysia"
+              placeholder={t("suppliers.form.countryPlaceholder")}
             />
           </InputWrapper>
           <InputWrapper>
-            <InputLabel htmlFor="supplier-email">Email <span className="text-xs font-normal text-muted-foreground">(optional)</span></InputLabel>
+            <InputLabel htmlFor="supplier-email">{t("suppliers.form.email")} <span className="text-xs font-normal text-muted-foreground">({t("suppliers.form.optional")})</span></InputLabel>
             <Input
               id="supplier-email"
               type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="contact@supplier.com"
+              placeholder={t("suppliers.form.emailPlaceholder")}
             />
           </InputWrapper>
           <InputWrapper>
-            <InputLabel htmlFor="supplier-phone">Phone <span className="text-xs font-normal text-muted-foreground">(optional)</span></InputLabel>
+            <InputLabel htmlFor="supplier-phone">{t("suppliers.form.phone")} <span className="text-xs font-normal text-muted-foreground">({t("suppliers.form.optional")})</span></InputLabel>
             <Input
               id="supplier-phone"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              placeholder="+60 3-XXXX XXXX"
+              placeholder={t("suppliers.form.phonePlaceholder")}
             />
           </InputWrapper>
           <div className="space-y-2">
-            <InputLabel htmlFor="supplier-status">Status</InputLabel>
+            <InputLabel htmlFor="supplier-status">{t("suppliers.form.status")}</InputLabel>
             <Select
               value={form.status}
               onValueChange={(v) => setForm({ ...form, status: v as SupplierStatus })}
@@ -322,8 +325,8 @@ export function SuppliersModule() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ACTIVE">Active</SelectItem>
-                <SelectItem value="INACTIVE">Inactive</SelectItem>
+                <SelectItem value="ACTIVE">{t("suppliers.form.statusActive")}</SelectItem>
+                <SelectItem value="INACTIVE">{t("suppliers.form.statusInactive")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -332,15 +335,14 @@ export function SuppliersModule() {
           )}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button type="submit" disabled={saveMutation.isPending}>
-              {saveMutation.isPending ? "Saving…" : editing ? "Save Changes" : "Add Supplier"}
+              {saveMutation.isPending ? t("common.saving") : editing ? t("suppliers.saveChanges") : t("suppliers.addSupplier")}
             </Button>
           </div>
         </form>
       </Dialog>
-
     </div>
   );
 }
