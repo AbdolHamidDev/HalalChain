@@ -8,6 +8,15 @@ export type UserStatus = "ACTIVE" | "SUSPENDED";
 export type SupplierStatus = "ACTIVE" | "INACTIVE";
 export type PurchaseOrderStatus = "DRAFT" | "APPROVED" | "SHIPPING" | "RECEIVED" | "CANCELLED" | "PARTIAL";
 export type ShipmentStatus = "PENDING" | "IN_TRANSIT" | "DELIVERED" | "DELAYED";
+export type CertificateStatus = "VALID" | "EXPIRING_SOON" | "EXPIRED";
+
+export interface NotificationPreferences {
+  id?: string;
+  certificateAlerts: boolean;
+  inventoryAlerts: boolean;
+  shipmentAlerts: boolean;
+  invitationEmails: boolean;
+}
 
 export interface User {
   id: string;
@@ -53,6 +62,8 @@ export interface HalalCertificate {
   issueDate: string;
   expiryDate: string;
   fileUrl: string | null;
+  filePublicId?: string | null;
+  status?: CertificateStatus; // computed server-side, not persisted
   supplier?: { id: string; name: string; country: string };
 }
 
@@ -225,6 +236,8 @@ export interface ReportSummary {
   };
 }
 
+let refreshPromise: Promise<void> | null = null;
+
 async function request<T>(
   path: string,
   options: RequestInit = {}
@@ -237,6 +250,30 @@ async function request<T>(
       ...options.headers,
     },
   });
+
+  if (res.status === 401 && path !== "/api/auth/refresh") {
+    if (!refreshPromise) {
+      refreshPromise = fetch(`${API_BASE}/api/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      })
+        .then(async (r) => {
+          refreshPromise = null;
+          if (!r.ok) {
+            if (typeof window !== "undefined") {
+              window.location.href = "/login";
+            }
+            throw new Error("Session expired");
+          }
+        })
+        .catch((e) => {
+          refreshPromise = null;
+          throw e;
+        });
+    }
+    await refreshPromise;
+    return request<T>(path, options);
+  }
 
   const data = await res.json().catch(() => ({}));
 
@@ -654,4 +691,32 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+
+  // Notification preferences
+  getNotificationPreferences: () =>
+    request<{ preferences: NotificationPreferences }>("/api/settings/notifications"),
+
+  updateNotificationPreferences: (data: Partial<NotificationPreferences>) =>
+    request<{ preferences: NotificationPreferences }>("/api/settings/notifications", {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+
+  // Certificate file upload (uses raw fetch to avoid Content-Type override on FormData)
+  uploadCertificate: (certificateId: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return fetch(`${API_BASE}/api/certificates/${certificateId}/upload`, {
+      method: "POST",
+      credentials: "include",
+      body: form,
+    }).then(async (r) => {
+      const data = await r.json();
+      if (!r.ok)
+        throw new Error(
+          typeof data.error === "string" ? data.error : "Upload failed"
+        );
+      return data as { certificate: HalalCertificate & { status: CertificateStatus } };
+    });
+  },
 };

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   ArrowLeft,
   Bell,
+  BellRing,
   KeyRound,
   Menu,
   Settings,
@@ -18,6 +19,7 @@ const settingsNavItems = [
   { label: "Profile", href: "/settings/profile", icon: User },
   { label: "Security", href: "/settings/security", icon: KeyRound },
   { label: "Preferences", href: "/settings/preferences", icon: Bell },
+  { label: "Notifications", href: "/settings/notifications", icon: BellRing },
 ];
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {

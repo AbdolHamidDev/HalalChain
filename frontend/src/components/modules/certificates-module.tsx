@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { api, HalalCertificate } from "@/lib/api";
+import { api, HalalCertificate, CertificateStatus } from "@/lib/api";
+import { CertificateUploadZone } from "@/components/settings/certificate-upload-zone";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
@@ -24,11 +25,25 @@ import {
 } from "@/components/ui/table";
 import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/state-blocks";
 
-function certStatus(expiry: string) {
+/** Derive badge props from the local expiry date (fallback when API status is absent). */
+function certStatusFromExpiry(expiry: string) {
   const days = (new Date(expiry).getTime() - Date.now()) / 86400000;
   if (days < 0) return { label: "Expired", variant: "danger" as const };
   if (days <= 90) return { label: "Expiring Soon", variant: "warning" as const };
   return { label: "Valid", variant: "success" as const };
+}
+
+/** Return badge props, preferring the API-computed `status` field when present. */
+function certStatusProps(c: HalalCertificate) {
+  if (c.status) {
+    const map: Record<CertificateStatus, { label: string; variant: "success" | "warning" | "danger" }> = {
+      VALID: { label: "Valid", variant: "success" },
+      EXPIRING_SOON: { label: "Expiring Soon", variant: "warning" },
+      EXPIRED: { label: "Expired", variant: "danger" },
+    };
+    return map[c.status];
+  }
+  return certStatusFromExpiry(c.expiryDate);
 }
 
 type FormData = {
@@ -174,25 +189,32 @@ export function CertificatesModule() {
           placeholder="e.g. JAKIM/2024/001234"
         />
       </InputWrapper>
-      <div className="space-y-2">
+      <InputWrapper>
         <InputLabel htmlFor="cert-issuer">
           Issuing Authority <span className="text-destructive" aria-hidden="true">*</span>
         </InputLabel>
-        <Select
+        <Input
+          id="cert-issuer"
+          required
+          list="issuer-suggestions"
           value={form.issuedBy}
-          onValueChange={(v) => setForm({ ...form, issuedBy: v })}
-        >
-          <SelectTrigger id="cert-issuer">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="JAKIM">JAKIM (Malaysia)</SelectItem>
-            <SelectItem value="MUI">MUI (Indonesia)</SelectItem>
-            <SelectItem value="CICOT">CICOT (Thailand)</SelectItem>
-            <SelectItem value="Other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+          onChange={(e) => setForm({ ...form, issuedBy: e.target.value })}
+          placeholder="e.g. JAKIM, MUI, CICOT, MUIS..."
+        />
+        <datalist id="issuer-suggestions">
+          <option value="JAKIM" />
+          <option value="MUI" />
+          <option value="CICOT" />
+          <option value="MUIS" />
+          <option value="IFANCA" />
+          <option value="HFA" />
+          <option value="ESMA" />
+          <option value="HFCE" />
+          <option value="ISNA" />
+          <option value="HIPL"/>
+        </datalist>
+        <InputHint>Chọn từ gợi ý hoặc gõ tên tổ chức khác</InputHint>
+      </InputWrapper>
       <div className="grid grid-cols-2 gap-4">
         <InputWrapper>
           <InputLabel htmlFor="cert-issue-date">
@@ -275,7 +297,7 @@ export function CertificatesModule() {
           {/* Mobile card view */}
           <div className="grid gap-3 sm:hidden">
             {certificates.map((c) => {
-              const st = certStatus(c.expiryDate);
+              const st = certStatusProps(c);
               return (
                 <div key={c.id} className="rounded-xl border bg-card p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
@@ -335,7 +357,7 @@ export function CertificatesModule() {
               </TableHeader>
               <TableBody>
                 {certificates.map((c) => {
-                  const st = certStatus(c.expiryDate);
+                  const st = certStatusProps(c);
                   return (
                     <TableRow key={c.id}>
                       <TableCell className="font-mono text-xs">{c.certificateNumber}</TableCell>
@@ -409,6 +431,20 @@ export function CertificatesModule() {
         }
       >
         {formContent}
+        {editing && isAdmin && (
+          <div className="pt-4 border-t">
+            <p className="text-sm font-medium mb-3">Certificate Document</p>
+            <CertificateUploadZone
+              certificateId={editing.id}
+              existingFileUrl={editing.fileUrl}
+              onSuccess={(url) => {
+                setEditing({ ...editing, fileUrl: url });
+                setForm({ ...form, fileUrl: url });
+                toast.success("Certificate file uploaded successfully");
+              }}
+            />
+          </div>
+        )}
       </Sheet>
 
     </div>

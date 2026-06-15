@@ -3,9 +3,17 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
-import { AUTH_COOKIE_NAME, signToken } from "../lib/jwt";
+import {
+  AUTH_COOKIE_NAME,
+  REFRESH_COOKIE_NAME,
+  ACCESS_COOKIE_OPTIONS,
+  REFRESH_COOKIE_OPTIONS,
+  signAccessToken,
+  signRefreshToken,
+} from "../lib/jwt";
 import { AuthRequest, authenticate, authorize } from "../middleware/auth";
 import { logAudit } from "../lib/auditLog";
+import { authRateLimiter } from "../lib/rateLimiter";
 
 const router = Router();
 
@@ -24,13 +32,6 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-  path: "/",
-};
 
 function sanitizeUser(user: {
   id: string;
@@ -78,7 +79,7 @@ router.post("/register", async (req: AuthRequest, res: Response) => {
     },
   });
 
-  const token = signToken({
+  const accessToken = signAccessToken({
     sub: user.id,
     email: user.email,
     role: user.role,
@@ -86,7 +87,18 @@ router.post("/register", async (req: AuthRequest, res: Response) => {
     tv: user.tokenVersion,
   });
 
-  res.cookie(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
+  const rawRefresh = signRefreshToken(user.id);
+  const hashRefresh = await bcrypt.hash(rawRefresh, 10);
+  await prisma.refreshToken.create({
+    data: {
+      token: hashRefresh,
+      userId: user.id,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  res.cookie(AUTH_COOKIE_NAME, accessToken, ACCESS_COOKIE_OPTIONS);
+  res.cookie(REFRESH_COOKIE_NAME, rawRefresh, REFRESH_COOKIE_OPTIONS);
   res.status(201).json({ user: sanitizeUser(user) });
 });
 
@@ -117,7 +129,7 @@ router.post("/login", async (req, res: Response) => {
     return;
   }
 
-  const token = signToken({
+  const accessToken = signAccessToken({
     sub: user.id,
     email: user.email,
     role: user.role,
@@ -128,12 +140,102 @@ router.post("/login", async (req, res: Response) => {
   // Track last login time (non-blocking)
   prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } }).catch(() => {});
 
-  res.cookie(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
+  const rawRefresh = signRefreshToken(user.id);
+  const hashRefresh = await bcrypt.hash(rawRefresh, 10);
+  await prisma.refreshToken.create({
+    data: {
+      token: hashRefresh,
+      userId: user.id,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  res.cookie(AUTH_COOKIE_NAME, accessToken, ACCESS_COOKIE_OPTIONS);
+  res.cookie(REFRESH_COOKIE_NAME, rawRefresh, REFRESH_COOKIE_OPTIONS);
   res.json({ user: sanitizeUser(user) });
 });
 
-router.post("/logout", (_req, res: Response) => {
+router.post("/refresh", authRateLimiter, async (req, res: Response) => {
+  const rawToken = req.cookies?.[REFRESH_COOKIE_NAME];
+  if (!rawToken) {
+    res.clearCookie(AUTH_COOKIE_NAME, { path: "/" });
+    res.clearCookie(REFRESH_COOKIE_NAME, { path: "/api/auth/refresh" });
+    return res.status(401).json({ error: "No refresh token" });
+  }
+
+  // Extract userId from the structured token: "${userId}.${randomHex}"
+  const userId = rawToken.split(".")[0];
+  if (!userId) {
+    res.clearCookie(AUTH_COOKIE_NAME, { path: "/" });
+    res.clearCookie(REFRESH_COOKIE_NAME, { path: "/api/auth/refresh" });
+    return res.status(401).json({ error: "Invalid refresh token" });
+  }
+
+  const records = await prisma.refreshToken.findMany({
+    where: { userId, expiresAt: { gt: new Date() } },
+  });
+
+  let matched = null;
+  for (const record of records) {
+    if (await bcrypt.compare(rawToken, record.token)) {
+      matched = record;
+      break;
+    }
+  }
+
+  if (!matched) {
+    res.clearCookie(AUTH_COOKIE_NAME, { path: "/" });
+    res.clearCookie(REFRESH_COOKIE_NAME, { path: "/api/auth/refresh" });
+    return res.status(401).json({ error: "Invalid or expired refresh token" });
+  }
+
+  // Rotation: delete old token
+  await prisma.refreshToken.delete({ where: { id: matched.id } });
+
+  // Look up user to build access token payload
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    res.clearCookie(AUTH_COOKIE_NAME, { path: "/" });
+    res.clearCookie(REFRESH_COOKIE_NAME, { path: "/api/auth/refresh" });
+    return res.status(401).json({ error: "User not found" });
+  }
+
+  const accessToken = signAccessToken({
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+    name: user.name,
+    tv: user.tokenVersion,
+  });
+  const rawRefresh = signRefreshToken(user.id);
+  const hashRefresh = await bcrypt.hash(rawRefresh, 10);
+  await prisma.refreshToken.create({
+    data: {
+      token: hashRefresh,
+      userId: user.id,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  res.cookie(AUTH_COOKIE_NAME, accessToken, ACCESS_COOKIE_OPTIONS);
+  res.cookie(REFRESH_COOKIE_NAME, rawRefresh, REFRESH_COOKIE_OPTIONS);
+  res.json({ message: "Refreshed" });
+});
+
+router.post("/logout", async (req, res: Response) => {
+  const rawRefresh = req.cookies?.[REFRESH_COOKIE_NAME] as string | undefined;
+
+  // Extract userId from the `${userId}.${random}` cookie structure for targeted DB cleanup
+  if (rawRefresh) {
+    const userId = rawRefresh.split(".")[0];
+    if (userId) {
+      // Delete all refresh tokens for this user (graceful — don't fail logout if DB errors)
+      await prisma.refreshToken.deleteMany({ where: { userId } }).catch(() => {});
+    }
+  }
+
   res.clearCookie(AUTH_COOKIE_NAME, { path: "/" });
+  res.clearCookie(REFRESH_COOKIE_NAME, { path: "/api/auth/refresh" });
   res.json({ message: "Logged out" });
 });
 

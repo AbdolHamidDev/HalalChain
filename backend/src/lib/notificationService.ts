@@ -1,4 +1,10 @@
 import { PrismaClient, UserRole, NotificationType } from "@prisma/client";
+import {
+  dispatchCertExpiringEmails,
+  dispatchCertExpiredEmails,
+  dispatchLowStockEmails,
+  dispatchShipmentDelayedEmails,
+} from "./emailService";
 
 type TxClient = Omit<
   PrismaClient,
@@ -47,6 +53,15 @@ export async function notifyLowStock(
       type: NotificationType.LOW_STOCK,
     })),
   });
+
+  // Fire-and-forget email dispatch — outside transaction, no await
+  dispatchLowStockEmails({
+    productName: params.productName,
+    sku: params.sku,
+    warehouseName: params.warehouseName,
+    quantity: params.quantity,
+    reorderLevel: params.reorderLevel,
+  }).catch(() => {});
 }
 
 export async function notifyShipmentDelayed(
@@ -64,6 +79,12 @@ export async function notifyShipmentDelayed(
       type: NotificationType.SHIPMENT_DELAYED,
     })),
   });
+
+  // Fire-and-forget email dispatch — outside transaction, no await
+  dispatchShipmentDelayedEmails({
+    trackingNumber: params.trackingNumber,
+    poNumber: params.poNumber,
+  }).catch(() => {});
 }
 
 export async function notifyCertificateExpiring(
@@ -96,4 +117,11 @@ export async function notifyCertificateExpiring(
       type: NotificationType.CERTIFICATE_EXPIRING,
     })),
   });
+
+  // Fire-and-forget email dispatch — outside transaction, no await
+  dispatchCertExpiringEmails({
+    certificateNumber: params.certificateNumber,
+    supplierName: params.supplierName,
+    expiryDate: params.expiryDate,
+  }).catch(() => {});
 }

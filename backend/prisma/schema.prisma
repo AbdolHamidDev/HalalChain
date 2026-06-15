@@ -17,17 +17,31 @@ model User {
   avatarPublicId String?  @map("avatar_public_id")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  auditLogs          AuditLog[]
-  inventoryMovements InventoryMovement[]
-  notifications      Notification[]
-  invitationsSent    UserInvitation[]   @relation("InvitedBy")
-  
+  auditLogs              AuditLog[]
+  inventoryMovements     InventoryMovement[]
+  notifications          Notification[]
+  invitationsSent        UserInvitation[]        @relation("InvitedBy")
+  notificationPreference NotificationPreference?
+  refreshTokens      RefreshToken[]
+
   isVerified Boolean @default(false) @map("is_verified")
   status     UserStatus @default(ACTIVE)
   lastLoginAt DateTime? @map("last_login_at")
   tokenVersion Int @default(0) @map("token_version")
 
   @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  token     String   @unique              // stores bcrypt hash of the raw token
+  userId    String   @map("user_id") @db.Uuid
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
 }
 
 model Supplier {
@@ -53,6 +67,7 @@ model HalalCertificate {
   issueDate         DateTime @map("issue_date") @db.Date
   expiryDate        DateTime @map("expiry_date") @db.Date
   fileUrl           String?  @map("file_url")
+  filePublicId      String?  @map("file_public_id")
   createdAt         DateTime @default(now()) @map("created_at")
   supplier          Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -213,6 +228,20 @@ model UserInvitation {
 
   @@index([email])
   @@map("user_invitations")
+}
+
+model NotificationPreference {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @unique @map("user_id") @db.Uuid
+  certificateAlerts Boolean  @default(true) @map("certificate_alerts")
+  inventoryAlerts   Boolean  @default(true) @map("inventory_alerts")
+  shipmentAlerts    Boolean  @default(true) @map("shipment_alerts")
+  invitationEmails  Boolean  @default(true) @map("invitation_emails")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
 }
 
 enum UserRole {

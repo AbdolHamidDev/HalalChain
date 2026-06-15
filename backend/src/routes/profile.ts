@@ -2,7 +2,7 @@ import { Router, Response } from "express";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
-import { AUTH_COOKIE_NAME, signToken } from "../lib/jwt";
+import { AUTH_COOKIE_NAME, signAccessToken, ACCESS_COOKIE_OPTIONS } from "../lib/jwt";
 import { authenticate, AuthRequest } from "../middleware/auth";
 import { buildUserResponse } from "../lib/userResponse";
 import { validateName } from "../lib/validateName";
@@ -11,14 +11,6 @@ import { logAudit } from "../lib/auditLog";
 import { avatarUpload, uploadAvatarToCloudinary, deleteAvatarFromCloudinary } from "../lib/avatarUpload";
 
 const router = Router();
-
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-  path: "/",
-};
 
 const patchProfileSchema = z.object({
   name: z.string(),
@@ -122,7 +114,7 @@ router.patch("/", authenticate, async (req: AuthRequest, res: Response) => {
     });
 
     // Re-issue JWT cookie so in-memory session reflects new name (requirement 4.4)
-    const token = signToken({
+    const token = signAccessToken({
       sub: updatedUser.id,
       email: updatedUser.email,
       role: updatedUser.role,
@@ -130,7 +122,7 @@ router.patch("/", authenticate, async (req: AuthRequest, res: Response) => {
       tv: req.user!.tv,
     });
 
-    res.cookie(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
+    res.cookie(AUTH_COOKIE_NAME, token, ACCESS_COOKIE_OPTIONS);
     res.json({ user: buildUserResponse(updatedUser) });
   } catch (err) {
     console.error(err);
@@ -327,6 +319,8 @@ router.post("/password", authenticate, async (req: AuthRequest, res: Response) =
           tokenVersion: { increment: 1 }, // invalidate all existing sessions
         },
       });
+      // Delete all refresh tokens so active refresh cookies are immediately invalidated (req 7.7)
+      await tx.refreshToken.deleteMany({ where: { userId } });
       await logAudit(tx, {
         userId,
         action: "UPDATE",

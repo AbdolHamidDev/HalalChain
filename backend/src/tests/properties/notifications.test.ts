@@ -300,7 +300,7 @@ describe("Property 18: Certificate expiry notification idempotency", () => {
       fc.asyncProperty(
         fc.string({ minLength: 2, maxLength: 30 }),
         fc.string({ minLength: 2, maxLength: 50 }),
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31"), noInvalidDate: true }),
         async (certificateNumber, supplierName, expiryDate) => {
           const tx = makeTxClient({ existingNotification: null, userIds: ["u1"] });
 

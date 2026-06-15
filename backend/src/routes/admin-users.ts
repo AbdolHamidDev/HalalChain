@@ -325,6 +325,9 @@ router.post("/:id/reset-password", async (req: AuthRequest, res: Response): Prom
         },
       });
 
+      // Delete all refresh tokens so active refresh cookies are immediately invalidated (req 7.7)
+      await tx.refreshToken.deleteMany({ where: { userId: targetId } });
+
       await logAudit(tx, {
         userId: adminId,
         action: "UPDATE",
@@ -381,6 +384,11 @@ router.patch("/:id/status", async (req: AuthRequest, res: Response): Promise<voi
           ...(status === UserStatus.SUSPENDED ? { tokenVersion: { increment: 1 } } : {}),
         },
       });
+
+      // Delete all refresh tokens when suspending so active refresh cookies are immediately invalidated (req 7.8)
+      if (status === UserStatus.SUSPENDED) {
+        await tx.refreshToken.deleteMany({ where: { userId: targetId } });
+      }
 
       await logAudit(tx, {
         userId: adminId,

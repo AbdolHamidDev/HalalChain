@@ -5,22 +5,16 @@ import bcrypt from "bcryptjs";
 import { UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { authenticate, authorize, AuthRequest } from "../middleware/auth";
-import { AUTH_COOKIE_NAME, signToken } from "../lib/jwt";
+import { AUTH_COOKIE_NAME, signAccessToken, ACCESS_COOKIE_OPTIONS } from "../lib/jwt";
 import { buildUserResponse } from "../lib/userResponse";
 import { validatePassword } from "../lib/passwordValidator";
 import { logAudit } from "../lib/auditLog";
+import { sendEmail } from "../lib/emailService";
+import { invitationTemplate } from "../lib/emailTemplates";
 
 const router = Router();
 
 const INVITE_TTL_HOURS = 48;
-
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-  path: "/",
-};
 
 // ---------------------------------------------------------------------------
 // POST /api/invitations — admin sends an invitation
@@ -76,6 +70,17 @@ router.post(
     // In a real SaaS you'd send an email here. We return the invite link
     // so the frontend can display / copy it for the admin.
     const inviteUrl = `${process.env.FRONTEND_URL ?? "http://localhost:3000"}/accept-invite?token=${token}`;
+
+    // Fetch the inviting admin's name for the email
+    const admin = await prisma.user.findUnique({ where: { id: adminId }, select: { name: true } });
+
+    // Send invitation email — fire-and-forget (Requirements 3.4, 3.6)
+    const { html, text } = invitationTemplate({
+      inviterName: admin?.name ?? "HalalChain Admin",
+      role: role,
+      acceptanceUrl: inviteUrl,
+    });
+    sendEmail({ to: email, subject: "You've been invited to HalalChain", html, text });
 
     res.status(201).json({
       invitation: {
@@ -234,7 +239,7 @@ router.post("/accept", async (req, res: Response): Promise<void> => {
     return created;
   });
 
-  const jwtToken = signToken({
+  const jwtToken = signAccessToken({
     sub: user.id,
     email: user.email,
     role: user.role,
@@ -242,7 +247,7 @@ router.post("/accept", async (req, res: Response): Promise<void> => {
     tv: user.tokenVersion,
   });
 
-  res.cookie(AUTH_COOKIE_NAME, jwtToken, COOKIE_OPTIONS);
+  res.cookie(AUTH_COOKIE_NAME, jwtToken, ACCESS_COOKIE_OPTIONS);
   res.status(201).json({ user: buildUserResponse(user) });
 });
 

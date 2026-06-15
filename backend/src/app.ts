@@ -23,6 +23,7 @@ import publicRoutes from "./routes/public";
 import profileRoutes from "./routes/profile";
 import adminUserRoutes from "./routes/admin-users";
 import invitationRoutes from "./routes/invitations";
+import { notificationsRouter } from "./routes/settings";
 
 // Ensure the avatar upload directory exists before the app starts handling requests
 fs.mkdirSync(path.join(process.cwd(), "uploads", "avatars"), { recursive: true });
@@ -106,6 +107,7 @@ app.use("/api/public", publicRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/invitations", invitationRoutes);
+app.use("/api/settings/notifications", notificationsRouter);
 app.use("/uploads/avatars", express.static(path.join(process.cwd(), "uploads", "avatars")));
 
 app.use(

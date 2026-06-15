@@ -1,12 +1,15 @@
 import { Router, Response } from "express";
 import { z } from "zod";
 import { Prisma, UserRole } from "@prisma/client";
+import { v2 as cloudinary } from "cloudinary";
 import { prisma } from "../lib/prisma";
 import { parseBody, sendNotFound, sendValidationError } from "../lib/validate";
 import { paramId } from "../lib/params";
 import { AuthRequest, authenticate, authorize } from "../middleware/auth";
 import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
 import { logAudit } from "../lib/auditLog";
+import { computeCertificateStatus } from "../lib/certificateUtils";
+import { certUpload, uploadCertToCloudinary } from "../lib/certificateUpload";
 
 const router = Router();
 
@@ -72,7 +75,12 @@ router.get(
       }),
     ]);
 
-    res.json(buildPaginatedResponse(certificates, total, params));
+    const certificatesWithStatus = certificates.map((cert) => ({
+      ...cert,
+      status: computeCertificateStatus(cert.expiryDate),
+    }));
+
+    res.json(buildPaginatedResponse(certificatesWithStatus, total, params));
   }
 );
 
@@ -89,7 +97,7 @@ router.get(
       sendNotFound(res, "Certificate");
       return;
     }
-    res.json({ certificate });
+    res.json({ certificate: { ...certificate, status: computeCertificateStatus(certificate.expiryDate) } });
   }
 );
 
@@ -212,6 +220,99 @@ router.delete(
     });
 
     res.json({ message: "Certificate deleted" });
+  }
+);
+
+// ---------------------------------------------------------------------------
+// POST /api/certificates/:id/upload — upload a certificate file (Req 4.1–4.7, 11.1, 11.2)
+// ---------------------------------------------------------------------------
+
+router.post(
+  "/:id/upload",
+  authenticate,
+  authorize(UserRole.ADMIN),
+  // Wrap certUpload.single so we can catch multer errors and return 400 ourselves
+  (req, res, next) => {
+    certUpload.single("file")(req, res, (err) => {
+      if (err) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(400).json({ error: "File exceeds 10 MB limit" });
+        }
+        // MIME type rejection or any other multer error
+        return res.status(400).json({ error: err.message ?? "File upload error" });
+      }
+      next();
+    });
+  },
+  async (req: AuthRequest, res: Response) => {
+    if (!req.file) {
+      res.status(400).json({ error: "No file provided" });
+      return;
+    }
+
+    const id = paramId(req.params.id);
+
+    // Look up the existing certificate (Req 4.4 — 404 if not found)
+    const existing = await prisma.halalCertificate.findUnique({ where: { id } });
+    if (!existing) {
+      sendNotFound(res, "Certificate");
+      return;
+    }
+
+    // Upload to Cloudinary first — if this fails we must not write to DB (Req 4.5)
+    let secureUrl: string;
+    let publicId: string;
+    try {
+      const result = await uploadCertToCloudinary(req.file.buffer, req.file.mimetype);
+      secureUrl = result.secureUrl;
+      publicId = result.publicId;
+    } catch {
+      res.status(500).json({ error: "Failed to upload file to storage" });
+      return;
+    }
+
+    // Capture old publicId for later clean-up (Req 4.6)
+    const oldPublicId = existing.filePublicId ?? null;
+
+    const userId = req.user?.sub ?? null;
+
+    // Wrap DB update + audit log in a transaction (Req 11.1)
+    const updated = await prisma.$transaction(async (tx) => {
+      const cert = await tx.halalCertificate.update({
+        where: { id },
+        data: { fileUrl: secureUrl, filePublicId: publicId },
+      });
+      await logAudit(tx, {
+        userId,
+        action: "UPDATE",
+        entityType: "HalalCertificate",
+        entityId: cert.id,
+        oldData: existing as unknown as Record<string, unknown>,
+        newData: cert as unknown as Record<string, unknown>,
+      });
+      return cert;
+    });
+
+    // Non-blocking deletion of old Cloudinary resource (Req 4.6 — fire-and-forget)
+    if (oldPublicId) {
+      const oldMimeType = existing.fileUrl ?? "";
+      // Determine resource_type from the old public_id prefix or fall back to "raw"
+      const oldResourceType =
+        oldPublicId.startsWith("certificates/") && !oldMimeType.includes("pdf")
+          ? "image"
+          : "raw";
+      cloudinary.uploader.destroy(oldPublicId, { resource_type: oldResourceType }).catch(() => {
+        // Silently swallow — same pattern as deleteAvatarFromCloudinary
+      });
+    }
+
+    // Return updated certificate with computed status (Req 4.7, 5.4)
+    res.json({
+      certificate: {
+        ...updated,
+        status: computeCertificateStatus(updated.expiryDate),
+      },
+    });
   }
 );
 
