@@ -1,9 +1,20 @@
 import { Router, Response } from "express";
 import { UserRole } from "@prisma/client";
+import { z } from "zod";
 import { prisma } from "../lib/prisma";
-import { authenticate, authorize } from "../middleware/auth";
+import { authenticate, authorize, AuthRequest } from "../middleware/auth";
+import { exportReport } from "../lib/reportExportService";
 
 const router = Router();
+
+const exportParamsSchema = z.object({
+  module: z.enum(["products", "inventory", "suppliers", "certificates", "purchase-orders", "shipments"]),
+  format: z.enum(["csv", "xlsx", "pdf"]).default("csv"),
+  from: z.coerce.date().optional(),
+  to: z.coerce.date().optional(),
+}).refine((data) => !data.from || !data.to || data.from <= data.to, {
+  message: "from must be before to",
+});
 
 router.get(
   "/summary",
@@ -103,45 +114,34 @@ router.get(
 );
 
 router.get(
-  "/export/inventory",
+  "/export/:module",
   authenticate,
   authorize(UserRole.ADMIN, UserRole.MANAGER),
-  async (_req, res: Response) => {
-    const rows = await prisma.inventory.findMany({
-      include: {
-        product: {
-          select: { name: true, sku: true, unit: true, unitPrice: true },
-        },
-        warehouse: { select: { name: true, location: true } },
-      },
+  async (req: AuthRequest, res: Response) => {
+    const parsed = exportParamsSchema.safeParse({
+      module: req.params.module,
+      format: req.query.format ?? "csv",
+      from: req.query.from,
+      to: req.query.to,
     });
 
-    const header =
-      "Product,SKU,Warehouse,Location,Quantity,Reorder Level,Unit Price,Value\n";
-    const csv = rows
-      .map((r) => {
-        const value = r.quantity * Number(r.product.unitPrice);
-        return [
-          r.product.name,
-          r.product.sku,
-          r.warehouse.name,
-          r.warehouse.location,
-          r.quantity,
-          r.reorderLevel,
-          r.product.unitPrice,
-          value.toFixed(2),
-        ]
-          .map((v) => `"${String(v).replace(/"/g, '""')}"`)
-          .join(",");
-      })
-      .join("\n");
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Invalid export request" });
+      return;
+    }
 
-    res.setHeader("Content-Type", "text/csv");
-    res.setHeader(
-      "Content-Disposition",
-      'attachment; filename="halalchain-inventory.csv"'
-    );
-    res.send(header + csv);
+    try {
+      await exportReport(
+        prisma,
+        parsed.data.module,
+        parsed.data.format,
+        { from: parsed.data.from, to: parsed.data.to },
+        res
+      );
+    } catch (err) {
+      console.error("Report export failed:", err);
+      res.status(500).json({ error: "Failed to export report" });
+    }
   }
 );
 

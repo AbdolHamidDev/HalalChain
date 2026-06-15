@@ -4,12 +4,14 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { api } from "@/lib/api";
+import { api, type ExportFormat, type ExportModule } from "@/lib/api";
 import { countryFlag } from "@/lib/countryFlag";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -22,22 +24,26 @@ export function ReportsModule() {
   });
 
   const [isExporting, setIsExporting] = useState(false);
+  const [moduleName, setModuleName] = useState<ExportModule>("inventory");
+  const [format, setFormat] = useState<ExportFormat>("csv");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
 
-  async function downloadCsv() {
+  async function downloadReport() {
     setIsExporting(true);
     try {
-      const res = await api.exportInventoryCsv();
+      const res = await api.exportReport(moduleName, format, { from, to });
       if (!res.ok) throw new Error("Export failed");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "halalchain-inventory.csv";
+      a.download = `halalchain-${moduleName}.${format}`;
       a.click();
       URL.revokeObjectURL(url);
-      toast.success("Export ready", { description: "Inventory CSV has been downloaded." });
+      toast.success("Export ready", { description: "The report file has been downloaded." });
     } catch {
-      toast.error("Export failed", { description: "Could not generate the CSV file. Please try again." });
+      toast.error("Export failed", { description: "Could not generate the report file. Please try again." });
     } finally {
       setIsExporting(false);
     }
@@ -48,20 +54,59 @@ export function ReportsModule() {
 
   const s = data.summary;
 
+  const moduleOptions: { value: ExportModule; label: string }[] = [
+    { value: "inventory", label: "Inventory" },
+    { value: "products", label: "Products" },
+    { value: "suppliers", label: "Suppliers" },
+    { value: "certificates", label: "Certificates" },
+    { value: "purchase-orders", label: "Purchase Orders" },
+    { value: "shipments", label: "Shipments" },
+  ];
+
+  const formatOptions: { value: ExportFormat; label: string }[] = [
+    { value: "csv", label: "CSV" },
+    { value: "xlsx", label: "Excel (.xlsx)" },
+    { value: "pdf", label: "PDF" },
+  ];
+
   return (
     <div className="space-y-8">
       <PageHeader
         title="Reports"
         description="Operational KPI reports for Managers — inventory, compliance and procurement"
         action={
-          <Button variant="outline" onClick={downloadCsv} disabled={isExporting}>
-            {isExporting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4" />
-            )}
-            {isExporting ? "Exporting…" : "Export Inventory CSV"}
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <Select value={moduleName} onValueChange={(v) => setModuleName(v as ExportModule)}>
+              <SelectTrigger className="h-9 w-full sm:w-44">
+                <SelectValue placeholder="Module" />
+              </SelectTrigger>
+              <SelectContent>
+                {moduleOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={format} onValueChange={(v) => setFormat(v as ExportFormat)}>
+              <SelectTrigger className="h-9 w-full sm:w-36">
+                <SelectValue placeholder="Format" />
+              </SelectTrigger>
+              <SelectContent>
+                {formatOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-full sm:w-36" placeholder="From" />
+            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-full sm:w-36" placeholder="To" />
+            <Button variant="outline" onClick={downloadReport} disabled={isExporting} className="shrink-0">
+              {isExporting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              {isExporting ? "Exporting…" : "Export"}
+            </Button>
+          </div>
         }
       />
 

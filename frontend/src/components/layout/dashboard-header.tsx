@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { navItems } from "@/lib/navigation";
+import { useNotificationStream } from "@/lib/useNotificationStream";
 import { useMobileNav } from "@/components/layout/mobile-nav-provider";
 import {
   type Notification,
@@ -28,11 +29,12 @@ function useBreadcrumb() {
 export function DashboardHeader() {
   const pageTitle = useBreadcrumb();
   const { toggle } = useMobileNav();
+  useNotificationStream();
 
   const { data } = useQuery({
     queryKey: ["notifications"],
     queryFn: fetchNotifications,
-    refetchInterval: 30_000,
+    staleTime: 30_000,
   });
 
   const notifications: Notification[] = data?.notifications ?? [];

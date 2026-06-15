@@ -131,10 +131,14 @@ export interface Shipment {
 
 export interface DashboardStats {
   kpis: {
+    totalProducts: number;
+    activeSuppliers: number;
     totalSuppliers: number;
     activeCertificates: number;
     expiringSoonCertificates: number;
     inventoryValue: number;
+    openPurchaseOrders: number;
+    delayedShipments: number;
     pendingShipments: number;
   };
   charts: {
@@ -142,6 +146,30 @@ export interface DashboardStats {
     purchaseOrdersPerMonth: { month: string; orders: number }[];
     shipmentStatusDistribution: { status: string; count: number }[];
     certificateExpiryTimeline: { quarter: string; count: number }[];
+    shipmentVolumeTrend?: { month: string; shipments: number }[];
+  };
+  widgets: {
+    lowStockAlerts: {
+      id: string;
+      productName: string;
+      sku: string;
+      warehouseName: string;
+      quantity: number;
+      reorderLevel: number;
+    }[];
+    expiringCertificates: {
+      id: string;
+      certificateNumber: string;
+      supplierName: string;
+      expiryDate: string;
+    }[];
+    shipmentDelays: {
+      id: string;
+      trackingNumber: string;
+      poNumber: string;
+      supplierName: string;
+      estimatedArrival: string | null;
+    }[];
   };
 }
 
@@ -202,6 +230,51 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
+export interface InventoryAnalytics {
+  inventoryValueTrend: { month: string; value: number }[];
+  inventoryMovementTrend: { month: string; value: number }[];
+  inboundTrend: { month: string; value: number }[];
+  outboundTrend: { month: string; value: number }[];
+  lowStockTrend: { month: string; value: number }[];
+  inventoryByWarehouse: {
+    warehouseId: string;
+    warehouseName: string;
+    totalQuantity: number;
+    totalValue: number;
+  }[];
+  topStockedProducts: { productId: string; productName: string; sku: string; totalQuantity: number; totalValue: number }[];
+  fastMovingProducts: { productId: string; productName: string; sku: string; totalQuantity: number; totalValue: number }[];
+  slowMovingProducts: { productId: string; productName: string; sku: string; totalQuantity: number; totalValue: number }[];
+}
+
+export interface PurchaseOrderAnalytics {
+  ordersPerMonth: { month: string; orders: number }[];
+  approvalRate: number;
+  fulfillmentRate: number;
+  averageProcessingTimeDays: number | null;
+  statusBreakdown: { status: string; count: number }[];
+}
+
+export interface ShipmentAnalytics {
+  onTimeDeliveryRate: number;
+  delayedShipmentRate: number;
+  shipmentVolumeTrend: { month: string; shipments: number }[];
+  statusBreakdown: { status: string; count: number }[];
+}
+
+export interface CertificateAnalytics {
+  activeCertificates: number;
+  expiringCertificates: number;
+  expiredCertificates: number;
+  supplierComplianceScore: {
+    supplierId: string;
+    supplierName: string;
+    score: number;
+    activeCertificates: number;
+    totalCertificates: number;
+  }[];
+}
+
 export interface ReportSummary {
   summary: {
     activeSuppliers: number;
@@ -235,6 +308,16 @@ export interface ReportSummary {
     shipments: { status: string; count: number }[];
   };
 }
+
+export type ExportModule =
+  | "products"
+  | "inventory"
+  | "suppliers"
+  | "certificates"
+  | "purchase-orders"
+  | "shipments";
+
+export type ExportFormat = "csv" | "xlsx" | "pdf";
 
 let refreshPromise: Promise<void> | null = null;
 
@@ -306,7 +389,13 @@ export const api = {
 
   me: () => request<{ user: User }>("/api/auth/me"),
 
-  dashboardStats: () => request<DashboardStats>("/api/dashboard/stats"),
+  dashboardStats: (params?: { from?: string; to?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.from) query.set("from", params.from);
+    if (params?.to) query.set("to", params.to);
+    const qs = query.toString();
+    return request<DashboardStats>(`/api/dashboard/stats${qs ? `?${qs}` : ""}`);
+  },
 
   // Suppliers
   getSuppliers: () =>
@@ -513,6 +602,36 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  // Analytics
+  getAnalyticsInventory: (params?: { from?: string; to?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.from) query.set("from", params.from);
+    if (params?.to) query.set("to", params.to);
+    const qs = query.toString();
+    return request<InventoryAnalytics>(`/api/analytics/inventory${qs ? `?${qs}` : ""}`);
+  },
+  getAnalyticsPurchaseOrders: (params?: { from?: string; to?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.from) query.set("from", params.from);
+    if (params?.to) query.set("to", params.to);
+    const qs = query.toString();
+    return request<PurchaseOrderAnalytics>(`/api/analytics/purchase-orders${qs ? `?${qs}` : ""}`);
+  },
+  getAnalyticsShipments: (params?: { from?: string; to?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.from) query.set("from", params.from);
+    if (params?.to) query.set("to", params.to);
+    const qs = query.toString();
+    return request<ShipmentAnalytics>(`/api/analytics/shipments${qs ? `?${qs}` : ""}`);
+  },
+  getAnalyticsCertificates: (params?: { from?: string; to?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.from) query.set("from", params.from);
+    if (params?.to) query.set("to", params.to);
+    const qs = query.toString();
+    return request<CertificateAnalytics>(`/api/analytics/certificates${qs ? `?${qs}` : ""}`);
+  },
+
   // Reports
   getReportSummary: () =>
     request<ReportSummary>("/api/reports/summary"),
@@ -521,6 +640,15 @@ export const api = {
     fetch(`${API_BASE}/api/reports/export/inventory`, {
       credentials: "include",
     }),
+
+  exportReport: (moduleName: ExportModule, format: ExportFormat, params?: { from?: string; to?: string }) => {
+    const query = new URLSearchParams({ format });
+    if (params?.from) query.set("from", params.from);
+    if (params?.to) query.set("to", params.to);
+    return fetch(`${API_BASE}/api/reports/export/${moduleName}?${query.toString()}`, {
+      credentials: "include",
+    });
+  },
 
   // Notifications
   getNotifications: (page?: number) => {

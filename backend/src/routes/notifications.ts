@@ -2,8 +2,16 @@ import { Router, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { authenticate, AuthRequest } from "../middleware/auth";
 import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
+import { addNotificationClient, publishNotificationEvent } from "../lib/notificationStream";
 
 const router = Router();
+
+router.get("/stream", authenticate, async (req: AuthRequest, res: Response) => {
+  const cleanup = addNotificationClient(req.user!.sub, res);
+
+  req.on("close", cleanup);
+  req.on("error", cleanup);
+});
 
 // GET / — list notifications for the authenticated user (paginated)
 router.get("/", authenticate, async (req: AuthRequest, res: Response) => {
@@ -43,6 +51,11 @@ router.patch(
         data: { isRead: true },
       });
 
+      publishNotificationEvent([userId], "notification_read", {
+        scope: "all",
+        updated: result.count,
+      });
+
       res.json({ updated: result.count });
     } catch (err) {
       console.error(err);
@@ -73,6 +86,8 @@ router.patch(
         where: { id },
         data: { isRead: true },
       });
+
+      publishNotificationEvent([userId], "notification_read", updated);
 
       res.status(200).json(updated);
     } catch (err) {

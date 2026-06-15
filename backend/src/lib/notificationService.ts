@@ -5,6 +5,7 @@ import {
   dispatchLowStockEmails,
   dispatchShipmentDelayedEmails,
 } from "./emailService";
+import { publishCreatedNotifications } from "./notificationStream";
 
 type TxClient = Omit<
   PrismaClient,
@@ -45,14 +46,20 @@ export async function notifyLowStock(
   const userIds = await getManagerAndAdminUserIds(tx);
   const message = `Product ${params.productName} (SKU: ${params.sku}) in ${params.warehouseName} is below reorder level. Current: ${params.quantity}, Reorder level: ${params.reorderLevel}.`;
 
-  await tx.notification.createMany({
-    data: userIds.map((userId) => ({
-      userId,
-      title: "Low Stock Alert",
-      message,
-      type: NotificationType.LOW_STOCK,
-    })),
-  });
+  const notifications = await Promise.all(
+    userIds.map((userId) =>
+      tx.notification.create({
+        data: {
+          userId,
+          title: "Low Stock Alert",
+          message,
+          type: NotificationType.LOW_STOCK,
+        },
+      })
+    )
+  );
+
+  setImmediate(() => publishCreatedNotifications(notifications));
 
   // Fire-and-forget email dispatch — outside transaction, no await
   dispatchLowStockEmails({
@@ -71,14 +78,20 @@ export async function notifyShipmentDelayed(
   const userIds = await getManagerAndAdminUserIds(tx);
   const message = `Shipment ${params.trackingNumber} for PO ${params.poNumber} has been marked as DELAYED.`;
 
-  await tx.notification.createMany({
-    data: userIds.map((userId) => ({
-      userId,
-      title: "Shipment Delayed",
-      message,
-      type: NotificationType.SHIPMENT_DELAYED,
-    })),
-  });
+  const notifications = await Promise.all(
+    userIds.map((userId) =>
+      tx.notification.create({
+        data: {
+          userId,
+          title: "Shipment Delayed",
+          message,
+          type: NotificationType.SHIPMENT_DELAYED,
+        },
+      })
+    )
+  );
+
+  setImmediate(() => publishCreatedNotifications(notifications));
 
   // Fire-and-forget email dispatch — outside transaction, no await
   dispatchShipmentDelayedEmails({
@@ -109,14 +122,20 @@ export async function notifyCertificateExpiring(
     : params.expiryDate.toISOString().split("T")[0];
   const message = `Certificate ${params.certificateNumber} for ${params.supplierName} expires on ${dateStr}.`;
 
-  await tx.notification.createMany({
-    data: userIds.map((userId) => ({
-      userId,
-      title: "Certificate Expiring Soon",
-      message,
-      type: NotificationType.CERTIFICATE_EXPIRING,
-    })),
-  });
+  const notifications = await Promise.all(
+    userIds.map((userId) =>
+      tx.notification.create({
+        data: {
+          userId,
+          title: "Certificate Expiring Soon",
+          message,
+          type: NotificationType.CERTIFICATE_EXPIRING,
+        },
+      })
+    )
+  );
+
+  setImmediate(() => publishCreatedNotifications(notifications));
 
   // Fire-and-forget email dispatch — outside transaction, no await
   dispatchCertExpiringEmails({

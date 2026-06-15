@@ -1,97 +1,85 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Award, DollarSign, Loader2, Truck, Users } from "lucide-react";
+import { Award, Boxes, CircleDollarSign, FileClock, Package, Truck, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { api } from "@/lib/api";
+import { type DashboardStats } from "@/lib/api";
 
-const kpiMeta = [
-  {
-    key: "totalSuppliers" as const,
-    title: "Total Suppliers",
-    icon: Users,
-    iconClass: "text-success",
-    bgClass: "bg-success/10",
-    format: (v: number) => String(v),
-    subtitle: (data: Awaited<ReturnType<typeof api.dashboardStats>>) =>
-      `${data.kpis.totalSuppliers} active trong mạng lưới SEA`,
-  },
-  {
-    key: "activeCertificates" as const,
-    title: "Active Certificates",
-    icon: Award,
-    iconClass: "text-warning",
-    bgClass: "bg-warning/10",
-    format: (v: number) => String(v),
-    subtitle: (data: Awaited<ReturnType<typeof api.dashboardStats>>) =>
-      `${data.kpis.expiringSoonCertificates} sắp hết hạn (90 ngày)`,
-  },
-  {
-    key: "inventoryValue" as const,
-    title: "Inventory Value",
-    icon: DollarSign,
-    iconClass: "text-primary",
-    bgClass: "bg-primary/10",
-    format: (v: number) =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-      }).format(v),
-    subtitle: () => "Tính theo quantity × unit price",
-  },
-  {
-    key: "pendingShipments" as const,
-    title: "Pending Shipments",
-    icon: Truck,
-    iconClass: "text-muted-foreground",
-    bgClass: "bg-secondary",
-    format: (v: number) => String(v),
-    subtitle: () => "Pending · In transit · Delayed",
-  },
-];
+const money = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
 
-export function KpiCards() {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["dashboard-stats"],
-    queryFn: () => api.dashboardStats(),
-  });
+export function KpiCards({ data }: { data: DashboardStats }) {
+  const kpis = data?.kpis;
 
-  if (isLoading) {
-    return (
-      <div className="flex h-32 items-center justify-center rounded-xl border bg-card">
-        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  if (!kpis) return null;
 
-  if (isError || !data) {
-    return (
-      <div className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">
-        Không thể tải KPI. Vui lòng đăng nhập với quyền Admin hoặc Manager.
-      </div>
-    );
-  }
+  const cards = [
+    {
+      title: "Total Products",
+      value: (kpis.totalProducts ?? 0).toLocaleString(),
+      note: "Tracked SKUs",
+      icon: Package,
+      tone: "text-primary bg-primary/10",
+    },
+    {
+      title: "Inventory Value",
+      value: money.format(kpis.inventoryValue ?? 0),
+      note: "Quantity x unit price",
+      icon: CircleDollarSign,
+      tone: "text-success bg-success/10",
+    },
+    {
+      title: "Active Suppliers",
+      value: (kpis.activeSuppliers ?? 0).toLocaleString(),
+      note: "Approved network",
+      icon: Users,
+      tone: "text-sky-600 bg-sky-500/10",
+    },
+    {
+      title: "Active Certificates",
+      value: (kpis.activeCertificates ?? 0).toLocaleString(),
+      note: `${kpis.expiringSoonCertificates ?? 0} expiring within 90 days`,
+      icon: Award,
+      tone: "text-warning bg-warning/10",
+    },
+    {
+      title: "Open Purchase Orders",
+      value: (kpis.openPurchaseOrders ?? 0).toLocaleString(),
+      note: "Draft through shipping",
+      icon: Boxes,
+      tone: "text-primary bg-primary/10",
+    },
+    {
+      title: "Delayed Shipments",
+      value: (kpis.delayedShipments ?? 0).toLocaleString(),
+      note: "Needs follow-up",
+      icon: Truck,
+      tone: "text-destructive bg-destructive/10",
+    },
+  ];
 
   return (
-    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-      {kpiMeta.map((kpi) => {
-        const Icon = kpi.icon;
-        const value = data.kpis[kpi.key];
-
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+      {cards.map((card) => {
+        const Icon = card.icon;
         return (
-          <Card key={kpi.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-small font-medium text-muted-foreground">
-                {kpi.title}
+          <Card key={card.title}>
+            <CardHeader className="flex flex-row items-center justify-between gap-3 pb-2">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
+                {card.title}
               </CardTitle>
-              <div className={`rounded-lg p-2 ${kpi.bgClass}`}>
-                <Icon className={`h-4 w-4 ${kpi.iconClass}`} />
+              <div className={`rounded-md p-2 ${card.tone}`}>
+                <Icon className="h-4 w-4" />
               </div>
             </CardHeader>
             <CardContent>
-              <p className="font-display text-2xl tracking-tight sm:text-section">{kpi.format(value)}</p>
-              <p className="mt-1 text-caption text-muted-foreground">{kpi.subtitle(data)}</p>
+              <p className="text-2xl font-semibold tracking-normal">{card.value}</p>
+              <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                <FileClock className="h-3 w-3" />
+                {card.note}
+              </p>
             </CardContent>
           </Card>
         );

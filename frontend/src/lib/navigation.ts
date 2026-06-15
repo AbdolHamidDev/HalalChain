@@ -3,6 +3,7 @@ import {
   BarChart3,
   Building2,
   LayoutDashboard,
+  LineChart,
   Package,
   ShoppingCart,
   Truck,
@@ -73,6 +74,12 @@ export const navItems: NavItem[] = [
     href: "/dashboard/reports",
     label: "Reports",
     icon: BarChart3,
+    roles: ["ADMIN", "MANAGER"],
+  },
+  {
+    href: "/dashboard/analytics",
+    label: "Analytics",
+    icon: LineChart,
     roles: ["ADMIN", "MANAGER"],
   },
   {

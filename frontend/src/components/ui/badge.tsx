@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
    BASE VARIANTS
 ----------------------------- */
 const badgeVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border relative overflow-hidden transition-colors",
+  "inline-flex items-center gap-0 rounded-full px-3 py-1 rounded-full px-3 py-1 text-xs font-medium border relative overflow-hidden transition-colors",
   {
     variants: {
       variant: {
@@ -85,8 +85,7 @@ function Badge({ className, variant, children, ...props }: BadgeProps) {
       )}
       {...props}
     >
-      {/* DOT */}
-      <StatusDot />
+ 
 
       {/* PULSE (for shipping / in transit) */}
       {isPulse && <Pulse />}

@@ -21,14 +21,15 @@ interface NotificationsResponse {
 export async function fetchNotifications(): Promise<NotificationsResponse> {
   const res = await fetch("/api/notifications", { credentials: "include" });
   if (!res.ok) throw new Error("Failed to fetch notifications");
-  return res.json();
+  const data = await res.json();
+  return { notifications: data.data ?? data.notifications ?? [] };
 }
 
 export function NotificationBell() {
   const { data } = useQuery({
     queryKey: ["notifications"],
     queryFn: fetchNotifications,
-    refetchInterval: 30_000,
+    staleTime: 30_000,
   });
 
   const unreadCount = data?.notifications.filter((n) => !n.isRead).length ?? 0;
