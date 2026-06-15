@@ -37,18 +37,33 @@ export const certUpload = multer({
 
 /**
  * Upload a certificate buffer to Cloudinary under the "certificates" folder.
- * PDFs are stored as resource_type "raw"; images as "image".
+ * PDFs are stored as resource_type "raw" with the original filename preserved.
+ * Images are stored as resource_type "image".
  * Returns the secure URL and public_id of the uploaded resource.
  */
 export async function uploadCertToCloudinary(
   buffer: Buffer,
-  mimeType: string
+  mimeType: string,
+  originalName: string
 ): Promise<{ secureUrl: string; publicId: string }> {
-  const resourceType = mimeType === "application/pdf" ? "raw" : "image";
+  const isPdf = mimeType === "application/pdf";
+  const resourceType = isPdf ? "raw" : "image";
+
+  // Strip extension from original name to use as the public_id display name
+  const baseName = originalName.replace(/\.[^/.]+$/, "").replace(/\s+/g, "_");
 
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder: "certificates", resource_type: resourceType },
+      {
+        folder: "certificates",
+        resource_type: resourceType,
+        // Preserve original filename so the URL ends with the correct name+extension
+        public_id: baseName,
+        use_filename: true,
+        unique_filename: true,
+        // For PDFs: tell Cloudinary the format so the URL includes .pdf extension
+        ...(isPdf ? { format: "pdf" } : {}),
+      },
       (err, result) => {
         if (err || !result) {
           return reject(err ?? new Error("Upload failed"));
@@ -57,7 +72,6 @@ export async function uploadCertToCloudinary(
       }
     );
 
-    // Pipe the in-memory buffer into the upload stream (mirrors avatarUpload.ts)
     const readable = new Readable();
     readable.push(buffer);
     readable.push(null);

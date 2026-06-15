@@ -263,7 +263,11 @@ router.post(
     let secureUrl: string;
     let publicId: string;
     try {
-      const result = await uploadCertToCloudinary(req.file.buffer, req.file.mimetype);
+      const result = await uploadCertToCloudinary(
+        req.file.buffer,
+        req.file.mimetype,
+        req.file.originalname
+      );
       secureUrl = result.secureUrl;
       publicId = result.publicId;
     } catch {
