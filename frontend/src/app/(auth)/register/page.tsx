@@ -1,8 +1,8 @@
-import { Boxes } from "lucide-react";
+import Image from "next/image";
+
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -10,18 +10,30 @@ import { RegisterForm } from "@/components/auth/register-form";
 
 export default function RegisterPage() {
   return (
-    <Card>
-      <CardHeader className="space-y-4 pb-4 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
-          <Boxes className="h-7 w-7 text-primary-foreground" />
+    <Card className="border-border/50 shadow-lg">
+      <CardHeader className="space-y-6 text-center">
+        <div className="flex justify-center">
+          <Image
+            src="/icon1.png"
+            alt="HalalChain"
+            width={64}
+            height={64}
+            priority
+            className="h-16 w-16 object-contain"
+          />
         </div>
+
         <div className="space-y-1">
-          <CardTitle>Tạo tài khoản</CardTitle>
-          <CardDescription>
-            Tham gia Halal Supply Hub để quản lý nhà cung cấp và tồn kho
-          </CardDescription>
+          <CardTitle className="text-2xl font-semibold tracking-tight">
+            Create account
+          </CardTitle>
+
+          <p className="text-sm text-muted-foreground">
+            Get started with HalalChain
+          </p>
         </div>
       </CardHeader>
+
       <CardContent>
         <RegisterForm />
       </CardContent>

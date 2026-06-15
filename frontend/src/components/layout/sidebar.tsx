@@ -110,7 +110,7 @@ function SidebarPanel({
               collapsed ? "w-0 opacity-0 pointer-events-none" : "w-auto opacity-100"
             )}
           >
-            <Image src="/logo.png" alt="HalalChain" width={32} height={32} className="shrink-0" />
+            <Image src="/icon1.png" alt="HalalChain" width={32} height={32} className="shrink-0" />
             <div className="min-w-0">
               <h2 className="font-display text-sm font-semibold text-foreground leading-tight">
                 HalalChain

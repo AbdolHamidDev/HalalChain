@@ -1,8 +1,8 @@
-import { Boxes } from "lucide-react";
+import Image from "next/image";
+
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -10,22 +10,30 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <Card>
-      <CardHeader className="space-y-4 pb-4 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
-          <Boxes className="h-7 w-7 text-primary-foreground" />
+    <Card className="border-border/50 shadow-lg">
+      <CardHeader className="space-y-6 text-center">
+        <div className="flex justify-center">
+          <Image
+            src="/icon1.png"
+            alt="HalalChain"
+            width={64}
+            height={64}
+            priority
+            className="h-16 w-16 object-contain"
+          />
         </div>
+
         <div className="space-y-1">
-          <CardTitle>HalalChain</CardTitle>
-          <CardDescription>
-            Halal Supply Chain Management Platform
-            <br />
-            <span className="text-caption text-brand">
-              Southeast Asian trade networks
-            </span>
-          </CardDescription>
+          <CardTitle className="text-2xl font-semibold tracking-tight">
+            HalalChain
+          </CardTitle>
+
+          <p className="text-sm text-muted-foreground">
+            Sign in to continue
+          </p>
         </div>
       </CardHeader>
+
       <CardContent>
         <LoginForm />
       </CardContent>
