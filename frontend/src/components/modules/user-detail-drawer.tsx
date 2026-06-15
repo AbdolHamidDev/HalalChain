@@ -468,7 +468,7 @@ export function UserDetailDrawer({
               )}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Verified badge is shown in the user's sidebar.
+              {`Verified badge is shown in the user's sidebar.`}
             </p>
           </div>
           {!isSelf && (

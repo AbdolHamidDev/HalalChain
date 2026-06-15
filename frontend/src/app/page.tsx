@@ -9,6 +9,7 @@ import { ScreenshotsSection } from "@/components/landing/screenshots";
 import { TechStackSection } from "@/components/landing/tech-stack";
 import { CTASection } from "@/components/landing/cta";
 import { LandingFooter } from "@/components/landing/footer";
+import { AnimateSection } from "@/components/landing/animate-section";
 
 export default function HomePage() {
   return (
@@ -16,14 +17,38 @@ export default function HomePage() {
       <LandingHeader />
       <main>
         <HeroSection />
-        <FeaturesSection />
-        <WorkflowSection />
-        <VerificationDemoSection />
-        <ArchitectureSection />
-        <StatsSection />
-        <ScreenshotsSection />
-        <TechStackSection />
-        <CTASection />
+
+        <AnimateSection>
+          <FeaturesSection />
+        </AnimateSection>
+
+        <AnimateSection direction="left">
+          <WorkflowSection />
+        </AnimateSection>
+
+        <AnimateSection direction="right">
+          <VerificationDemoSection />
+        </AnimateSection>
+
+        <AnimateSection direction="left">
+          <ArchitectureSection />
+        </AnimateSection>
+
+        <AnimateSection>
+          <StatsSection />
+        </AnimateSection>
+
+        <AnimateSection direction="right">
+          <ScreenshotsSection />
+        </AnimateSection>
+
+        <AnimateSection>
+          <TechStackSection />
+        </AnimateSection>
+
+        <AnimateSection>
+          <CTASection />
+        </AnimateSection>
       </main>
       <LandingFooter />
     </>

@@ -109,7 +109,7 @@ const TableRow = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tr
     ref={ref}
-    data-state={(props as any)["data-state"]}
+    data-state={(props as Record<string, unknown>)["data-state"] as string | undefined}
     className={cn(
       "border-b transition-colors",
       "hover:bg-accent/60",

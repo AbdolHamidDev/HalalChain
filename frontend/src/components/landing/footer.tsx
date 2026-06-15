@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Hexagon } from "lucide-react";
+import Image from "next/image";
 
 const footerLinks = {
   Product: [
@@ -9,8 +9,8 @@ const footerLinks = {
     { label: "Tech Stack", href: "#tech-stack" },
   ],
   Resources: [
-    { label: "Documentation", href: "/api-docs" },
-    { label: "API Reference", href: "/api-docs" },
+    { label: "API Documentation", href: "/api-docs" },
+    { label: "Traceability Demo", href: "/traceability/product/00000000-0000-4000-8000-000000000001" },
     { label: "Status", href: "#" },
   ],
   Company: [
@@ -28,16 +28,22 @@ export function LandingFooter() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
-                <Hexagon className="size-4" />
+              <div className="relative w-8 h-8 rounded-lg overflow-hidden ring-1 ring-border/50">
+                <Image
+                  src="/icon1.png"
+                  alt="HalalChain"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
               </div>
               <span className="font-display text-base font-bold tracking-tight">
                 Halal<span className="text-primary">Chain</span>
               </span>
             </Link>
-            <p className="text-sm text-muted-foreground max-w-xs">
+            <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
               End-to-end halal supply chain traceability platform for modern
-              halal businesses.
+              halal businesses across Southeast Asia.
             </p>
           </div>
 

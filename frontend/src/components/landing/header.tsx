@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Menu, X, Hexagon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -21,9 +22,16 @@ export function LandingHeader() {
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="container-genesis flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-primary text-primary-foreground transition-colors">
-            <Hexagon className="size-5" />
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+          <div className="relative w-8 h-8 rounded-lg overflow-hidden ring-1 ring-border/50">
+            <Image
+              src="/icon1.png"
+              alt="HalalChain"
+              width={32}
+              height={32}
+              className="object-contain"
+              priority
+            />
           </div>
           <span className="font-display text-lg font-bold tracking-tight">
             Halal<span className="text-primary">Chain</span>
