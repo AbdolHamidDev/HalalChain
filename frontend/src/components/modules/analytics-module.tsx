@@ -41,6 +41,20 @@ const money = new Intl.NumberFormat("en-US", {
 
 const PIE_COLORS = ["#0d6e4f", "#0284c7", "#d97706", "#dc2626", "#7c3aed", "#0891b2"];
 
+type PieSliceLabelProps = {
+  name?: string | number;
+  percent?: number;
+};
+
+function renderPieLabel(props: unknown) {
+  const { name, percent } = props as PieSliceLabelProps;
+  if (!percent || percent <= 0.05) {
+    return "";
+  }
+
+  return `${name ?? ""} ${(percent * 100).toFixed(0)}%`;
+}
+
 // ─── Rate badge ───────────────────────────────────────────────────────────────
 
 function RateBadge({ value, invert = false }: { value: number; invert?: boolean }) {
@@ -255,9 +269,7 @@ export function AnalyticsModule() {
                     cx="50%"
                     cy="50%"
                     outerRadius={90}
-                    label={({ status, percent }) =>
-                      percent > 0.05 ? `${status} ${(percent * 100).toFixed(0)}%` : ""
-                    }
+                    label={renderPieLabel}
                     labelLine={false}
                   >
                     {po.statusBreakdown.map((_, index) => (
@@ -329,9 +341,7 @@ export function AnalyticsModule() {
                     cx="50%"
                     cy="50%"
                     outerRadius={90}
-                    label={({ status, percent }) =>
-                      percent > 0.05 ? `${status} ${(percent * 100).toFixed(0)}%` : ""
-                    }
+                    label={renderPieLabel}
                     labelLine={false}
                   >
                     {ship.statusBreakdown.map((_, index) => (
