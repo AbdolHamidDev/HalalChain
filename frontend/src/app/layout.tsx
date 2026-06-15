@@ -23,6 +23,15 @@ export const metadata: Metadata = {
   title: "HalalChain | Halal Supply Chain Management",
   description:
     "Supply chain management platform for halal-certified products across Southeast Asia",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon0.svg", type: "image/svg+xml" },
+      { url: "/icon1.png", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
