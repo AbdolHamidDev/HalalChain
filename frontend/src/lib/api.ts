@@ -343,9 +343,6 @@ async function request<T>(
         .then(async (r) => {
           refreshPromise = null;
           if (!r.ok) {
-            if (typeof window !== "undefined") {
-              window.location.href = "/login";
-            }
             throw new Error("Session expired");
           }
         })
