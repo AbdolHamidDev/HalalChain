@@ -1,5 +1,6 @@
 import { LandingHeader } from "@/components/landing/header";
 import { HeroSection } from "@/components/landing/hero";
+import { DemoShowcaseSection } from "@/components/landing/demo-showcase";
 import { FeaturesSection } from "@/components/landing/features";
 import { ComplianceSection } from "@/components/landing/compliance";
 import { WorkflowSection } from "@/components/landing/workflow";
@@ -18,6 +19,10 @@ export default function HomePage() {
       <LandingHeader />
       <main>
         <HeroSection />
+
+        <AnimateSection>
+          <DemoShowcaseSection />
+        </AnimateSection>
 
         <AnimateSection>
           <FeaturesSection />

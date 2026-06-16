@@ -404,6 +404,16 @@
         "goToSlide": "Đến trang trình bày {{number}}"
       }
     },
+    "demoShowcase": {
+      "badge": "Demo Sản Phẩm",
+      "title": "Trải Nghiệm HalalChain Trong Hành Động",
+      "subtitle": "Xem toàn bộ giới thiệu dashboard — từ giám sát tuân thủ đến theo dõi tồn kho và quản lý vận chuyển.",
+      "loading": "Đang tải demo…",
+      "alt": "Demo tương tác dashboard HalalChain",
+      "footerLabel": "Demo Dashboard Tương Tác",
+      "liveLabel": "Giới thiệu đầy đủ",
+      "caption": "Khám phá mọi tính năng của HalalChain qua bài giới thiệu dashboard toàn diện này"
+    },
     "techStack": {
       "title": "Xây Dựng Với Công Nghệ Hiện Đại",
       "subtitle": "Công cụ và framework cấp doanh nghiệp cung cấp năng lượng cho nền tảng tuân thủ HalalChain."

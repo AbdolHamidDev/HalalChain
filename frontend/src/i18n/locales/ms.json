@@ -404,6 +404,16 @@
         "goToSlide": "Pergi ke slaid {{number}}"
       }
     },
+    "demoShowcase": {
+      "badge": "Demo Produk",
+      "title": "Lihat HalalChain Berfungsi",
+      "subtitle": "Tonton perjalanan penuh dashboard — dari pemantauan pematuhan ke pengurusan inventori dan penghantaran.",
+      "loading": "Memuatkan demo…",
+      "alt": "Demo interaktif dashboard HalalChain",
+      "footerLabel": "Demo Dashboard Interaktif",
+      "liveLabel": "Perjalanan penuh",
+      "caption": "Terokai setiap ciri HalalChain melalui perjalanan dashboard yang komprehensif ini"
+    },
     "techStack": {
       "title": "Dibina dengan Teknologi Moden",
       "subtitle": "Alat dan rangka kerja peringkat perusahaan yang memacu platform pematuhan HalalChain."

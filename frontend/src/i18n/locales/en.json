@@ -404,6 +404,16 @@
         "goToSlide": "Go to slide {{number}}"
       }
     },
+    "demoShowcase": {
+      "badge": "Product Demo",
+      "title": "See HalalChain in Action",
+      "subtitle": "Watch a full walkthrough of the dashboard — from compliance monitoring to inventory tracking and shipment management.",
+      "loading": "Loading demo…",
+      "alt": "HalalChain dashboard interactive demo",
+      "footerLabel": "Interactive Dashboard Demo",
+      "liveLabel": "Full walkthrough",
+      "caption": "Explore every feature of HalalChain through this comprehensive dashboard walkthrough"
+    },
     "techStack": {
       "title": "Built with Modern Technology",
       "subtitle": "Enterprise-grade tools and frameworks powering the HalalChain compliance platform."

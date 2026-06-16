@@ -404,6 +404,16 @@
         "goToSlide": "Pergi ke slide {{number}}"
       }
     },
+    "demoShowcase": {
+      "badge": "Demo Produk",
+      "title": "Lihat HalalChain Beraksi",
+      "subtitle": "Tonton tur lengkap dashboard — dari pemantauan kepatuhan hingga pelacakan inventori dan manajemen pengiriman.",
+      "loading": "Memuatkan demo…",
+      "alt": "Demo interaktif dashboard HalalChain",
+      "footerLabel": "Demo Dashboard Interaktif",
+      "liveLabel": "Tur lengkap",
+      "caption": "Jelajahi setiap fitur HalalChain melalui tur dashboard yang komprehensif ini"
+    },
     "techStack": {
       "title": "Dibangun dengan Teknologi Modern",
       "subtitle": "Alat dan framework tingkat perusahaan yang menggerakkan platform kepatuhan HalalChain."
