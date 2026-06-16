@@ -1,4 +1,10 @@
+
+
+
+
 <div align="center">
+
+<img src="frontend/public/logo.png" alt="HalalChain Logo" width="120" />
 
 # HalalChain
 
@@ -12,6 +18,15 @@ Automated compliance monitoring, end-to-end traceability, QR verification, real-
 [English](#english) · [Tiếng Việt](#tiếng-việt)
 
 </div>
+
+<img src="frontend/public/halalchain-hero-banner.png" alt="HalalChain Hero Banner" width="100%" />
+
+
+### Demo
+
+<p align="center">
+  <img src="docs/demo/demo.gif" alt="HalalChain Demo" width="100%" />
+</p>
 
 ---
 
