@@ -3,11 +3,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import {
   ScanSearch,
-  Building2,
-  Warehouse,
-  Ship,
   ShieldCheck,
+  Bell,
+  Award,
   BarChart3,
+  Workflow,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { AnimateItem } from "@/components/landing/animate-section";
@@ -34,28 +34,21 @@ export function FeaturesSection() {
       accent: "bg-primary",
     },
     {
-      icon: Building2,
-      titleKey: "landing.features.items.suppliers.title",
-      descKey: "landing.features.items.suppliers.description",
+      icon: ShieldCheck,
+      titleKey: "landing.features.items.compliance.title",
+      descKey: "landing.features.items.compliance.description",
       gradient: "from-emerald-500/10 via-emerald-500/5 to-transparent",
       accent: "bg-emerald-500",
     },
     {
-      icon: Warehouse,
-      titleKey: "landing.features.items.inventory.title",
-      descKey: "landing.features.items.inventory.description",
+      icon: Workflow,
+      titleKey: "landing.features.items.automation.title",
+      descKey: "landing.features.items.automation.description",
       gradient: "from-amber-500/10 via-amber-500/5 to-transparent",
       accent: "bg-amber-500",
     },
     {
-      icon: Ship,
-      titleKey: "landing.features.items.shipments.title",
-      descKey: "landing.features.items.shipments.description",
-      gradient: "from-sky-500/10 via-sky-500/5 to-transparent",
-      accent: "bg-sky-500",
-    },
-    {
-      icon: ShieldCheck,
+      icon: Award,
       titleKey: "landing.features.items.certifications.title",
       descKey: "landing.features.items.certifications.description",
       gradient: "from-violet-500/10 via-violet-500/5 to-transparent",
@@ -67,6 +60,13 @@ export function FeaturesSection() {
       descKey: "landing.features.items.analytics.description",
       gradient: "from-rose-500/10 via-rose-500/5 to-transparent",
       accent: "bg-rose-500",
+    },
+    {
+      icon: Bell,
+      titleKey: "landing.features.items.notifications.title",
+      descKey: "landing.features.items.notifications.description",
+      gradient: "from-sky-500/10 via-sky-500/5 to-transparent",
+      accent: "bg-sky-500",
     },
   ];
 

@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { I18nProvider } from "@/i18n/provider";
+import { LANGUAGE_COOKIE_NAME, SUPPORTED_LOCALES, DEFAULT_LOCALE } from "@/i18n/config";
 import { UltraDialogHost } from "@/components/ui/confirm-dialog";
 import "./globals.css";
 
@@ -21,9 +23,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HalalChain | Halal Supply Chain Management",
+  title: "HalalChain | Supply Chain Compliance & Traceability Platform",
   description:
-    "Supply chain management platform for halal-certified products across Southeast Asia",
+    "Compliance monitoring, product traceability, automated alerts, QR verification, and operational intelligence for halal supply chains across Southeast Asia.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -40,13 +42,21 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Read locale from cookie server-side to prevent hydration mismatch
+  const cookieStore = await cookies();
+  const langCookie = cookieStore.get(LANGUAGE_COOKIE_NAME)?.value;
+  const initialLocale =
+    langCookie && (SUPPORTED_LOCALES as readonly string[]).includes(langCookie)
+      ? langCookie
+      : DEFAULT_LOCALE;
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={initialLocale} suppressHydrationWarning>
       <head>
         <link
           href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap"
@@ -60,7 +70,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <I18nProvider>
+          <I18nProvider initialLocale={initialLocale}>
             <QueryProvider>
               <AuthProvider>{children}</AuthProvider>
             </QueryProvider>

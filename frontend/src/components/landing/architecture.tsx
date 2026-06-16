@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Globe, Server, Database, Mail, Bell, Cloud } from "lucide-react";
+import { Globe, Server, Database, Mail, Bell, Cloud, Workflow, ArrowRight, Check } from "lucide-react";
 import { useTranslation } from "@/i18n/hooks";
 import type { TranslationKey } from "@/i18n/types";
 
@@ -11,7 +11,8 @@ export function ArchitectureSection() {
   const mainStack = [
     { icon: Globe, labelKey: "landing.architecture.mainStack.nextjs.label", subtitleKey: "landing.architecture.mainStack.nextjs.description", color: "from-primary/20 to-primary/5", iconColor: "text-primary" },
     { icon: Server, labelKey: "landing.architecture.mainStack.express.label", subtitleKey: "landing.architecture.mainStack.express.description", color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-500" },
-    { icon: Database, labelKey: "landing.architecture.mainStack.prisma.label", subtitleKey: "landing.architecture.mainStack.prisma.description", color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500" },
+    { icon: Workflow, labelKey: "landing.architecture.mainStack.automation.label", subtitleKey: "landing.architecture.mainStack.automation.description", color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500" },
+    { icon: Database, labelKey: "landing.architecture.mainStack.prisma.label", subtitleKey: "landing.architecture.mainStack.prisma.description", color: "from-violet-500/20 to-violet-500/5", iconColor: "text-violet-500" },
     { icon: Database, labelKey: "landing.architecture.mainStack.postgresql.label", subtitleKey: "landing.architecture.mainStack.postgresql.description", color: "from-sky-500/20 to-sky-500/5", iconColor: "text-sky-500" },
   ];
 

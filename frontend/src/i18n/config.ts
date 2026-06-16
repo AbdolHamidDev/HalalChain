@@ -9,6 +9,11 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   vi: "Tiếng Việt",
 };
 
+export const LOCALE_FLAGS: Record<Locale, string> = {
+  en: "🇬🇧",
+  vi: "🇻🇳",
+};
+
 export const LOCALE_DIRECTIONS: Record<Locale, "ltr" | "rtl"> = {
   en: "ltr",
   vi: "ltr",

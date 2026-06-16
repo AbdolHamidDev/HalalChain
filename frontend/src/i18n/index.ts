@@ -14,11 +14,14 @@
 
 import type { TranslationKey, TranslationOptions } from "./types";
 import en from "./locales/en.json";
+import vi from "./locales/vi.json";
 
 // ─── Loaded locale cache ───────────────────────────────────────────
-// Loaded on demand to avoid importing all locales at build time.
+// Both English and Vietnamese are pre-loaded so locale switching is instant
+// with no async delay or hydration mismatches.
 const loadedLocales: Record<string, Record<string, unknown>> = {
   en: en as unknown as Record<string, unknown>,
+  vi: vi as unknown as Record<string, unknown>,
 };
 
 let currentLocale = "en";

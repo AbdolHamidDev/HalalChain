@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Github } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n/hooks";
@@ -16,6 +16,8 @@ export function LandingHeader() {
 
   const navLinks = [
     { label: t("landing.header.features"), href: "#features" },
+    { label: t("landing.header.compliance"), href: "#compliance" },
+    { label: t("landing.header.automation"), href: "#compliance" },
     { label: t("landing.header.workflow"), href: "#workflow" },
     { label: t("landing.header.architecture"), href: "#architecture" },
     { label: t("landing.header.techStack"), href: "#tech-stack" },
@@ -57,6 +59,15 @@ export function LandingHeader() {
         {/* Actions */}
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
+          <a
+            href="https://github.com/AbdolHamidDev/HalalChain"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            aria-label="View source on GitHub"
+          >
+            <Github className="h-4 w-4" />
+          </a>
           <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>

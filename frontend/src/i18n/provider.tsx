@@ -66,9 +66,9 @@ export function I18nProvider({
     return DEFAULT_LOCALE;
   });
 
-  // Load the locale on mount
+  // Initialize the locale data and sync the global currentLocale
   useEffect(() => {
-    loadLocale(locale);
+    changeLanguage(locale);
   }, [locale]);
 
   const setLanguage = useCallback(async (newLocale: string) => {

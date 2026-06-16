@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bell, ScrollText, Users, ShieldCheck, QrCode, FileSpreadsheet } from "lucide-react";
+import { Bell, ScrollText, Users, ShieldCheck, QrCode, FileSpreadsheet, Gauge } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "@/i18n/hooks";
 import type { TranslationKey } from "@/i18n/types";

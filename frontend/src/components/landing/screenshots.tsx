@@ -21,8 +21,8 @@ export function ScreenshotsSection() {
       gradient: "from-primary/10 via-primary/5 to-background",
     },
     {
-      titleKey: "landing.screenshots.slides.products.title",
-      descKey: "landing.screenshots.slides.products.description",
+      titleKey: "landing.screenshots.slides.inventory.title",
+      descKey: "landing.screenshots.slides.inventory.description",
       src: "/screenshots/inventory.png",
       gradient: "from-emerald-500/10 via-emerald-500/5 to-background",
     },

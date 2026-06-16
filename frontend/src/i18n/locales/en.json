@@ -58,30 +58,11 @@
     "role": "Role",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "errors": {
-      "generic": "Something went wrong. Please try again.",
-      "network": "Network error. Please check your connection.",
-      "sessionExpired": "Your session has expired. Please sign in again.",
-      "notFound": "Resource not found.",
-      "forbidden": "You do not have permission to perform this action.",
-      "validation": "Please fix the errors below."
-    }
-  },
-  "navigation": {
-    "title": "Navigation",
-    "dashboard": "Dashboard",
-    "suppliers": "Suppliers",
-    "products": "Products",
-    "inventory": "Inventory",
-    "warehouses": "Warehouses",
-    "purchaseOrders": "Purchase Orders",
-    "shipments": "Shipments",
-    "certificates": "Certificates",
-    "reports": "Reports",
-    "analytics": "Analytics",
-    "userManagement": "User Management",
-    "settings": "Settings",
-    "traceability": "Traceability"
+    "page": "Page",
+    "of": "of",
+    "items": "items",
+    "item": "item",
+    "selected": "selected"
   },
   "auth": {
     "signIn": "Sign In",
@@ -114,10 +95,45 @@
       "signUpFailed": "Registration failed. Please try again."
     }
   },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "suppliers": "Suppliers",
+    "products": "Products",
+    "inventory": "Inventory",
+    "warehouses": "Warehouses",
+    "purchaseOrders": "Purchase Orders",
+    "shipments": "Shipments",
+    "certificates": "Certificates",
+    "reports": "Reports",
+    "analytics": "Analytics",
+    "userManagement": "User Management"
+  },
+  "sidebar": {
+    "brand": "HalalChain",
+    "platform": "Compliance Platform",
+    "navigation": "Navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unread": "{{count}} unread",
+    "markAllRead": "Mark all read",
+    "noNotifications": "No notifications yet",
+    "types": {
+      "lowStock": "Low Stock",
+      "certificateExpiring": "Expiring",
+      "certificateExpired": "Expired",
+      "shipmentDelayed": "Delayed",
+      "system": "System"
+    }
+  },
   "landing": {
     "header": {
       "features": "Features",
-      "workflow": "Workflow",
+      "workflow": "Traceability Flow",
+      "compliance": "Compliance",
+      "automation": "Automation",
       "architecture": "Architecture",
       "techStack": "Tech Stack",
       "signIn": "Sign In",
@@ -125,10 +141,10 @@
       "toggleMenu": "Toggle menu"
     },
     "hero": {
-      "badge": "Trusted by halal supply chain businesses across Southeast Asia",
-      "title": "End-to-End Halal Supply Chain",
-      "titleAccent": "Traceability",
-      "subtitle": "Track products, suppliers, certifications, inventory and shipments through a unified platform built for modern halal businesses.",
+      "badge": "Supply Chain Compliance & Traceability Platform",
+      "title": "Supply Chain",
+      "titleAccent": "Compliance & Traceability",
+      "subtitle": "Track products, suppliers, certifications, inventory and shipments through a unified platform with automated compliance monitoring, real-time alerts, and intelligent risk detection.",
       "getStarted": "Get Started",
       "viewDemo": "View Demo",
       "dashboardPreview": "app.halalchain.io/dashboard",
@@ -157,90 +173,121 @@
       }
     },
     "features": {
-      "title": "Everything you need to manage your halal supply chain",
-      "subtitle": "A unified platform designed for modern halal businesses to track, verify, and optimize every step of their supply chain.",
+      "title": "From CRUD to intelligent compliance monitoring",
+      "subtitle": "HalalChain is not just a management system. It's a compliance-driven automation platform that monitors, alerts, and scores your supply chain health.",
       "items": {
         "traceability": {
           "title": "Product Traceability",
-          "description": "End-to-end tracking from raw materials to finished goods with QR code verification at every stage."
+          "description": "End-to-end tracking from supplier to consumer with QR code verification. Public traceability pages require no login."
         },
-        "suppliers": {
-          "title": "Supplier Management",
-          "description": "Manage supplier profiles, certifications, performance scores, and compliance documentation in one place."
+        "compliance": {
+          "title": "Compliance Monitoring",
+          "description": "Automated certificate expiry detection, expired certificate alerts, compliance issue tracking, and a transparent compliance score (0-100) with explainable factors."
         },
-        "inventory": {
-          "title": "Inventory Control",
-          "description": "Real-time inventory tracking across multiple warehouses with automated stock alerts and batch management."
-        },
-        "shipments": {
-          "title": "Shipment Tracking",
-          "description": "Monitor shipments in real-time with status updates, location tracking, and delivery confirmation."
+        "automation": {
+          "title": "Automation Engine",
+          "description": "Four automated rules run daily: certificate expiry alerts, expired certificate escalation, low inventory warnings, and shipment delay detection. Idempotent with built-in duplicate prevention."
         },
         "certifications": {
           "title": "Halal Certifications",
-          "description": "Centralize certification management with expiry monitoring, document storage, and audit trail logging."
+          "description": "Centralize certification management with digital document storage, expiry monitoring, file uploads to Cloudinary, and automated renewal reminders."
         },
         "analytics": {
           "title": "Analytics & Reporting",
-          "description": "Comprehensive dashboards and exportable reports covering all aspects of your supply chain operations."
+          "description": "Comprehensive dashboards, date-range analytics for inventory, POs, shipments, certificates, and exportable reports in CSV/XLSX/PDF formats."
+        },
+        "notifications": {
+          "title": "Real-time Notifications",
+          "description": "In-app alerts via Server-Sent Events for low stock, certificate events, and shipment delays. Fire-and-forget email delivery via Resend or SMTP with exponential retry."
         }
       }
     },
     "workflow": {
-      "title": "How HalalChain Works",
-      "subtitle": "From supplier registration to consumer verification, every step is tracked and recorded on an immutable audit trail.",
+      "title": "Traceability Flow",
+      "subtitle": "From supplier registration to consumer verification, every step is tracked, certified, and verifiable through QR codes.",
       "steps": {
         "supplier": {
           "label": "Supplier",
-          "description": "Register and verify halal-certified suppliers"
+          "description": "Onboard halal-certified suppliers with documentation"
         },
         "product": {
           "label": "Product",
-          "description": "Log products with batch numbers and ingredients"
+          "description": "Log products with SKU, batch, and halal status"
         },
         "certification": {
           "label": "Certification",
-          "description": "Attach halal certificates and track expiry"
+          "description": "Attach certificates with automated expiry monitoring"
         },
         "warehouse": {
           "label": "Warehouse",
-          "description": "Manage inventory across multiple locations"
+          "description": "Manage inventory with reorder level alerts"
         },
         "shipment": {
           "label": "Shipment",
-          "description": "Track shipments with real-time status updates"
+          "description": "Track shipments with delay detection"
         },
         "consumer": {
           "label": "Consumer",
-          "description": "End customers verify authenticity via QR code"
+          "description": "Verify authenticity via QR code — no login required"
         }
       },
       "explanation": {
-        "title": "Full supply chain transparency",
-        "p1": "HalalChain creates a digital thread connecting every entity in your supply chain. Each product batch receives a unique identifier that follows it from raw materials to the end consumer.",
-        "p2": "Suppliers are onboarded with verified halal certifications. Products are logged with complete ingredient lists and processing methods. Certifications are attached digitally and monitored for expiry.",
-        "p3": "Warehouse operators scan incoming and outgoing shipments, updating inventory in real-time. When products ship, customers receive tracking information and can verify authenticity by scanning the QR code on the packaging."
+        "title": "Full supply chain transparency with compliance baked in",
+        "p1": "HalalChain creates a digital thread connecting every entity in your supply chain. Each product batch receives a unique QR code that follows it from raw materials to the end consumer, enabling instant verification.",
+        "p2": "Suppliers are onboarded with verifiable halal certifications. The platform automatically monitors certificate expiry dates and escalates expired certificates with high-severity alerts to compliance teams.",
+        "p3": "The automation engine runs daily checks: detecting overdue shipments, scanning inventory for low-stock items, and generating compliance scores that give management a single KPI for supply chain health."
       }
     },
+    "compliance": {
+      "title": "Automated Compliance Monitoring",
+      "subtitle": "The platform continuously monitors your supply chain health and alerts you to risks before they become problems.",
+      "items": {
+        "certificateExpiry": {
+          "title": "Certificate Expiry Detection",
+          "subtitle": "Scans all certificates daily. Detects expirations within 30 days and sends alerts to managers and admins via in-app notification and email."
+        },
+        "certificateExpired": {
+          "title": "Expired Certificate Escalation",
+          "subtitle": "Identifies already-expired certificates and creates high-severity compliance issues. Triggers immediate notifications to responsible teams."
+        },
+        "lowInventory": {
+          "title": "Low Inventory Detection",
+          "subtitle": "Compares current stock against reorder levels. Generates alerts suggesting replenishment actions without automatically placing orders."
+        },
+        "shipmentDelay": {
+          "title": "Shipment Delay Detection",
+          "subtitle": "Automatically detects shipments past their estimated arrival date that haven't been marked delivered. Prevents duplicate daily alerts."
+        },
+        "complianceScore": {
+          "title": "Compliance Scoring",
+          "subtitle": "A transparent 0-100 score based on 5 factors: expired certs (-30pt), expiring certs (-15pt), delayed shipments (up to -20pt), low inventory (up to -15pt), and certificate coverage (up to -20pt). Each deduction is explainable."
+        },
+        "realTimeAlerts": {
+          "title": "Real-time Alerts",
+          "subtitle": "All automation events stream via Server-Sent Events to the dashboard instantly. Email delivery is fire-and-forget with 3 retry attempts and exponential backoff."
+        }
+      },
+      "scoreNote": "See the Compliance Score KPI on your dashboard. Every deduction is transparent — hover or click to see why each point was deducted."
+    },
     "verificationDemo": {
-      "title": "QR Code Verification",
-      "subtitle": "End consumers can verify product authenticity instantly by scanning the QR code on packaging. No account required.",
+      "title": "Public QR Code Verification",
+      "subtitle": "End consumers can verify product authenticity instantly by scanning the QR code on packaging. No account or login required.",
       "steps": {
         "qrScanning": {
           "title": "QR Code Scanning",
-          "description": "Each product has a unique QR code printed on packaging. Consumers scan it with any smartphone camera."
+          "description": "Each product has a unique QR code on packaging. Consumers scan with any smartphone camera — no app required."
         },
         "productVerification": {
-          "title": "Product Verification",
-          "description": "The public portal displays product origin, batch number, production date, and halal status instantly."
+          "title": "Product Details",
+          "description": "The public portal displays product origin, supplier, batch number, and halal certification status instantly."
         },
         "certificateValidation": {
           "title": "Certificate Validation",
-          "description": "View all attached halal certificates, certifying bodies, and expiry dates with a single click."
+          "description": "View all attached halal certificates with certifying bodies, issue dates, and expiry information at a glance."
         },
         "shipmentHistory": {
-          "title": "Shipment History",
-          "description": "Track the complete journey from supplier to warehouse to retailer with timestamps and locations."
+          "title": "Supply Chain Journey",
+          "description": "Track the complete journey from supplier through warehouses to retailer with timestamps and location data."
         }
       },
       "cta": {
@@ -250,23 +297,23 @@
     },
     "architecture": {
       "title": "Platform Architecture",
-      "subtitle": "Built on a modern, scalable tech stack designed for enterprise halal supply chain management.",
-      "frontend": "Frontend",
-      "backend": "Backend",
-      "database": "Database",
-      "deployment": "Deployment",
+      "subtitle": "A modern, layered architecture with a dedicated automation engine for intelligent compliance monitoring.",
       "mainStack": {
         "nextjs": {
-          "label": "Next.js",
-          "description": "Frontend & SSR"
+          "label": "Next.js 15",
+          "description": "Frontend with SSR"
         },
         "express": {
-          "label": "Express API",
+          "label": "Express 5 API",
           "description": "RESTful backend"
+        },
+        "automation": {
+          "label": "Automation Engine",
+          "description": "4 rules, daily cron, idempotent"
         },
         "prisma": {
           "label": "Prisma ORM",
-          "description": "Type-safe queries"
+          "description": "Type-safe PostgreSQL access"
         },
         "postgresql": {
           "label": "PostgreSQL",
@@ -277,50 +324,64 @@
       "services": {
         "cloudinary": {
           "label": "Cloudinary",
-          "description": "Media & file uploads"
+          "description": "Avatar & certificate file uploads"
         },
         "resend": {
-          "label": "Resend",
-          "description": "Email notifications"
+          "label": "Resend / SMTP",
+          "description": "Email delivery with retry"
         },
         "sse": {
-          "label": "SSE Notifications",
-          "description": "Real-time updates"
+          "label": "SSE Stream",
+          "description": "Real-time dashboard updates"
         }
+      },
+      "flow": {
+        "title": "How Automation Works",
+        "description": "The Automation Engine runs daily at 08:00, evaluating 4 rules transactionally. Each rule checks conditions against the database, creates notifications with deduplication, and dispatches emails asynchronously.",
+        "steps": [
+          "Cron triggers daily evaluation",
+          "Engine opens a database transaction",
+          "All 4 rules evaluate in parallel",
+          "Notifications created with dedup check",
+          "Emails dispatched fire-and-forget",
+          "Results stream to dashboard in real-time"
+        ]
       }
     },
     "stats": {
-      "title": "Enterprise-grade platform capabilities",
-      "subtitle": "Built for businesses that require complete visibility and control over their halal supply chain operations.",
+      "title": "Enterprise-grade compliance features",
+      "subtitle": "Built for businesses that require complete visibility, automated monitoring, and verifiable compliance across their halal supply chain.",
       "notifications": "Real-time Notifications",
       "auditLogging": "Audit Logging",
-      "multiRoleAccess": "Multi-role Access",
-      "secureAuth": "Secure Authentication",
+      "multiRoleAccess": "RBAC Roles",
+      "secureAuth": "JWT + Refresh Tokens",
       "qrVerification": "QR Verification",
-      "reportingExports": "Reporting Exports",
+      "reportingExports": "Report Formats",
+      "complianceMonitoring": "Compliance Monitoring",
       "suffixPercent": "%",
       "suffixRoles": "+ roles",
-      "suffixFormats": "+ formats"
+      "suffixFormats": "+ formats",
+      "suffixRules": " rules"
     },
     "screenshots": {
       "title": "See HalalChain in Action",
-      "subtitle": "Intuitive interface designed for efficiency across all supply chain operations.",
+      "subtitle": "Compliance-focused dashboard with automation alerts, traceability views, and management controls.",
       "slides": {
         "dashboard": {
-          "title": "Dashboard Analytics",
-          "description": "Comprehensive overview of your supply chain operations"
+          "title": "Compliance Dashboard",
+          "description": "KPI cards including Compliance Score, live automation alerts, and operational widgets"
         },
-        "products": {
-          "title": "Product Management",
-          "description": "Manage products with batch tracking and halal status"
+        "inventory": {
+          "title": "Inventory with Low Stock Alerts",
+          "description": "Real-time stock levels with automated low-inventory detection and replenishment suggestions"
         },
         "traceability": {
-          "title": "Traceability Portal",
-          "description": "Public-facing product verification with full supply chain timeline"
+          "title": "Public Traceability Portal",
+          "description": "Consumer-facing product verification with full supply chain timeline — no login required"
         },
         "users": {
-          "title": "User Management",
-          "description": "Role-based access control with detailed permissions"
+          "title": "RBAC User Management",
+          "description": "Role-based access control with ADMIN, MANAGER, and STAFF roles, audit logs, and invitation flow"
         }
       },
       "aria": {
@@ -331,23 +392,25 @@
     },
     "techStack": {
       "title": "Built with Modern Technology",
-      "subtitle": "Enterprise-grade tools and frameworks powering the HalalChain platform."
+      "subtitle": "Enterprise-grade tools and frameworks powering the HalalChain compliance platform."
     },
     "cta": {
-      "title": "Ready to Modernize",
+      "title": "Ready to Transform Your",
       "titleAccent": "Halal Supply Chain",
-      "titleSuffix": "Operations?",
-      "subtitle": "Join forward-thinking halal businesses that trust HalalChain for end-to-end traceability and compliance management.",
+      "titleSuffix": "Compliance?",
+      "subtitle": "Join forward-thinking halal businesses that trust HalalChain for end-to-end traceability, automated compliance monitoring, and operational intelligence.",
       "exploreDemo": "Explore Demo",
       "signIn": "Sign In"
     },
     "footer": {
-      "description": "End-to-end halal supply chain traceability platform for modern halal businesses across Southeast Asia.",
+      "description": "Supply Chain Compliance & Traceability Platform — automated compliance monitoring, QR verification, and operational intelligence for modern halal businesses.",
       "product": "Product",
       "resources": "Resources",
       "company": "Company",
       "features": "Features",
-      "workflow": "Workflow",
+      "workflow": "Traceability Flow",
+      "compliance": "Compliance",
+      "automation": "Automation",
       "architecture": "Architecture",
       "techStack": "Tech Stack",
       "apiDocs": "API Documentation",
@@ -398,205 +461,141 @@
     }
   },
   "products": {
-    "pageTitle": "Product Management",
-    "pageDescription": "Halal product catalog by SKU, category, unit and linked supplier",
-    "addProduct": "Add Product",
-    "newProduct": "New Product",
+    "pageTitle": "Products",
+    "pageDescription": "Manage halal-certified products across your supply chain",
+    "createProduct": "Create Product",
+    "createProductDescription": "Add a new halal-certified product to your catalog",
     "editProduct": "Edit Product",
-    "deleteProduct": "Delete Product",
-    "deleteConfirm": "Delete product?",
-    "deleteDescription": "This will permanently remove \"{{name}}\" ({{sku}}) and all associated inventory records. This cannot be undone.",
-    "saveChanges": "Save Changes",
-    "productSaved": "Product updated",
-    "productCreated": "Product created",
-    "productUpdated": "{{name}} has been updated.",
-    "productAdded": "{{name}} ({{sku}}) has been added to your catalog.",
-    "productDeleted": "Product deleted",
-    "productDeleteFailed": "Failed to delete product",
-    "form": {
-      "supplier": "Supplier",
-      "name": "Name",
-      "namePlaceholder": "e.g. Halal Chicken Breast",
+    "productDetails": "Product Details",
+    "productDeleted": "Product deleted successfully",
+    "productCreated": "Product created successfully",
+    "productUpdated": "Product updated successfully",
+    "fields": {
+      "name": "Product Name",
+      "namePlaceholder": "Enter product name",
       "sku": "SKU",
-      "skuPlaceholder": "e.g. HCB-001",
+      "skuPlaceholder": "e.g. HAL-COCO-001",
       "category": "Category",
-      "categoryPlaceholder": "e.g. Poultry",
+      "categoryPlaceholder": "Select a category",
       "unit": "Unit",
-      "unitPlaceholder": "e.g. kg",
-      "unitPrice": "Unit Price (USD)",
-      "selectSupplier": "Select supplier",
-      "newProductDescription": "Add a new halal product to your catalog.",
-      "editProductDescription": "Update product details. SKU and supplier cannot be changed after creation."
+      "unitPlaceholder": "e.g. kg, carton, bottle",
+      "unitPrice": "Unit Price",
+      "unitPricePlaceholder": "0.00",
+      "supplier": "Supplier"
     },
-    "table": {
-      "sku": "SKU",
-      "name": "Name",
-      "category": "Category",
-      "supplier": "Supplier",
-      "unit": "Unit",
-      "price": "Price",
-      "stock": "Stock",
-      "traceability": "Traceability",
-      "qrCode": "QR Code",
-      "actions": "Actions",
-      "trace": "Trace",
-      "qr": "QR"
-    },
-    "qrDialog": {
-      "title": "QR Code",
-      "scanDescription": "Scan to view halal supply chain traceability",
-      "download": "Download QR"
-    },
-    "empty": {
-      "title": "No products yet",
-      "description": "Add your first halal product to begin tracking SKUs, pricing, and inventory across your warehouses."
-    },
-    "common": {
-      "editItem": "Edit {{name}}",
-      "deleteItem": "Delete {{name}}",
-      "viewTraceability": "View traceability for {{name}}",
-      "viewQrCode": "View QR code for {{name}}",
-      "qrCodeFor": "QR Code for {{name}}"
+    "categories": {
+      "beverages": "Beverages",
+      "condiments": "Condiments",
+      "grains": "Grains",
+      "meatPoultry": "Meat & Poultry",
+      "snacks": "Snacks & Dried Fruit"
     },
     "errors": {
-      "loadFailed": "Failed to load products"
-    }
-  },
-  "suppliers": {
-    "pageTitle": "Supplier Management",
-    "pageDescription": "Manage halal-certified suppliers across Malaysia, Indonesia, Thailand and SEA",
-    "addSupplier": "Add Supplier",
-    "newSupplier": "New Supplier",
-    "editSupplier": "Edit Supplier",
-    "deleteSupplier": "Delete Supplier",
-    "saveChanges": "Save Changes",
-    "supplierUpdated": "Supplier updated",
-    "supplierCreated": "Supplier created",
-    "supplierEdited": "{{name}} has been updated.",
-    "supplierAdded": "{{name}} has been added to your supplier network.",
-    "supplierDeleted": "Supplier deleted",
-    "supplierDeleteFailed": "Failed to delete supplier",
-    "deleteConfirm": "Delete supplier?",
-    "deleteDescription": "This will permanently remove \"{{name}}\" and cannot be undone. Products and certificates linked to this supplier may be affected.",
-    "form": {
-      "name": "Name",
-      "country": "Country",
-      "email": "Email",
-      "phone": "Phone",
-      "status": "Status",
-      "optional": "optional",
-      "namePlaceholder": "e.g. Al-Barakah Food Co.",
-      "countryPlaceholder": "e.g. Malaysia",
-      "emailPlaceholder": "contact@supplier.com",
-      "phonePlaceholder": "+60 3-XXXX XXXX",
-      "statusActive": "Active",
-      "statusInactive": "Inactive"
-    },
-    "table": {
-      "name": "Name",
-      "country": "Country",
-      "contact": "Contact",
-      "status": "Status",
-      "products": "Products",
-      "certificates": "Certs",
-      "actions": "Actions"
-    },
-    "common": {
-      "editItem": "Edit {{name}}",
-      "deleteItem": "Delete {{name}}"
-    },
-    "empty": {
-      "title": "No suppliers yet",
-      "description": "Add your first halal-certified supplier to start building your supply network across Southeast Asia."
-    },
-    "errors": {
-      "loadFailed": "Failed to load suppliers"
+      "loadFailed": "Failed to load products",
+      "loadFailedSingle": "Failed to load product details",
+      "createFailed": "Failed to create product",
+      "updateFailed": "Failed to update product",
+      "deleteFailed": "Failed to delete product",
+      "skuExists": "A product with this SKU already exists"
     }
   },
   "inventory": {
     "pageTitle": "Inventory Management",
-    "pageDescription": "Inbound / outbound stock movements per warehouse with reorder alerts",
+    "pageDescription": "Track stock levels and movements across all warehouses",
+    "movementsPageTitle": "Inventory Movements",
+    "movementsPageDescription": "View inbound, outbound, and adjustment history",
     "inbound": "Inbound",
     "outbound": "Outbound",
     "adjustment": "Adjustment",
-    "movements": "Movements",
-    "recordInbound": "Record Inbound Stock",
-    "recordOutbound": "Record Outbound Dispatch",
-    "confirmInbound": "Confirm Inbound",
-    "confirmOutbound": "Confirm Outbound",
-    "inboundRecorded": "Inbound movement recorded",
-    "outboundRecorded": "Outbound movement recorded",
-    "movementRecorded": "{{quantity}} units of {{productName}} {{action}} successfully.",
-    "actionReceived": "received",
-    "actionDispatched": "dispatched",
-    "recording": "Recording…",
-    "filters": "Filters",
-    "allWarehouses": "All warehouses",
-    "allProducts": "All products",
-    "lowStockOnly": "Show low stock only",
-    "lowStockActive": "⚠ Low stock only",
-    "clearFilters": "Clear filters",
-    "clear": "Clear",
-    "noMatchFilters": "No inventory records match the current filters.",
-    "showingRecords": "Showing {{count}} record{{plural}}",
+    "inboundTitle": "Receive Stock",
+    "inboundDescription": "Record incoming inventory from a purchase order or supplier",
+    "outboundTitle": "Dispatch Stock",
+    "outboundDescription": "Record outgoing inventory for shipment or write-off",
+    "warehouseSections": "Warehouses",
     "lowStock": "Low Stock",
-    "stockOk": "OK",
-    "value": "Value",
-    "date": "Date",
-    "type": "Type",
-    "by": "By",
-    "qty": "Qty",
-    "note": "Note",
-    "notePlaceholderInbound": "e.g. Received from supplier",
-    "notePlaceholderOutbound": "e.g. Dispatched to customer",
-    "optional": "optional",
-    "enterQuantity": "Enter quantity",
-    "recentMovements": "Recent Movements",
-    "table": {
-      "product": "Product",
-      "sku": "SKU",
-      "warehouse": "Warehouse",
-      "quantity": "Quantity",
-      "reorderLevel": "Reorder Level",
-      "status": "Status",
-      "actions": "Actions"
+    "currentStock": "Current Stock",
+    "reorderLevel": "Reorder Level",
+    "movementDate": "Date",
+    "movementType": "Type",
+    "movementQuantity": "Quantity",
+    "movementNote": "Note",
+    "performedBy": "Performed By",
+    "stockValue": "Stock Value",
+    "filterByWarehouse": "Filter by warehouse",
+    "filterByProduct": "Filter by product",
+    "showLowStockOnly": "Show low stock only",
+    "errors": {
+      "loadFailed": "Failed to load inventory",
+      "movementFailed": "Failed to record movement",
+      "insufficientStock": "Insufficient stock for outbound movement",
+      "loadMovementsFailed": "Failed to load movements"
+    }
+  },
+  "suppliers": {
+    "pageTitle": "Suppliers",
+    "pageDescription": "Manage halal-certified supplier network",
+    "createSupplier": "Add Supplier",
+    "createSupplierDescription": "Register a new halal-certified supplier",
+    "editSupplier": "Edit Supplier",
+    "supplierDetails": "Supplier Details",
+    "supplierDeleted": "Supplier deleted successfully",
+    "supplierCreated": "Supplier created successfully",
+    "supplierUpdated": "Supplier updated successfully",
+    "fields": {
+      "name": "Supplier Name",
+      "namePlaceholder": "Enter supplier name",
+      "country": "Country",
+      "email": "Email",
+      "emailPlaceholder": "supplier@example.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+84 123 456 789",
+      "status": "Status"
     },
-    "empty": {
-      "title": "No inventory records",
-      "description": "Inventory records are created when stock movements are processed. Add products and process an inbound movement to get started.",
-      "movementsTitle": "No movements recorded",
-      "movementsDescription": "Stock movements will appear here as inbound receipts and outbound dispatches are processed."
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
     },
     "errors": {
-      "loadFailed": "Failed to load inventory"
+      "loadFailed": "Failed to load suppliers",
+      "createFailed": "Failed to create supplier",
+      "updateFailed": "Failed to update supplier",
+      "deleteFailed": "Failed to delete supplier"
+    }
+  },
+  "warehouses": {
+    "pageTitle": "Warehouses",
+    "pageDescription": "Manage warehouse locations across your network",
+    "createWarehouse": "Add Warehouse",
+    "createWarehouseDescription": "Register a new warehouse location",
+    "editWarehouse": "Edit Warehouse",
+    "warehouseDetails": "Warehouse Details",
+    "warehouseDeleted": "Warehouse deleted successfully",
+    "warehouseCreated": "Warehouse created successfully",
+    "warehouseUpdated": "Warehouse updated successfully",
+    "fields": {
+      "name": "Warehouse Name",
+      "namePlaceholder": "Enter warehouse name",
+      "location": "Location",
+      "locationPlaceholder": "City, Country"
+    },
+    "stockSummary": "Stock Summary",
+    "errors": {
+      "loadFailed": "Failed to load warehouses",
+      "loadFailedSingle": "Failed to load warehouse details",
+      "createFailed": "Failed to create warehouse",
+      "updateFailed": "Failed to update warehouse",
+      "deleteFailed": "Failed to delete warehouse"
     }
   },
   "purchaseOrders": {
     "pageTitle": "Purchase Orders",
-    "pageDescription": "Procurement workflow: DRAFT → APPROVED → SHIPPING → RECEIVED",
-    "newPO": "New PO",
+    "pageDescription": "Manage procurement across supplier network",
     "createPO": "Create PO",
-    "creating": "Creating…",
-    "editPO": "Edit Purchase Order",
-    "poCreated": "Purchase order created",
-    "poCreatedDesc": "{{poNumber}} has been created as a draft.",
-    "poDeleted": "Purchase order deleted",
-    "poDeleteFailed": "Failed to delete purchase order",
-    "statusUpdated": "Status updated",
-    "statusUpdatedDesc": "Purchase order has been moved to {{status}}.",
-    "statusUpdateFailed": "Failed to update status",
-    "deleteConfirm": "Delete purchase order?",
-    "deleteDescription": "This will permanently delete PO \"{{poNumber}}\". Only DRAFT orders can be deleted.",
-    "deletePO": "Delete PO",
-    "amount": "Amount",
-    "shipments": "Shipments",
-    "created": "Created",
-    "addItem": "Add Item",
-    "removeItem": "Remove item",
-    "total": "Total",
-    "items": "Items",
-    "qty": "Qty",
-    "price": "Price",
+    "createPODescription": "Create a new purchase order with line items",
+    "poDetails": "Purchase Order Details",
+    "poDeleted": "Purchase order deleted successfully",
+    "poCreated": "Purchase order created successfully",
+    "poStatusUpdated": "Purchase order status updated",
     "status": {
       "draft": "Draft",
       "approved": "Approved",
@@ -605,449 +604,217 @@
       "cancelled": "Cancelled",
       "partial": "Partial"
     },
-    "table": {
+    "fields": {
       "poNumber": "PO Number",
       "supplier": "Supplier",
-      "status": "Status",
+      "items": "Line Items",
       "totalAmount": "Total Amount",
-      "createdAt": "Created",
-      "actions": "Actions"
+      "status": "Status",
+      "createdAt": "Created"
     },
-    "common": {
-      "editItem": "Edit {{poNumber}}",
-      "deleteItem": "Delete {{poNumber}}"
-    },
-    "empty": {
-      "title": "No purchase orders yet",
-      "description": "Purchase orders track your procurement workflow from DRAFT → APPROVED → SHIPPING → RECEIVED. Create your first PO to get started."
+    "noItems": "No line items yet",
+    "addItem": "Add Item",
+    "itemProduct": "Product",
+    "itemQuantity": "Quantity",
+    "itemPrice": "Unit Price",
+    "itemSubtotal": "Subtotal",
+    "actions": {
+      "approve": "Approve",
+      "markShipping": "Mark Shipping",
+      "markReceived": "Mark Received",
+      "cancel": "Cancel"
     },
     "errors": {
-      "loadFailed": "Failed to load purchase orders"
+      "loadFailed": "Failed to load purchase orders",
+      "loadFailedSingle": "Failed to load purchase order details",
+      "createFailed": "Failed to create purchase order",
+      "statusUpdateFailed": "Failed to update status",
+      "deleteFailed": "Failed to delete purchase order"
     }
   },
   "shipments": {
-    "pageTitle": "Shipment Monitoring",
-    "pageDescription": "Track inbound cargo from origin port to distribution hubs",
+    "pageTitle": "Shipments",
+    "pageDescription": "Track and manage supply chain shipments",
     "createShipment": "Create Shipment",
-    "newShipment": "New Shipment",
-    "creating": "Creating…",
-    "shipmentCreated": "Shipment created",
-    "shipmentCreatedDesc": "Tracking {{trackingNumber}} is now being monitored.",
-    "shipmentUpdated": "Shipment updated",
-    "shipmentUpdatedDesc": "Tracking {{trackingNumber}} updated to {{status}}.",
-    "updateShipment": "Update Shipment",
-    "saveChanges": "Save Changes",
-    "route": "Route",
-    "eta": "ETA",
-    "createDescription": "No shipments yet. You can create one manually or approve a purchase order to auto-generate a shipment.",
-    "newShipmentCta": "New Shipment",
-    "purchaseOrder": "Purchase Order",
-    "selectPO": "Select purchase order",
-    "trackingNumber": "Tracking Number",
-    "origin": "Origin",
-    "destination": "Destination",
-    "estimatedArrival": "Estimated Arrival",
-    "originPlaceholder": "e.g. Kuala Lumpur, Malaysia",
-    "destinationPlaceholder": "e.g. Ho Chi Minh City, Vietnam",
-    "trackingPlaceholder": "e.g. SHP-2026-0042",
-    "statusOptions": {
+    "createShipmentDescription": "Register a new shipment for a purchase order",
+    "shipmentDetails": "Shipment Details",
+    "shipmentCreated": "Shipment created successfully",
+    "shipmentUpdated": "Shipment updated successfully",
+    "status": {
       "pending": "Pending",
       "inTransit": "In Transit",
       "delivered": "Delivered",
       "delayed": "Delayed"
     },
-    "table": {
-      "trackingNumber": "Tracking #",
-      "poNumber": "PO Number",
-      "supplier": "Supplier",
+    "fields": {
+      "trackingNumber": "Tracking Number",
+      "trackingPlaceholder": "e.g. MY-HAL-784521",
+      "origin": "Origin",
+      "destination": "Destination",
+      "estimatedArrival": "Estimated Arrival",
       "status": "Status",
-      "estimatedArrival": "Est. Arrival",
-      "actions": "Actions"
-    },
-    "common": {
-      "editItem": "Update shipment {{trackingNumber}}"
-    },
-    "empty": {
-      "title": "No shipments yet",
-      "description": "Shipments are automatically created when a purchase order is approved. Approve a PO to generate its first shipment."
+      "purchaseOrder": "Purchase Order",
+      "supplier": "Supplier"
     },
     "errors": {
-      "loadFailed": "Failed to load shipments"
-    }
-  },
-  "warehouses": {
-    "pageTitle": "Warehouse Management",
-    "pageDescription": "Manage storage locations across your distribution network",
-    "addWarehouse": "Add Warehouse",
-    "newWarehouse": "New Warehouse",
-    "editWarehouse": "Edit Warehouse",
-    "deleteWarehouse": "Delete Warehouse",
-    "saveChanges": "Save Changes",
-    "warehouseUpdated": "Warehouse updated",
-    "warehouseCreated": "Warehouse created",
-    "warehouseEdited": "{{name}} has been updated.",
-    "warehouseAdded": "{{name}} has been added.",
-    "warehouseDeleted": "Warehouse deleted",
-    "warehouseDeleteFailed": "Failed to delete warehouse",
-    "deleteConfirm": "Delete warehouse?",
-    "deleteDescription": "This will permanently remove \"{{name}}\". All inventory records in this warehouse may be affected.",
-    "form": {
-      "name": "Name",
-      "namePlaceholder": "e.g. Jakarta Main Warehouse",
-      "location": "Location",
-      "locationPlaceholder": "e.g. Jakarta, Indonesia"
-    },
-    "table": {
-      "name": "Name",
-      "location": "Location",
-      "items": "Items",
-      "actions": "Actions"
-    },
-    "common": {
-      "editItem": "Edit {{name}}",
-      "deleteItem": "Delete {{name}}"
-    },
-    "empty": {
-      "title": "No warehouses yet",
-      "description": "Add your first warehouse to start tracking inventory by location across your distribution network."
-    },
-    "errors": {
-      "loadFailed": "Failed to load warehouses"
+      "loadFailed": "Failed to load shipments",
+      "loadFailedSingle": "Failed to load shipment details",
+      "createFailed": "Failed to create shipment",
+      "updateFailed": "Failed to update shipment",
+      "trackingExists": "Tracking number already exists"
     }
   },
   "certificates": {
     "pageTitle": "Halal Certificates",
-    "pageDescription": "Manage supplier halal certifications and compliance monitoring",
-    "addCertificate": "Add Certificate",
-    "newCertificate": "New Certificate",
+    "pageDescription": "Manage halal certification across your supply chain",
+    "createCertificate": "Add Certificate",
+    "createCertificateDescription": "Register a new halal certificate for a supplier",
     "editCertificate": "Edit Certificate",
-    "deleteCertificate": "Delete Certificate",
-    "saveChanges": "Save Changes",
-    "uploadDocument": "Upload Document",
-    "certificateUpdated": "Certificate updated",
-    "certificateCreated": "Certificate created",
-    "certificateDeleted": "Certificate deleted",
-    "certificateDeleteFailed": "Failed to delete certificate",
-    "deleteConfirm": "Delete certificate?",
-    "deleteDescription": "This will permanently remove certificate \"{{certificateNumber}}\" for {{supplierName}}.",
+    "certificateDetails": "Certificate Details",
+    "certificateDeleted": "Certificate deleted successfully",
+    "certificateCreated": "Certificate created successfully",
+    "certificateUpdated": "Certificate updated successfully",
     "status": {
       "valid": "Valid",
       "expiringSoon": "Expiring Soon",
       "expired": "Expired"
     },
-    "form": {
+    "fields": {
       "certificateNumber": "Certificate Number",
-      "issuedBy": "Issued By",
-      "issueDate": "Issue Date",
-      "expiryDate": "Expiry Date",
-      "supplier": "Supplier",
-      "certificateNumberPlaceholder": "e.g. JAKIM-2024-001",
-      "issuedByPlaceholder": "e.g. JAKIM",
-      "newCertificateDescription": "Add a new halal certification to track compliance.",
-      "editCertificateDescription": "Update certificate details and expiry information."
-    },
-    "table": {
-      "certificateNumber": "Certificate #",
+      "certificatePlaceholder": "e.g. JAKIM-2024-00123",
       "supplier": "Supplier",
       "issuedBy": "Issued By",
       "issueDate": "Issue Date",
       "expiryDate": "Expiry Date",
-      "status": "Status",
-      "document": "Document",
-      "actions": "Actions"
+      "file": "Certificate File",
+      "currentFile": "Current File"
     },
-    "common": {
-      "editItem": "Edit {{certificateNumber}}",
-      "deleteItem": "Delete {{certificateNumber}}"
-    },
-    "empty": {
-      "title": "No certificates yet",
-      "description": "Track JAKIM, MUI, CICOT and other halal certifications here. Add your first certificate to monitor compliance and expiry dates."
+    "upload": {
+      "dropzone": "Drop certificate file here or click to browse",
+      "uploading": "Uploading…",
+      "success": "File uploaded successfully",
+      "error": "Upload failed",
+      "fileTooLarge": "File exceeds 10 MB limit"
     },
     "errors": {
-      "loadFailed": "Failed to load certificates"
-    }
-  },
-  "analytics": {
-    "pageTitle": "Advanced Analytics",
-    "pageDescription": "Deep-dive into inventory, procurement, shipments, and halal certificate compliance",
-    "loadFailed": "Failed to load analytics data. Please try again.",
-    "purchaseOrders": {
-      "title": "Purchase Orders",
-      "approvalRate": "Approval Rate",
-      "approvalRateNote": "Approved / total POs",
-      "fulfillmentRate": "Fulfillment Rate",
-      "fulfillmentRateNote": "Received or partial POs",
-      "avgProcessingTime": "Avg. Processing Time",
-      "avgProcessingTimeNote": "Draft → Received",
-      "notEnoughData": "Not enough data",
-      "statusBreakdown": "Status Breakdown",
-      "statusBreakdownNote": "Active statuses",
-      "ordersPerMonth": "Orders per Month",
-      "statusDistribution": "PO Status Distribution"
-    },
-    "shipments": {
-      "title": "Shipments",
-      "onTimeDelivery": "On-Time Delivery Rate",
-      "onTimeDeliveryNote": "Delivered / total in range",
-      "delayedRate": "Delayed Shipment Rate",
-      "delayedRateNote": "DELAYED / total in range",
-      "statusDistribution": "Status Distribution",
-      "statusDistributionNote": "All shipments in range",
-      "volumeTrend": "Shipment Volume Trend",
-      "shipmentStatusDistribution": "Shipment Status Distribution"
-    },
-    "inventory": {
-      "title": "Inventory",
-      "valueTrend": "Inventory Value Trend",
-      "inboundOutbound": "Inbound vs Outbound Movement",
-      "byWarehouse": "Inventory by Warehouse",
-      "topStocked": "Top Stocked Products",
-      "fastMoving": "Fast-Moving Products",
-      "slowMoving": "Slow-Moving Products",
-      "product": "Product",
-      "qty": "Qty",
-      "value": "Value",
-      "unitsOut": "Units Out",
-      "noOutbound": "No outbound movements in selected range"
-    },
-    "certificates": {
-      "title": "Certificate Compliance",
-      "active": "Active Certificates",
-      "activeNote": "Not yet expired",
-      "expiring": "Expiring within 90 days",
-      "expiringNote": "Requires attention",
-      "expired": "Expired Certificates",
-      "expiredNote": "Must be renewed",
-      "supplierScore": "Supplier Compliance Score",
-      "score": "Score",
-      "activeCerts": "Active",
-      "totalCerts": "Total",
-      "noSupplierData": "No supplier data available"
+      "loadFailed": "Failed to load certificates",
+      "loadFailedSingle": "Failed to load certificate details",
+      "createFailed": "Failed to create certificate",
+      "updateFailed": "Failed to update certificate",
+      "deleteFailed": "Failed to delete certificate"
     }
   },
   "reports": {
-    "pageTitle": "Reports & Analytics",
-    "pageDescription": "Export and analyze supply chain data",
-    "export": "Export Report",
+    "pageTitle": "Reports",
+    "pageDescription": "Export supply chain data and generate compliance reports",
+    "summary": "Report Summary",
+    "export": "Export Data",
     "format": {
       "csv": "CSV",
-      "xlsx": "Excel",
+      "xlsx": "XLSX",
       "pdf": "PDF"
     },
-    "summary": {
-      "title": "Report Summary"
+    "modules": {
+      "products": "Products",
+      "inventory": "Inventory",
+      "suppliers": "Suppliers",
+      "certificates": "Certificates",
+      "purchase-orders": "Purchase Orders",
+      "shipments": "Shipments"
     },
-    "empty": {
-      "title": "No report data",
-      "description": "Report data will appear once you have suppliers, products, inventory, and purchase orders in the system."
+    "dateRange": "Date Range",
+    "errors": {
+      "loadFailed": "Failed to load report summary",
+      "exportFailed": "Failed to export report"
+    }
+  },
+  "analytics": {
+    "pageTitle": "Analytics",
+    "pageDescription": "In-depth analysis of supply chain operations",
+    "tabs": {
+      "inventory": "Inventory",
+      "purchaseOrders": "Purchase Orders",
+      "shipments": "Shipments",
+      "certificates": "Certificates"
     },
     "errors": {
-      "loadFailed": "Failed to load report data"
+      "loadFailed": "Failed to load analytics"
     }
   },
   "users": {
     "pageTitle": "User Management",
-    "pageDescription": "Manage user accounts, roles, and permissions",
-    "totalUsers": "Total Users",
-    "activeUsers": "Active Users",
-    "suspendedUsers": "Suspended Users",
-    "unverifiedUsers": "Unverified Users",
-    "byRole": "Users by Role",
-    "admins": "Admins",
-    "managers": "Managers",
-    "staff": "Staff",
-    "searchPlaceholder": "Search users…",
-    "allRoles": "All Roles",
-    "allStatuses": "All Statuses",
-    "invitations": "Invitations",
-    "manage": "Manage",
-    "noUsers": "No users found.",
-    "noInvitations": "No pending invitations.",
+    "pageDescription": "Manage platform users, roles, and invitations",
     "inviteUser": "Invite User",
-    "emailLabel": "Email",
-    "roleLabel": "Role",
-    "sendInvite": "Send Invitation",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "send": "Send",
-    "invited": "Invitation sent",
-    "invitedDesc": "Invitation email has been sent to {{email}}.",
-    "sendFailed": "Failed to send invitation",
-    "revoke": "Revoke",
-    "revoked": "Invitation revoked",
-    "revokeFailed": "Failed to revoke invitation",
+    "inviteUserDescription": "Send an invitation email to a new user",
     "userDetails": "User Details",
-    "displayName": "Display Name",
-    "saveName": "Save Name",
-    "nameUpdated": "Name updated.",
-    "nameUpdateFailed": "Failed to update name.",
-    "nameEmpty": "Name cannot be empty.",
-    "nameMinLength": "Name must be at least 2 characters.",
-    "role": "Role",
-    "saveRole": "Save Role",
-    "roleUpdated": "Role updated.",
-    "roleUpdateFailed": "Failed to update role.",
-    "changeRole": "Change role?",
-    "changeRoleDesc": "Set {{name}}'s role to {{role}}?",
-    "change": "Change",
-    "verificationStatus": "Verification Status",
-    "verifiedUser": "Verified user",
-    "notVerified": "Not verified",
-    "verifiedDesc": "Verified badge is shown in the user's sidebar.",
-    "verifyUser": "Verify user?",
-    "removeVerification": "Remove verification?",
-    "verifyDesc": "Mark {{name}} as a verified user.",
-    "unverifyDesc": "Remove the verified badge from {{name}}.",
-    "verify": "Verify",
-    "unverify": "Unverify",
-    "verificationUpdated": "Verification updated.",
-    "verificationUpdateFailed": "Failed to update verification.",
-    "resetPassword": "Reset Password",
-    "resetPasswordDesc": "Set a new password for this user. They will need to use it on their next login.",
-    "resetPasswordConfirm": "Reset password?",
-    "resetPasswordConfirmDesc": "This will immediately change {{name}}'s password. They will need to log in again.",
-    "reset": "Reset",
-    "passwordReset": "Password reset successfully.",
-    "passwordResetFailed": "Failed to reset password.",
-    "accountStatus": "Account Status",
-    "accountActive": "Account active",
-    "accountSuspended": "Account suspended",
-    "activeDesc": "User can log in and access the system.",
-    "suspendedDesc": "User cannot log in while suspended.",
-    "reactivate": "Reactivate",
-    "suspend": "Suspend",
-    "reactivateConfirm": "Reactivate account?",
-    "reactivateDesc": "{{name}} will be able to log in again.",
-    "suspendConfirm": "Suspend account?",
-    "suspendDesc": "{{name}} will immediately lose access and cannot log in.",
-    "accountUpdated": "Account status updated.",
-    "accountUpdateFailed": "Failed to update account status.",
-    "userId": "User ID",
-    "joined": "Joined",
-    "statusActive": "Active",
-    "statusSuspended": "Suspended",
-    "actions": "Actions"
+    "stats": {
+      "total": "Total Users",
+      "active": "Active",
+      "suspended": "Suspended",
+      "unverified": "Unverified",
+      "admins": "Admins",
+      "managers": "Managers",
+      "staff": "Staff"
+    },
+    "actions": {
+      "verify": "Verify User",
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "resetPassword": "Reset Password",
+      "changeRole": "Change Role"
+    },
+    "status": {
+      "active": "Active",
+      "suspended": "Suspended"
+    },
+    "errors": {
+      "loadFailed": "Failed to load users",
+      "inviteFailed": "Failed to invite user",
+      "updateFailed": "Failed to update user"
+    }
   },
   "settings": {
     "pageTitle": "Settings",
-    "navigation": {
+    "pageDescription": "Manage your account and platform preferences",
+    "tabs": {
       "profile": "Profile",
       "security": "Security",
       "notifications": "Notifications",
       "preferences": "Preferences"
     },
     "profile": {
-      "title": "Profile Settings",
-      "description": "Manage your personal information and avatar",
-      "nameLabel": "Full Name",
-      "emailLabel": "Email Address",
-      "roleLabel": "Role",
-      "avatarLabel": "Profile Photo",
-      "uploadAvatar": "Upload Photo",
-      "removeAvatar": "Remove",
-      "saved": "Profile updated",
-      "saveFailed": "Failed to update profile"
+      "title": "Profile Information",
+      "description": "Update your personal information and avatar",
+      "nameLabel": "Display Name",
+      "namePlaceholder": "Your display name",
+      "emailLabel": "Email",
+      "emailDescription": "Your email address cannot be changed",
+      "updateSuccess": "Profile updated successfully"
     },
     "security": {
-      "title": "Security Settings",
-      "description": "Update your password and account security",
+      "title": "Change Password",
+      "description": "Update your account password",
       "currentPassword": "Current Password",
       "newPassword": "New Password",
-      "confirmPassword": "Confirm New Password",
-      "changePassword": "Change Password",
-      "passwordChanged": "Password changed successfully",
-      "changeFailed": "Failed to change password"
+      "confirmPassword": "Confirm Password",
+      "updateSuccess": "Password changed successfully"
     },
     "notifications": {
       "title": "Notification Preferences",
-      "description": "Control which notifications you receive",
+      "description": "Choose which notifications you receive",
       "certificateAlerts": "Certificate Alerts",
-      "certificateAlertsDesc": "Get notified when certificates are expiring soon",
+      "certificateAlertsDesc": "Get notified when halal certificates are expiring or expired",
       "inventoryAlerts": "Inventory Alerts",
       "inventoryAlertsDesc": "Get notified when stock levels are low",
       "shipmentAlerts": "Shipment Alerts",
-      "shipmentAlertsDesc": "Get notified about shipment status changes",
+      "shipmentAlertsDesc": "Get notified when shipments are delayed",
       "invitationEmails": "Invitation Emails",
-      "invitationEmailsDesc": "Receive email notifications for team invitations",
-      "saved": "Notification preferences saved",
-      "saveFailed": "Failed to save notification preferences"
+      "invitationEmailsDesc": "Receive emails when users are invited to the platform",
+      "updateSuccess": "Preferences updated successfully"
     },
     "preferences": {
-      "title": "Preferences",
-      "description": "Customize your application experience",
-      "language": "Language",
-      "languageDescription": "Select your preferred language for the interface",
-      "theme": "Theme",
-      "themeDescription": "Choose your preferred color scheme"
-    },
-    "errors": {
-      "loadFailed": "Failed to load settings"
+      "title": "Display Preferences",
+      "description": "Customize your platform experience"
     }
-  },
-  "notifications": {
-    "title": "Notifications",
-    "unread": "{{count}} unread",
-    "markAllRead": "Mark all as read",
-    "noNotifications": "No notifications yet.",
-    "types": {
-      "lowStock": "Low Stock",
-      "certificateExpiring": "Cert Expiring",
-      "shipmentDelayed": "Delayed",
-      "system": "System"
-    }
-  },
-  "userMenu": {
-    "myProfile": "My Profile",
-    "accountSettings": "Account Settings",
-    "changePassword": "Change Password",
-    "signOut": "Sign Out",
-    "roles": {
-      "admin": "Administrator",
-      "manager": "Operations Manager",
-      "staff": "Warehouse Staff"
-    }
-  },
-  "sidebar": {
-    "navigation": "Navigation",
-    "closeMenu": "Close menu",
-    "expandSidebar": "Expand sidebar",
-    "collapseSidebar": "Collapse sidebar",
-    "brand": "HalalChain",
-    "platform": "Traceability Platform"
-  },
-  "traceability": {
-    "pageTitle": "Product Traceability",
-    "pageDescription": "End-to-end supply chain traceability for halal products",
-    "timeline": "Traceability Timeline",
-    "productInfo": "Product Information",
-    "productName": "Product Name",
-    "sku": "SKU",
-    "supplier": "Supplier",
-    "category": "Category",
-    "manufacturedAt": "Manufactured At",
-    "shippedFrom": "Shipped From",
-    "shippedTo": "Shipped To",
-    "verifiedBy": "Verified By",
-    "verificationDate": "Verification Date",
-    "certificate": "Certificate",
-    "noData": "No traceability data available for this product."
-  },
-  "demo": {
-    "title": "HalalChain Demo",
-    "description": "Explore the platform capabilities through an interactive demo."
-  },
-  "acceptInvite": {
-    "title": "Accept Invitation",
-    "description": "Create your account to join the organization.",
-    "submit": "Accept & Create Account",
-    "errors": {
-      "invalidToken": "This invitation link is invalid or has expired."
-    }
-  },
-  "errors": {
-    "notFound": "Page not found",
-    "notFoundDescription": "The page you are looking for does not exist.",
-    "goHome": "Go Home"
   }
 }
