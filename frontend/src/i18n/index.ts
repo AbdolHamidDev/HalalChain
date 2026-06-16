@@ -15,13 +15,15 @@
 import type { TranslationKey, TranslationOptions } from "./types";
 import en from "./locales/en.json";
 import vi from "./locales/vi.json";
+import ms from "./locales/ms.json";
 
 // ─── Loaded locale cache ───────────────────────────────────────────
-// Both English and Vietnamese are pre-loaded so locale switching is instant
-// with no async delay or hydration mismatches.
+// English, Vietnamese, and Malay are pre-loaded so locale switching is
+// instant with no async delay or hydration mismatches.
 const loadedLocales: Record<string, Record<string, unknown>> = {
   en: en as unknown as Record<string, unknown>,
   vi: vi as unknown as Record<string, unknown>,
+  ms: ms as unknown as Record<string, unknown>,
 };
 
 let currentLocale = "en";

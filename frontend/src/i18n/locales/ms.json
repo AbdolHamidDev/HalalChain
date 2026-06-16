@@ -1,0 +1,1257 @@
+{
+  "common": {
+    "save": "Simpan",
+    "saving": "Menyimpan…",
+    "cancel": "Batal",
+    "delete": "Padam",
+    "unsavedChanges": "Perubahan belum disimpan",
+    "unsavedChangesDesc": "Anda mempunyai perubahan yang belum disimpan. Jika anda meninggalkan halaman ini, perubahan anda akan hilang.",
+    "leave": "Tinggalkan",
+    "stay": "Kekal",
+    "updated": "dikemas kini",
+    "added": "ditambah",
+    "edit": "Sunting",
+    "create": "Cipta",
+    "add": "Tambah",
+    "remove": "Alih keluar",
+    "search": "Carian",
+    "filter": "Tapis",
+    "clear": "Padam",
+    "confirm": "Sahkan",
+    "close": "Tutup",
+    "back": "Kembali",
+    "next": "Seterusnya",
+    "previous": "Sebelumnya",
+    "loading": "Memuatkan…",
+    "retry": "Cuba Semula",
+    "noResults": "Tiada hasil ditemui.",
+    "noData": "Tiada data tersedia.",
+    "actions": "Tindakan",
+    "status": "Status",
+    "all": "Semua",
+    "none": "Tiada",
+    "required": "Wajib",
+    "optional": "Pilihan",
+    "yes": "Ya",
+    "no": "Tidak",
+    "or": "atau",
+    "and": "dan",
+    "more": "Lebih",
+    "less": "Kurang",
+    "today": "Hari ini",
+    "yesterday": "Semalam",
+    "thisWeek": "Minggu ini",
+    "thisMonth": "Bulan ini",
+    "from": "Dari",
+    "to": "Ke",
+    "export": "Eksport",
+    "import": "Import",
+    "download": "Muat Turun",
+    "upload": "Muat Naik",
+    "print": "Cetak",
+    "view": "Lihat",
+    "show": "Tunjukkan",
+    "hide": "Sembunyikan",
+    "expand": "Kembangkan",
+    "collapse": "Runtuhkan",
+    "toggle": "Togol",
+    "role": "Peranan",
+    "openMenu": "Buka menu",
+    "closeMenu": "Tutup menu",
+    "page": "Halaman",
+    "of": "daripada",
+    "items": "item",
+    "item": "item",
+    "selected": "dipilih",
+    "errors": {
+      "generic": "Ada yang tidak kena. Sila cuba semula."
+    }
+  },
+  "auth": {
+    "signIn": "Log Masuk",
+    "signingIn": "Sedang log masuk…",
+    "signOut": "Log Keluar",
+    "signUp": "Daftar",
+    "register": "Daftar",
+    "createAccount": "Cipta akaun",
+    "getStarted": "Mula",
+    "email": "E-mel",
+    "password": "Kata laluan",
+    "currentPassword": "Kata Laluan Semasa",
+    "newPassword": "Kata Laluan Baharu",
+    "confirmPassword": "Sahkan Kata Laluan",
+    "name": "Nama",
+    "forgotPassword": "Lupa kata laluan?",
+    "rememberMe": "Ingat saya",
+    "noAccount": "Tidak mempunyai akaun?",
+    "hasAccount": "Sudah mempunyai akaun?",
+    "signInToContinue": "Log masuk untuk meneruskan",
+    "halalChainTitle": "HalalChain",
+    "errors": {
+      "emailRequired": "E-mel diperlukan",
+      "emailInvalid": "Sila masukkan alamat e-mel yang sah",
+      "passwordRequired": "Kata laluan diperlukan",
+      "passwordMinLength": "Kata laluan mesti sekurang-kurangnya 8 aksara",
+      "passwordMismatch": "Kata laluan tidak sepadan",
+      "nameRequired": "Nama diperlukan",
+      "signInFailed": "Log masuk gagal. Sila semuka kelayakan anda.",
+      "signUpFailed": "Pendaftaran gagal. Sila cuba semula."
+    }
+  },
+  "navigation": {
+    "website": "Laman Web",
+    "dashboard": "Papan Pemuka",
+    "suppliers": "Pembekal",
+    "products": "Produk",
+    "inventory": "Inventori",
+    "warehouses": "Gudang",
+    "purchaseOrders": "Pesanan Pembelian",
+    "shipments": "Penghantaran",
+    "certificates": "Sijil",
+    "reports": "Laporan",
+    "analytics": "Analitik",
+    "userManagement": "Pengurusan Pengguna",
+    "settings": "Tetapan"
+  },
+  "sidebar": {
+    "brand": "HalalChain",
+    "platform": "Platform Pematuhan",
+    "navigation": "Navigasi",
+    "collapseSidebar": "Runtuhkan palang sisi",
+    "expandSidebar": "Kembangkan palang sisi",
+    "groups": {
+      "overview": "Gambaran Keseluruhan",
+      "supplyChain": "Rantaian Bekalan",
+      "operations": "Operasi",
+      "insights": "Wawasan",
+      "administration": "Pentadbiran"
+    }
+  },
+  "notifications": {
+    "title": "Pemberitahuan",
+    "unread": "{{count}} belum dibaca",
+    "markAllRead": "Tandakan semua dibaca",
+    "noNotifications": "Tiada pemberitahuan lagi",
+    "types": {
+      "lowStock": "Stok Rendah",
+      "certificateExpiring": "Akan Tamat Tempoh",
+      "certificateExpired": "Tamat Tempoh",
+      "shipmentDelayed": "Tertangguh",
+      "system": "Sistem"
+    }
+  },
+  "landing": {
+    "header": {
+      "features": "Ciri-ciri",
+      "workflow": "Aliran Jejak Baki",
+      "compliance": "Pematuhan",
+      "automation": "Automasi",
+      "architecture": "Seni Bina",
+      "techStack": "Teknologi",
+      "signIn": "Log Masuk",
+      "getStarted": "Mula",
+      "toggleMenu": "Togol menu",
+      "dashboard": "Papan Pemuka",
+      "logout": "Log Keluar"
+    },
+    "hero": {
+      "badge": "Platform Pematuhan & Jejak Baki Rantaian Bekalan",
+      "title": "Rantaian Bekalan",
+      "titleAccent": "Pematuhan & Jejak Baki",
+      "subtitle": "Jejak produk, pembekal, sijil, inventori dan penghantaran melalui platform berpadu dengan pemantauan pematuhan automatik, amaran masa nyata, dan pengesanan risiko pintar.",
+      "getStarted": "Mula",
+      "viewDemo": "Lihat Demo",
+      "dashboardPreview": "app.halalchain.io/dashboard",
+      "sidebar": {
+        "dashboard": "Papan Pemuka",
+        "products": "Produk",
+        "suppliers": "Pembekal",
+        "shipments": "Penghantaran",
+        "certifications": "Sijil",
+        "reports": "Laporan"
+      },
+      "stats": {
+        "products": "Produk",
+        "suppliers": "Pembekal",
+        "shipments": "Penghantaran"
+      },
+      "activity": {
+        "title": "Aktiviti Terkini",
+        "today": "Hari ini",
+        "newShipment": "Penghantaran baharu diterima",
+        "certificateExpiring": "Sijil akan tamat tempoh tidak lama lagi",
+        "inventoryAdjusted": "Inventori diselaraskan",
+        "minutesAgo": "minit yang lalu",
+        "hourAgo": "jam yang lalu",
+        "hoursAgo": "jam yang lalu"
+      }
+    },
+    "features": {
+      "title": "Daripada CRUD kepada pemantauan pematuhan pintar",
+      "subtitle": "HalalChain bukan sekadar sistem pengurusan. Ia adalah platform automasi berasaskan pematuhan yang memantau, memberi amaran, dan menilai kesihatan rantaian bekalan anda.",
+      "items": {
+        "traceability": {
+          "title": "Jejak Baki Produk",
+          "description": "Penjejakan hujung ke hujung daripada pembekal kepada pengguna dengan pengesahan kod QR. Halaman jejak baki awam tidak memerlukan log masuk."
+        },
+        "compliance": {
+          "title": "Pemantauan Pematuhan",
+          "description": "Pengesanan tamat tempoh sijil automatik, amaran sijil tamat tempoh, penjejakan isu pematuhan, dan skor pematuhan telus (0-100) dengan faktor yang boleh dijelaskan."
+        },
+        "automation": {
+          "title": "Enjin Automasi",
+          "description": "Empat peraturan automatik berjalan setiap hari: amaran tamat tempoh sijil, eskalasi sijil tamat tempoh, amaran inventori rendah, dan pengesanan kelewatan penghantaran. Idempoten dengan pencegahan pendua terbina dalam."
+        },
+        "certifications": {
+          "title": "Sijil Halal",
+          "description": "Pusakakan pengurusan sijil dengan storan dokumen digital, pemantauan tamat tempoh, muat naik fail ke Cloudinary, dan peringatan pembaharuan automatik."
+        },
+        "analytics": {
+          "title": "Analitik & Pelaporan",
+          "description": "Papan pemuka menyeluruh, analitik julat tarikh untuk inventori, PO, penghantaran, sijil, dan laporan yang boleh dieksport dalam format CSV/XLSX/PDF."
+        },
+        "notifications": {
+          "title": "Pemberitahuan Masa Nyata",
+          "description": "Amaran dalam apl melalui Server-Sent Events untuk stok rendah, acara sijil, dan kelewatan penghantaran. Penghantaran e-mel fire-and-forget melalui Resend atau SMTP dengan percubaan berkurang eksponen."
+        }
+      }
+    },
+    "workflow": {
+      "title": "Aliran Jejak Baki",
+      "subtitle": "Daripada pendaftaran pembekal kepada pengesahan pengguna, setiap langkah ditjejaki, disahkan, dan boleh disahkan melalui kod QR.",
+      "steps": {
+        "supplier": {
+          "label": "Pembekal",
+          "description": "Pendaftaran pembekal bersijil halal dengan dokumentasi"
+        },
+        "product": {
+          "label": "Produk",
+          "description": "Rekod produk dengan SKU, kelompok, dan status halal"
+        },
+        "certification": {
+          "label": "Sijil",
+          "description": "Lampirkan sijil dengan pemantauan tamat tempoh automatik"
+        },
+        "warehouse": {
+          "label": "Gudang",
+          "description": "Urus inventori dengan amaran tahap pesanan semula"
+        },
+        "shipment": {
+          "label": "Penghantaran",
+          "description": "Jejak penghantaran dengan pengesanan kelewatan"
+        },
+        "consumer": {
+          "label": "Pengguna",
+          "description": "Sahkan keaslian melalui kod QR — tiada log masuk diperlukan"
+        }
+      },
+      "explanation": {
+        "title": "Ketelusan rantaian bekalan penuh dengan pematuhan terbina dalam",
+        "p1": "HalalChain mewujudkan benang digital yang menghubungkan setiap entiti dalam rantaian bekalan anda. Setiap kelompok produk menerima kod QR unik yang mengikutinya daripada bahan mentah kepada pengguna akhir, membolehkan pengesahan segera.",
+        "p2": "Pembekal didaftarkan dengan sijil halal yang boleh disahkan. Platform secara automatik memantau tarikh tamat tempoh sijil dan menaiktaraf sijil tamat tempoh dengan amaran keparahan tinggi kepada pasukan pematuhan.",
+        "p3": "Enjin automasi menjalankan semakan harian: mengesan penghantaran lewat, mengimbas inventori untuk item stok rendah, dan menjana skor pematuhan yang memberi pengurusan satu KPI untuk kesihatan rantaian bekalan."
+      }
+    },
+    "compliance": {
+      "title": "Pemantauan Pematuhan Automatik",
+      "subtitle": "Platform secara berterusan memantau kesihatan rantaian bekalan anda dan memberi amaran kepada anda tentang risiko sebelum ia menjadi masalah.",
+      "items": {
+        "certificateExpiry": {
+          "title": "Pengesanan Tamat Tempoh Sijil",
+          "subtitle": "Mengimbas semua sijil setiap hari. Mengesan tamat tempoh dalam 30 hari dan menghantar amaran kepada pengurus dan pentadbir melalui pemberitahuan dalam apl dan e-mel."
+        },
+        "certificateExpired": {
+          "title": "Eskalasi Sijil Tamat Tempoh",
+          "subtitle": "Mengenal pasti sijil yang sudah tamat tempoh dan mencipta isu pematuhan keparahan tinggi. Mencetuskan pemberitahuan segera kepada pasukan bertanggungjawab."
+        },
+        "lowInventory": {
+          "title": "Pengesanan Inventori Rendah",
+          "subtitle": "Membandingkan stok semasa dengan tahap pesanan semula. Menjana amaran yang mencadangkan tindakan pengisian semula tanpa secara automatik membuat pesanan."
+        },
+        "shipmentDelay": {
+          "title": "Pengesanan Kelewatan Penghantaran",
+          "subtitle": "Secara automatik mengesan penghantaran melewati tarikh ketibaan anggaran yang belum ditanda dihantar. Mencegah amaran harian pendua."
+        },
+        "complianceScore": {
+          "title": "Penilaian Pematuhan",
+          "subtitle": "Skor telus 0-100 berdasarkan 5 faktor: sijil tamat tempoh (-30pt), sijil akan tamat tempoh (-15pt), penghantaran tertangguh (sehingga -20pt), inventori rendah (sehingga -15pt), dan liputan sijil (sehingga -20pt). Setiap pengurangan boleh dijelaskan."
+        },
+        "realTimeAlerts": {
+          "title": "Amaran Masa Nyata",
+          "subtitle": "Semua acara automasi disiarkan melalui Server-Sent Events kepada papan pemuka dengan segera. Penghantaran e-mel adalah fire-and-forget dengan 3 percubaan semula dan pengurangan eksponen."
+        }
+      },
+      "scoreNote": "Lihat KPI Skor Pematuhan pada papan pemuka anda. Setiap pengurangan adalah telus — layangkan atau klik untuk melihat mengapa setiap mata ditolak."
+    },
+    "verificationDemo": {
+      "title": "Pengesahan Kod QR Awam",
+      "subtitle": "Pengguna akhir boleh mengesahkan keaslian produk dengan segera dengan mengimbas kod QR pada pembungkusan. Tiada akaun atau log masuk diperlukan.",
+      "steps": {
+        "qrScanning": {
+          "title": "Pengimbasan Kod QR",
+          "description": "Setiap produk mempunyai kod QR unik pada pembungkusan. Pengguna mengimbas dengan mana-mana kamera telefon pintar — tiada apl diperlukan."
+        },
+        "productVerification": {
+          "title": "Butiran Produk",
+          "description": "Portal awam memaparkan asal produk, pembekal, nombor kelompok, dan status sijil halal dengan segera."
+        },
+        "certificateValidation": {
+          "title": "Pengesahan Sijil",
+          "description": "Lihat semua sijil halal yang dilampirkan dengan badan sijil, tarikh dikeluarkan, dan maklumat tamat tempoh dalam sekilas pandang."
+        },
+        "shipmentHistory": {
+          "title": "Perjalanan Rantaian Bekalan",
+          "description": "Jejak perjalanan lengkap daripada pembekal melalui gudang kepada peruncit dengan cap masa dan data lokasi."
+        }
+      },
+      "cta": {
+        "tryText": "Cuba sekarang dengan produk benih sebenar daripada pangkalan data kami",
+        "button": "Sahkan Santan Organik"
+      }
+    },
+    "architecture": {
+      "title": "Seni Bina Platform",
+      "subtitle": "Seni bina berlapis moden dengan enjin automasi khusus untuk pemantauan pematuhan pintar.",
+      "mainStack": {
+        "nextjs": {
+          "label": "Next.js 15",
+          "description": "Hadan muka dengan SSR"
+        },
+        "express": {
+          "label": "Express 5 API",
+          "description": "Bahagian belakang RESTful"
+        },
+        "automation": {
+          "label": "Enjin Automasi",
+          "description": "4 peraturan, cron harian, idempoten"
+        },
+        "prisma": {
+          "label": "Prisma ORM",
+          "description": "Akses PostgreSQL yang selamat jenis"
+        },
+        "postgresql": {
+          "label": "PostgreSQL",
+          "description": "Pangkalan data berelasi"
+        }
+      },
+      "externalServices": "Perkhidmatan Luaran",
+      "services": {
+        "cloudinary": {
+          "label": "Cloudinary",
+          "description": "Muat naik fail avatar & sijil"
+        },
+        "resend": {
+          "label": "Resend / SMTP",
+          "description": "Penghantaran e-mel dengan percubaan semula"
+        },
+        "sse": {
+          "label": "Siaran SSE",
+          "description": "Kemas kini papan pemuka masa nyata"
+        }
+      },
+      "flow": {
+        "title": "Bagaimana Automasi Berfungsi",
+        "description": "Enjin Automasi berjalan setiap hari pada 08:00, menilai 4 peraturan secara transaksi. Setiap peraturan menyemak syarat terhadap pangkalan data, mencipta pemberitahuan dengan deduplikasi, dan menghantar e-mel secara tidak segerak.",
+        "steps": [
+          "Cron mencetuskan penilaian harian",
+          "Enjin membuka transaksi pangkalan data",
+          "Semua 4 peraturan dinilai secara selari",
+          "Pemberitahuan dicipta dengan semakan dedup",
+          "E-mel dihantar secara fire-and-forget",
+          "Keputusan disiarkan kepada papan pemuka secara masa nyata"
+        ]
+      }
+    },
+    "stats": {
+      "title": "Ciri pematuhan peringkat perusahaan",
+      "subtitle": "Dibina untuk perniagaan yang memerlukan penglihatan lengkap, pemantauan automatik, dan pematuhan yang boleh disahkan merentasi rantaian bekalan halal mereka.",
+      "notifications": "Pemberitahuan Masa Nyata",
+      "auditLogging": "Pengelogan Audit",
+      "multiRoleAccess": "Peranan RBAC",
+      "secureAuth": "JWT + Token Penyegaran",
+      "qrVerification": "Pengesahan QR",
+      "reportingExports": "Format Laporan",
+      "complianceMonitoring": "Pemantauan Pematuhan",
+      "suffixPercent": "%",
+      "suffixRoles": "+ peranan",
+      "suffixFormats": "+ format",
+      "suffixRules": " peraturan"
+    },
+    "screenshots": {
+      "title": "Lihat HalalChain Bertindak",
+      "subtitle": "Papan pemuka berfokuskan pematuhan dengan amaran automasi, pandangan jejak baki, dan kawalan pengurusan.",
+      "slides": {
+        "dashboard": {
+          "title": "Papan Pemuka Pematuhan",
+          "description": "Kad KPI termasuk Skor Pematuhan, amaran automasi langsung, dan widget operasi"
+        },
+        "inventory": {
+          "title": "Inventori dengan Amaran Stok Rendah",
+          "description": "Tahap stok masa nyata dengan pengesanan inventori rendah automatik dan cadangan pengisian semula"
+        },
+        "traceability": {
+          "title": "Portal Jejak Baki Awam",
+          "description": "Pengesahan produk untuk pengguna dengan garis masa rantaian bekalan penuh — tiada log masuk diperlukan"
+        },
+        "users": {
+          "title": "Pengurusan Pengguna RBAC",
+          "description": "Kawalan akses berasaskan peranan dengan peranan ADMIN, MANAGER, dan STAFF, log audit, dan aliran jemputan"
+        }
+      },
+      "aria": {
+        "prevSlide": "Slaid sebelumnya",
+        "nextSlide": "Slaid seterusnya",
+        "goToSlide": "Pergi ke slaid {{number}}"
+      }
+    },
+    "techStack": {
+      "title": "Dibina dengan Teknologi Moden",
+      "subtitle": "Alat dan rangka kerja peringkat perusahaan yang memacu platform pematuhan HalalChain."
+    },
+    "cta": {
+      "title": "Bersedia untuk Mengubah",
+      "titleAccent": "Rantaian Bekalan Halal",
+      "titleSuffix": "Pematuhan Anda?",
+      "subtitle": "Sertai perniagaan halal yang berfikiran ke hadapan yang mempercayai HalalChain untuk jejak baki hujung ke hujung, pemantauan pematuhan automatik, dan kecerdasan operasi.",
+      "exploreDemo": "Jelajah Demo",
+      "signIn": "Log Masuk"
+    },
+    "footer": {
+      "description": "Platform Pematuhan & Jejak Baki Rantaian Bekalan — pemantauan pematuhan automatik, pengesahan QR, dan kecerdasan operasi untuk perniagaan halal moden.",
+      "product": "Produk",
+      "resources": "Sumber",
+      "company": "Syarikat",
+      "features": "Ciri-ciri",
+      "workflow": "Aliran Jejak Baki",
+      "compliance": "Pematuhan",
+      "automation": "Automasi",
+      "architecture": "Seni Bina",
+      "techStack": "Teknologi",
+      "apiDocs": "Dokumentasi API",
+      "traceabilityDemo": "Demo Jejak Baki",
+      "status": "Status",
+      "about": "Tentang",
+      "privacy": "Privasi",
+      "terms": "Syarat",
+      "copyright": "Hak cipta terpelihara.",
+      "privacyPolicy": "Dasar Privasi",
+      "termsOfService": "Syarat Perkhidmatan"
+    }
+  },
+  "dashboard": {
+    "pageTitle": "Papan Pemuka Operasi",
+    "pageDescription": "Pantau inventori, pembelian, penghantaran, dan pematuhan sijil halal",
+    "warehouseOpsTitle": "Operasi Gudang",
+    "warehouseOpsDescription": "Akses pantas untuk pergerakan stok masuk dan keluar",
+    "warehouseOpsCardTitle": "Operasi Gudang",
+    "warehouseOpsCardDescription": "Proses penerimaan masuk dan pesanan penghantaran keluar",
+    "goToInventory": "Pergi ke Inventori",
+    "recentActivity": "Aktiviti Terkini",
+    "kpis": {
+      "totalProducts": "Jumlah Produk",
+      "activeSuppliers": "Pembekal Aktif",
+      "totalSuppliers": "Jumlah Pembekal",
+      "activeCertificates": "Sijil Aktif",
+      "expiringCertificates": "Akan Tamat Tempoh",
+      "inventoryValue": "Nilai Inventori",
+      "openPOs": "PO Terbuka",
+      "delayedShipments": "Tertangguh",
+      "pendingShipments": "Belum Selesai"
+    },
+    "widgets": {
+      "lowStockAlerts": "Amaran Stok Rendah",
+      "expiringCertificates": "Sijil Akan Tamat Tempoh",
+      "shipmentDelays": "Kelewatan Penghantaran",
+      "stockHealthy": "Tahap stok sihat",
+      "stockHealthyDesc": "Tiada inventori yang ditjejaki berada di bawah tahap pesanan semula.",
+      "noExpiries": "Tiada tamat tempoh akan datang",
+      "noExpiriesDesc": "Tiada sijil tamat tempoh dalam tetingkap pemerhatian yang dipilih.",
+      "noDelays": "Tiada penghantaran tertangguh",
+      "noDelaysDesc": "Semua penghantaran aktif sedang mengikut jadual.",
+      "delayed": "Tertangguh"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuatkan analitik papan pemuka"
+    }
+  },
+  "products": {
+    "pageTitle": "Produk",
+    "pageDescription": "Urus produk bersijil halal merentasi rantaian bekalan anda",
+    "createProduct": "Cipta Produk",
+    "createProductDescription": "Tambah produk bersijil halar baharu ke katalog anda",
+    "editProduct": "Sunting Produk",
+    "productDetails": "Butiran Produk",
+    "productDeleted": "Produk berjaya dipadam",
+    "productCreated": "Produk berjaya dicipta",
+    "productUpdated": "Produk berjaya dikemas kini",
+    "fields": {
+      "name": "Nama Produk",
+      "namePlaceholder": "Masukkan nama produk",
+      "sku": "SKU",
+      "skuPlaceholder": "cth. HAL-COCO-001",
+      "category": "Kategori",
+      "categoryPlaceholder": "Pilih kategori",
+      "unit": "Unit",
+      "unitPlaceholder": "cth. kg, kotak, botol",
+      "unitPrice": "Harga Seunit",
+      "unitPricePlaceholder": "0.00",
+      "supplier": "Pembekal"
+    },
+    "categories": {
+      "beverages": "Minuman",
+      "condiments": "Rempah",
+      "grains": "Bijirin",
+      "meatPoultry": "Daging & Unggas",
+      "snacks": "Snek & Buah Kering"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuatkan produk",
+      "loadFailedSingle": "Gagal memuatkan butiran produk",
+      "createFailed": "Gagal mencipta produk",
+      "updateFailed": "Gagal mengemas kini produk",
+      "deleteFailed": "Gagal memadam produk",
+      "skuExists": "Produk dengan SKU ini sudah wujud"
+    },
+    "addProduct": "Tambah Produk",
+    "newProduct": "Produk Baharu",
+    "saveChanges": "Simpan Perubahan",
+    "deleteProduct": "Padam Produk",
+    "deleteConfirm": "Padam Produk?",
+    "deleteDescription": "Adakah anda pasti ingin memadam produk ini? Tindakan ini tidak boleh dibatalkan.",
+    "productAdded": "Produk berjaya ditambah",
+    "productSaved": "Produk berjaya disimpan",
+    "productDeleteFailed": "Gagal memadam produk",
+    "common": {
+      "editItem": "Sunting Produk",
+      "deleteItem": "Padam Produk",
+      "viewTraceability": "Lihat Jejak Baki",
+      "viewQrCode": "Lihat Kod QR",
+      "qrCodeFor": "Kod QR untuk"
+    },
+    "form": {
+      "name": "Nama Produk",
+      "namePlaceholder": "Masukkan nama produk",
+      "sku": "SKU",
+      "skuPlaceholder": "cth. HAL-COCO-001",
+      "category": "Kategori",
+      "categoryPlaceholder": "Pilih kategori",
+      "unit": "Unit",
+      "unitPlaceholder": "cth. kg, kotak, botol",
+      "unitPrice": "Harga Seunit",
+      "supplier": "Pembekal",
+      "selectSupplier": "Pilih pembekal",
+      "newProductDescription": "Tambah produk bersijil halal baharu ke katalog anda",
+      "editProductDescription": "Kemas kini maklumat produk"
+    },
+    "table": {
+      "sku": "SKU",
+      "name": "Nama",
+      "category": "Kategori",
+      "supplier": "Pembekal",
+      "unit": "Unit",
+      "price": "Harga",
+      "stock": "Stok",
+      "traceability": "Jejak Baki",
+      "qrCode": "Kod QR",
+      "trace": "Jejak",
+      "qr": "QR",
+      "actions": "Tindakan"
+    },
+    "qrDialog": {
+      "title": "Kod QR Produk",
+      "scanDescription": "Imbas kod QR ini untuk melihat halaman jejak baki awam",
+      "download": "Muat Turun Kod QR"
+    }
+  },
+  "inventory": {
+    "pageTitle": "Pengurusan Inventori",
+    "pageDescription": "Jejak tahap stok dan pergerakan merentasi semua gudang",
+    "movementsPageTitle": "Pergerakan Inventori",
+    "movementsPageDescription": "Lihat sejarah masuk, keluar, dan pelarasan",
+    "inbound": "Masuk",
+    "outbound": "Keluar",
+    "adjustment": "Pelarasan",
+    "inboundTitle": "Terima Stok",
+    "inboundDescription": "Rekod inventori masuk daripada pesanan pembelian atau pembekal",
+    "outboundTitle": "Hantar Stok",
+    "outboundDescription": "Rekod inventori keluar untuk penghantaran atau hapus kira",
+    "warehouseSections": "Gudang",
+    "lowStock": "Stok Rendah",
+    "currentStock": "Stok Semasa",
+    "reorderLevel": "Tahap Pesanan Semula",
+    "movementDate": "Tarikh",
+    "movementType": "Jenis",
+    "movementQuantity": "Kuantiti",
+    "movementNote": "Nota",
+    "performedBy": "Dilakukan Oleh",
+    "stockValue": "Nilai Stok",
+    "filterByWarehouse": "Tapis mengikut gudang",
+    "filterByProduct": "Tapis mengikut produk",
+    "showLowStockOnly": "Tunjukkan stok rendah sahaja",
+    "errors": {
+      "loadFailed": "Gagal memuatkan inventori",
+      "movementFailed": "Gagal merakam pergerakan",
+      "insufficientStock": "Stok tidak mencukupi untuk pergerakan keluar",
+      "loadMovementsFailed": "Gagal memuatkan pergerakan"
+    },
+    "recordInbound": "Rakam Masuk",
+    "recordOutbound": "Rakam Keluar",
+    "confirmInbound": "Sahkan Penerimaan Masuk",
+    "confirmOutbound": "Sahkan Penghantaran Keluar",
+    "inboundRecorded": "Masuk berjaya dirakam",
+    "outboundRecorded": "Keluar berjaya dirakam",
+    "movementRecorded": "Pergerakan berjaya dirakam",
+    "actionReceived": "Diterima",
+    "actionDispatched": "Dihantar",
+    "recording": "Merakam…",
+    "qty": "Kuantiti",
+    "value": "Nilai",
+    "date": "Tarikh",
+    "type": "Jenis",
+    "note": "Nota",
+    "notePlaceholderInbound": "cth. Diterima daripada penghantaran pembekal",
+    "notePlaceholderOutbound": "cth. Dihantar ke kedai",
+    "optional": "Pilihan",
+    "enterQuantity": "Masukkan kuantiti",
+    "recentMovements": "Pergerakan Terkini",
+    "allWarehouses": "Semua Gudang",
+    "allProducts": "Semua Produk",
+    "filters": "Penapis",
+    "clearFilters": "Padam Penapis",
+    "clear": "Padam",
+    "lowStockOnly": "Stok Rendah Sahaja",
+    "lowStockActive": "Penapis stok rendah aktif",
+    "stockOk": "Semua tahap stok sihat",
+    "noMatchFilters": "Tiada item inventori sepadan dengan penapis semasa anda",
+    "showingRecords": "Menunjukkan {{count}} rekod",
+    "by": "oleh",
+    "table": {
+      "sku": "SKU",
+      "product": "Produk",
+      "warehouse": "Gudang",
+      "quantity": "Kuantiti",
+      "reorderLevel": "Tahap Pesanan Semula",
+      "status": "Status"
+    }
+  },
+  "suppliers": {
+    "pageTitle": "Pembekal",
+    "pageDescription": "Urus rangkaian pembekal bersijil halal",
+    "createSupplier": "Tambah Pembekal",
+    "createSupplierDescription": "Daftar pembekal bersijil halal baharu",
+    "editSupplier": "Sunting Pembekal",
+    "supplierDetails": "Butiran Pembekal",
+    "supplierDeleted": "Pembekal berjaya dipadam",
+    "supplierCreated": "Pembekal berjaya dicipta",
+    "supplierUpdated": "Pembekal berjaya dikemas kini",
+    "fields": {
+      "name": "Nama Pembekal",
+      "namePlaceholder": "Masukkan nama pembekal",
+      "country": "Negara",
+      "email": "E-mel",
+      "emailPlaceholder": "pembekal@contoh.com",
+      "phone": "Telefon",
+      "phonePlaceholder": "+84 123 456 789",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Tidak Aktif"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuatkan pembekal",
+      "createFailed": "Gagal mencipta pembekal",
+      "updateFailed": "Gagal mengemas kini pembekal",
+      "deleteFailed": "Gagal memadam pembekal"
+    },
+    "addSupplier": "Tambah Pembekal",
+    "newSupplier": "Pembekal Baharu",
+    "saveChanges": "Simpan Perubahan",
+    "deleteSupplier": "Padam Pembekal",
+    "deleteConfirm": "Padam Pembekal?",
+    "deleteDescription": "Adakah anda pasti ingin memadam pembekal ini? Tindakan ini tidak boleh dibatalkan.",
+    "supplierAdded": "Pembekal berjaya ditambah",
+    "supplierEdited": "Pembekal berjaya dikemas kini",
+    "supplierDeleteFailed": "Gagal memadam pembekal",
+    "common": {
+      "editItem": "Sunting Pembekal",
+      "deleteItem": "Padam Pembekal"
+    },
+    "form": {
+      "name": "Nama Pembekal",
+      "namePlaceholder": "Masukkan nama pembekal",
+      "country": "Negara",
+      "countryPlaceholder": "Pilih negara",
+      "email": "E-mel",
+      "emailPlaceholder": "pembekal@contoh.com",
+      "phone": "Telefon",
+      "phonePlaceholder": "+1 234 567 890",
+      "status": "Status",
+      "statusActive": "Aktif",
+      "statusInactive": "Tidak Aktif",
+      "optional": "Pilihan"
+    },
+    "table": {
+      "name": "Nama",
+      "country": "Negara",
+      "contact": "Hubungi",
+      "status": "Status",
+      "certificates": "Sijil",
+      "products": "Produk",
+      "actions": "Tindakan"
+    }
+  },
+  "warehouses": {
+    "pageTitle": "Gudang",
+    "pageDescription": "Urus lokasi gudang merentasi rangkaian anda",
+    "createWarehouse": "Tambah Gudang",
+    "createWarehouseDescription": "Daftar lokasi gudang baharu",
+    "editWarehouse": "Sunting Gudang",
+    "warehouseDetails": "Butiran Gudang",
+    "warehouseDeleted": "Gudang berjaya dipadam",
+    "warehouseCreated": "Gudang berjaya dicipta",
+    "warehouseUpdated": "Gudang berjaya dikemas kini",
+    "fields": {
+      "name": "Nama Gudang",
+      "namePlaceholder": "Masukkan nama gudang",
+      "location": "Lokasi",
+      "locationPlaceholder": "Bandar, Negara"
+    },
+    "stockSummary": "Ringkasan Stok",
+    "errors": {
+      "loadFailed": "Gagal memuatkan gudang",
+      "loadFailedSingle": "Gagal memuatkan butiran gudang",
+      "createFailed": "Gagal mencipta gudang",
+      "updateFailed": "Gagal mengemas kini gudang",
+      "deleteFailed": "Gagal memadam gudang"
+    },
+    "addWarehouse": "Tambah Gudang",
+    "newWarehouse": "Gudang Baharu",
+    "saveChanges": "Simpan Perubahan",
+    "deleteWarehouse": "Padam Gudang",
+    "deleteConfirm": "Padam Gudang?",
+    "deleteDescription": "Adakah anda pasti ingin memadam gudang ini? Tindakan ini tidak boleh dibatalkan.",
+    "warehouseAdded": "Gudang berjaya ditambah",
+    "warehouseEdited": "Gudang berjaya dikemas kini",
+    "warehouseDeleteFailed": "Gagal memadam gudang",
+    "common": {
+      "editItem": "Sunting Gudang",
+      "deleteItem": "Padam Gudang"
+    },
+    "form": {
+      "name": "Nama Gudang",
+      "namePlaceholder": "Masukkan nama gudang",
+      "location": "Lokasi",
+      "locationPlaceholder": "Bandar, Negara"
+    },
+    "table": {
+      "name": "Nama",
+      "location": "Lokasi",
+      "items": "Item",
+      "actions": "Tindakan"
+    }
+  },
+  "purchaseOrders": {
+    "pageTitle": "Pesanan Pembelian",
+    "pageDescription": "Urus pembelian merentasi rangkaian pembekal",
+    "createPO": "Cipta PO",
+    "createPODescription": "Cipta pesanan pembelian baharu dengan item barisan",
+    "poDetails": "Butiran Pesanan Pembelian",
+    "poDeleted": "Pesanan pembelian berjaya dipadam",
+    "poCreated": "Pesanan pembelian berjaya dicipta",
+    "poStatusUpdated": "Status pesanan pembelian dikemas kini",
+    "status": {
+      "draft": "Draf",
+      "approved": "Diluluskan",
+      "shipping": "Menghantar",
+      "received": "Diterima",
+      "cancelled": "Dibatalkan",
+      "partial": "Sebahagian"
+    },
+    "fields": {
+      "poNumber": "Nombor PO",
+      "supplier": "Pembekal",
+      "items": "Item Barisan",
+      "totalAmount": "Jumlah Jumlah",
+      "status": "Status",
+      "createdAt": "Dicipta"
+    },
+    "noItems": "Tiada item barisan lagi",
+    "addItem": "Tambah Item",
+    "itemProduct": "Produk",
+    "itemQuantity": "Kuantiti",
+    "itemPrice": "Harga Seunit",
+    "itemSubtotal": "Jumlah Kecil",
+    "actions": {
+      "approve": "Luluskan",
+      "markShipping": "Tandakan Menghantar",
+      "markReceived": "Tandakan Diterima",
+      "cancel": "Batal"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuatkan pesanan pembelian",
+      "loadFailedSingle": "Gagal memuatkan butiran pesanan pembelian",
+      "createFailed": "Gagal mencipta pesanan pembelian",
+      "statusUpdateFailed": "Gagal mengemas kini status",
+      "deleteFailed": "Gagal memadam pesanan pembelian"
+    },
+    "newPO": "Pesanan Pembelian Baharu",
+    "deleteConfirm": "Padam Pesanan Pembelian?",
+    "deleteDescription": "Adakah anda pasti ingin memadam pesanan pembelian ini? Tindakan ini tidak boleh dibatalkan.",
+    "deletePO": "Padam Pesanan Pembelian",
+    "creating": "Mencipta…",
+    "created": "Pesanan pembelian dicipta",
+    "poCreatedDesc": "Pesanan pembelian berjaya dicipta",
+    "poDeleteFailed": "Gagal memadam pesanan pembelian",
+    "statusUpdated": "Status Dikemas Kini",
+    "statusUpdatedDesc": "Status pesanan pembelian telah dikemas kini",
+    "statusUpdateFailed": "Gagal mengemas kini status",
+    "items": "Item",
+    "qty": "Kuantiti",
+    "price": "Harga",
+    "amount": "Jumlah",
+    "total": "Jumlah",
+    "shipments": "Penghantaran",
+    "removeItem": "Alih keluar item",
+    "common": {
+      "deleteItem": "Padam Pesanan Pembelian"
+    },
+    "table": {
+      "poNumber": "Nombor PO",
+      "supplier": "Pembekal",
+      "status": "Status",
+      "actions": "Tindakan"
+    }
+  },
+  "shipments": {
+    "pageTitle": "Penghantaran",
+    "pageDescription": "Jejak dan urus penghantaran rantaian bekalan",
+    "createShipment": "Cipta Penghantaran",
+    "createShipmentDescription": "Daftar penghantaran baharu untuk pesanan pembelian",
+    "shipmentDetails": "Butiran Penghantaran",
+    "shipmentCreated": "Penghantaran berjaya dicipta",
+    "shipmentUpdated": "Penghantaran berjaya dikemas kini",
+    "status": {
+      "pending": "Belum Selesai",
+      "inTransit": "Dalam Perjalanan",
+      "delivered": "Dihantar",
+      "delayed": "Tertangguh"
+    },
+    "fields": {
+      "trackingNumber": "Nombor Penjejakan",
+      "trackingPlaceholder": "cth. MY-HAL-784521",
+      "origin": "Asal",
+      "destination": "Destinasi",
+      "estimatedArrival": "Ketibaan Anggaran",
+      "status": "Status",
+      "purchaseOrder": "Pesanan Pembelian",
+      "supplier": "Pembekal"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuatkan penghantaran",
+      "loadFailedSingle": "Gagal memuatkan butiran penghantaran",
+      "createFailed": "Gagal mencipta penghantaran",
+      "updateFailed": "Gagal mengemas kini penghantaran",
+      "trackingExists": "Nombor penjejakan sudah wujud"
+    },
+    "newShipment": "Penghantaran Baharu",
+    "newShipmentCta": "Cipta Penghantaran",
+    "updateShipment": "Kemas Kini Penghantaran",
+    "saveChanges": "Simpan Perubahan",
+    "createDescription": "Daftar penghantaran baharu untuk pesanan pembelian",
+    "creating": "Mencipta…",
+    "shipmentCreatedDesc": "Penghantaran berjaya dicipta",
+    "shipmentUpdatedDesc": "Penghantaran berjaya dikemas kini",
+    "trackingNumber": "Nombor Penjejakan",
+    "trackingPlaceholder": "cth. MY-HAL-784521",
+    "origin": "Asal",
+    "originPlaceholder": "cth. Kuala Lumpur",
+    "destination": "Destinasi",
+    "destinationPlaceholder": "cth. Ho Chi Minh City",
+    "estimatedArrival": "Ketibaan Anggaran",
+    "eta": "ETA",
+    "purchaseOrder": "Pesanan Pembelian",
+    "selectPO": "Pilih pesanan pembelian",
+    "route": "Laluan",
+    "statusOptions": {
+      "pending": "Belum Selesai",
+      "inTransit": "Dalam Perjalanan",
+      "delivered": "Dihantar",
+      "delayed": "Tertangguh"
+    },
+    "common": {
+      "editItem": "Sunting Penghantaran"
+    },
+    "table": {
+      "trackingNumber": "Nombor Penjejakan",
+      "supplier": "Pembekal",
+      "poNumber": "Nombor PO",
+      "status": "Status",
+      "actions": "Tindakan"
+    }
+  },
+  "certificates": {
+    "pageTitle": "Sijil Halal",
+    "pageDescription": "Urus sijil halal merentasi rantaian bekalan anda",
+    "createCertificate": "Tambah Sijil",
+    "createCertificateDescription": "Daftar sijil halal baharu untuk pembekal",
+    "editCertificate": "Sunting Sijil",
+    "certificateDetails": "Butiran Sijil",
+    "certificateDeleted": "Sijil berjaya dipadam",
+    "certificateCreated": "Sijil berjaya dicipta",
+    "certificateUpdated": "Sijil berjaya dikemas kini",
+    "status": {
+      "valid": "Sah",
+      "expiringSoon": "Akan Tamat Tempoh",
+      "expired": "Tamat Tempoh"
+    },
+    "fields": {
+      "certificateNumber": "Nombor Sijil",
+      "certificatePlaceholder": "cth. JAKIM-2024-00123",
+      "supplier": "Pembekal",
+      "issuedBy": "Dikeluarkan Oleh",
+      "issueDate": "Tarikh Dikeluarkan",
+      "expiryDate": "Tarikh Tamat Tempoh",
+      "file": "Fail Sijil",
+      "currentFile": "Fail Semasa"
+    },
+    "upload": {
+      "dropzone": "Letakkan fail sijil di sini atau klik untuk menyemak imbas",
+      "uploading": "Memuat naik…",
+      "success": "Fail berjaya dimuat naik",
+      "error": "Muat naik gagal",
+      "fileTooLarge": "Fail melebihi had 10 MB"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuatkan sijil",
+      "loadFailedSingle": "Gagal memuatkan butiran sijil",
+      "createFailed": "Gagal mencipta sijil",
+      "updateFailed": "Gagal mengemas kini sijil",
+      "deleteFailed": "Gagal memadam sijil"
+    },
+    "addCertificate": "Tambah Sijil",
+    "newCertificate": "Sijil Baharu",
+    "saveChanges": "Simpan Perubahan",
+    "deleteCertificate": "Padam Sijil",
+    "deleteConfirm": "Padam Sijil?",
+    "deleteDescription": "Adakah anda pasti ingin memadam sijil ini? Tindakan ini tidak boleh dibatalkan.",
+    "certificateDeleteFailed": "Gagal memadam sijil",
+    "uploadDocument": "Muat Naik Dokumen",
+    "common": {
+      "editItem": "Sunting Sijil",
+      "deleteItem": "Padam Sijil"
+    },
+    "form": {
+      "certificateNumber": "Nombor Sijil",
+      "certificateNumberPlaceholder": "cth. JAKIM-2024-00123",
+      "supplier": "Pembekal",
+      "issuedBy": "Dikeluarkan Oleh",
+      "issuedByPlaceholder": "cth. JAKIM, MUI, BPJPH",
+      "issueDate": "Tarikh Dikeluarkan",
+      "expiryDate": "Tarikh Tamat Tempoh",
+      "newCertificateDescription": "Daftar sijil halal baharu untuk pembekal",
+      "editCertificateDescription": "Kemas kini maklumat sijil"
+    },
+    "table": {
+      "certificateNumber": "Nombor Sijil",
+      "supplier": "Pembekal",
+      "issuedBy": "Dikeluarkan Oleh",
+      "issueDate": "Tarikh Dikeluarkan",
+      "expiryDate": "Tarikh Tamat Tempoh",
+      "status": "Status",
+      "actions": "Tindakan"
+    }
+  },
+  "reports": {
+    "pageTitle": "Laporan",
+    "pageDescription": "Eksport data rantaian bekalan dan jana laporan pematuhan",
+    "summary": {
+      "0": "R",
+      "1": "i",
+      "2": "n",
+      "3": "g",
+      "4": "k",
+      "5": "a",
+      "6": "s",
+      "7": "a",
+      "8": "n",
+      "9": " ",
+      "10": "L",
+      "11": "a",
+      "12": "p",
+      "13": "o",
+      "14": "r",
+      "title": "Ringkasan Laporan"
+    },
+    "export": "Eksport Data",
+    "format": {
+      "csv": "CSV",
+      "xlsx": "XLSX",
+      "pdf": "PDF"
+    },
+    "modules": {
+      "products": "Produk",
+      "inventory": "Inventori",
+      "suppliers": "Pembekal",
+      "certificates": "Sijil",
+      "purchase-orders": "Pesanan Pembelian",
+      "shipments": "Penghantaran"
+    },
+    "dateRange": "Julat Tarikh",
+    "errors": {
+      "loadFailed": "Gagal memuatkan ringkasan laporan",
+      "exportFailed": "Gagal mengeksport laporan"
+    },
+    "empty": {
+      "title": "Tiada data laporan tersedia"
+    }
+  },
+  "analytics": {
+    "pageTitle": "Analitik",
+    "pageDescription": "Analisis mendalam operasi rantaian bekalan",
+    "tabs": {
+      "inventory": "Inventori",
+      "purchaseOrders": "Pesanan Pembelian",
+      "shipments": "Penghantaran",
+      "certificates": "Sijil"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuatkan analitik"
+    },
+    "loadFailed": "Gagal memuatkan data analitik",
+    "inventory": {
+      "title": "Analitik Inventori",
+      "valueTrend": "Aliran Nilai Stok",
+      "value": "Nilai",
+      "byWarehouse": "Stok mengikut Gudang",
+      "topStocked": "Produk Stok Tertinggi",
+      "product": "Produk",
+      "qty": "Kuantiti",
+      "inboundOutbound": "Masuk vs Keluar",
+      "unitsOut": "Unit Keluar",
+      "fastMoving": "Bergerak Pantas",
+      "slowMoving": "Bergerak Perlahan",
+      "noOutbound": "Tiada pergerakan keluar dalam tempoh ini"
+    },
+    "purchaseOrders": {
+      "title": "Analitik Pesanan Pembelian",
+      "ordersPerMonth": "Pesanan sebulan",
+      "statusDistribution": "Taburan Status",
+      "statusBreakdown": "Perincian Status",
+      "statusBreakdownNote": "Taburan pesanan pembelian mengikut status semasa",
+      "approvalRate": "Kadar Kelulusan",
+      "approvalRateNote": "Peratusan pesanan yang telah diluluskan atau lebih",
+      "fulfillmentRate": "Kadar Pemenuhan",
+      "fulfillmentRateNote": "Peratusan pesanan yang telah diterima",
+      "avgProcessingTime": "Purata Masa Pemprosesan",
+      "avgProcessingTimeNote": "Purata hari daripada penciptaan kepada status diterima",
+      "notEnoughData": "Data tidak mencukupi untuk memaparkan analitik"
+    },
+    "shipments": {
+      "title": "Analitik Penghantaran",
+      "volumeTrend": "Aliran Volume Penghantaran",
+      "statusDistribution": "Taburan Status",
+      "shipmentStatusDistribution": "Taburan Status Penghantaran",
+      "statusDistributionNote": "Taburan penghantaran mengikut status semasa",
+      "onTimeDelivery": "Kadar Penghantaran Tepat Masa",
+      "onTimeDeliveryNote": "Peratusan penghantaran yang dihantar tanpa kelewatan",
+      "delayedRate": "Kadar Kelewatan",
+      "delayedRateNote": "Peratusan penghantaran yang tertangguh pada masa ini"
+    },
+    "certificates": {
+      "title": "Analitik Sijil",
+      "totalCerts": "Jumlah Sijil",
+      "active": "Aktif",
+      "activeCerts": "Sijil Aktif",
+      "activeNote": "Sijil yang sah pada masa ini",
+      "expiring": "Akan Tamat Tempoh",
+      "expiringNote": "Sijil yang akan tamat tempoh dalam 30 hari",
+      "expired": "Tamat Tempoh",
+      "expiredNote": "Sijil yang sudah tamat tempoh",
+      "score": "Skor Pematuhan",
+      "supplierScore": "Pematuhan Pembekal",
+      "noSupplierData": "Tiada data sijil pembekal tersedia"
+    }
+  },
+  "users": {
+    "pageTitle": "Pengurusan Pengguna",
+    "pageDescription": "Urus pengguna platform, peranan, dan jemputan",
+    "inviteUser": "Jemput Pengguna",
+    "inviteUserDescription": "Hantar e-mel jemputan kepada pengguna baharu",
+    "userDetails": "Butiran Pengguna",
+    "stats": {
+      "total": "Jumlah Pengguna",
+      "active": "Aktif",
+      "suspended": "Digantung",
+      "unverified": "Belum Disahkan",
+      "admins": "Pentadbir",
+      "managers": "Pengurus",
+      "staff": "Kakitangan"
+    },
+    "actions": {
+      "verify": "Sahkan Pengguna",
+      "suspend": "Gantung",
+      "activate": "Aktifkan",
+      "resetPassword": "Tetapkan Semula Kata Laluan",
+      "changeRole": "Tukar Peranan"
+    },
+    "status": {
+      "active": "Aktif",
+      "suspended": "Digantung"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuatkan pengguna",
+      "inviteFailed": "Gagal menjemput pengguna",
+      "updateFailed": "Gagal mengemas kini pengguna"
+    },
+    "totalUsers": "Jumlah Pengguna",
+    "activeUsers": "Pengguna Aktif",
+    "suspendedUsers": "Pengguna Digantung",
+    "unverifiedUsers": "Pengguna Belum Disahkan",
+    "searchPlaceholder": "Cari mengikut nama atau e-mel…",
+    "allRoles": "Semua Peranan",
+    "allStatuses": "Semua Status",
+    "noUsers": "Tiada pengguna ditemui",
+    "manage": "Urus",
+    "cancel": "Batal",
+    "change": "Tukar",
+    "role": "Peranan",
+    "roleLabel": "Peranan",
+    "displayName": "Nama Paparan",
+    "emailLabel": "E-mel",
+    "userId": "ID Pengguna",
+    "joined": "Menyertai",
+    "invitations": "Jemputan",
+    "invitedDesc": "Jemputan belum selesai",
+    "verifiedUser": "Pengguna Disahkan",
+    "verifiedDesc": "Pengguna ini telah mengesahkan alamat e-mel mereka",
+    "notVerified": "Belum Disahkan",
+    "activeDesc": "Akaun pengguna ini aktif",
+    "suspendedDesc": "Akaun pengguna ini digantung",
+    "accountStatus": "Status Akaun",
+    "accountActive": "Akaun aktif",
+    "accountSuspended": "Akaun digantung",
+    "verificationStatus": "Status Pengesahan",
+    "verify": "Sahkan Pengguna",
+    "verifyUser": "Sahkan Pengguna",
+    "verifyDesc": "Secara manual sahkan alamat e-mel pengguna ini",
+    "unverify": "Alih Keluar Pengesahan",
+    "unverifyDesc": "Alih keluar pengesahan e-mel daripada pengguna ini",
+    "removeVerification": "Alih Keluar Pengesahan",
+    "suspend": "Gantung Pengguna",
+    "suspendConfirm": "Gantung pengguna ini?",
+    "suspendDesc": "Pengguna ini tidak akan dapat log masuk sehingga diaktifkan semula.",
+    "reactivate": "Aktifkan Semula Pengguna",
+    "reactivateConfirm": "Aktifkan semula pengguna ini?",
+    "reactivateDesc": "Pengguna ini akan dapat log masuk semula.",
+    "changeRole": "Tukar Peranan",
+    "changeRoleDesc": "Tukar peranan untuk pengguna ini",
+    "saveRole": "Simpan Peranan",
+    "roleUpdated": "Peranan berjaya dikemas kini",
+    "roleUpdateFailed": "Gagal mengemas kini peranan",
+    "saveName": "Simpan Nama",
+    "nameUpdated": "Nama berjaya dikemas kini",
+    "nameUpdateFailed": "Gagal mengemas kini nama",
+    "nameEmpty": "Nama tidak boleh kosong",
+    "nameMinLength": "Nama mesti sekurang-kurangnya 2 aksara",
+    "accountUpdated": "Akaun berjaya dikemas kini",
+    "accountUpdateFailed": "Gagal mengemas kini akaun",
+    "verificationUpdated": "Status pengesahan dikemas kini",
+    "verificationUpdateFailed": "Gagal mengemas kini status pengesahan",
+    "reset": "Tetapkan Semula",
+    "resetPassword": "Tetapkan Semula Kata Laluan",
+    "resetPasswordConfirm": "Tetapkan semula kata laluan pengguna ini?",
+    "resetPasswordConfirmDesc": "E-mel penetapan semula kata laluan akan dihantar kepada pengguna.",
+    "resetPasswordDesc": "Hantar e-mel penetapan semula kata laluan kepada pengguna ini",
+    "passwordReset": "E-mel penetapan semula kata laluan dihantar",
+    "passwordResetFailed": "Gagal menghantar penetapan semula kata laluan",
+    "sendInvite": "Hantar Jemputan",
+    "sendFailed": "Gagal menghantar jemputan",
+    "revoke": "Batalkan Jemputan",
+    "revoked": "Jemputan dibatalkan",
+    "revokeFailed": "Gagal membatalkan jemputan",
+    "statusActive": "Aktif",
+    "statusSuspended": "Digantung"
+  },
+  "settings": {
+    "pageTitle": "Tetapan",
+    "pageDescription": "Urus akaun dan keutamaan platform anda",
+    "tabs": {
+      "profile": "Profil",
+      "security": "Keselamatan",
+      "notifications": "Pemberitahuan",
+      "preferences": "Keutamaan"
+    },
+    "navigation": {
+      "profile": "Profil",
+      "security": "Keselamatan",
+      "preferences": "Keutamaan",
+      "notifications": "Pemberitahuan"
+    },
+    "profile": {
+      "title": "Maklumat Profil",
+      "description": "Kemas kini maklumat peribadi dan avatar anda",
+      "nameLabel": "Nama Paparan",
+      "namePlaceholder": "Nama paparan anda",
+      "emailLabel": "E-mel",
+      "emailDescription": "Alamat e-mel anda tidak boleh diubah",
+      "updateSuccess": "Profil berjaya dikemas kini",
+      "saved": "Profil berjaya disimpan",
+      "saveFailed": "Gagal menyimpan profil",
+      "avatarLabel": "Avatar",
+      "roleLabel": "Peranan"
+    },
+    "security": {
+      "title": "Tukar Kata Laluan",
+      "description": "Kemas kini kata laluan akaun anda",
+      "currentPassword": "Kata Laluan Semasa",
+      "newPassword": "Kata Laluan Baharu",
+      "confirmPassword": "Sahkan Kata Laluan",
+      "updateSuccess": "Kata laluan berjaya ditukar"
+    },
+    "notifications": {
+      "title": "Keutamaan Pemberitahuan",
+      "description": "Pilih pemberitahuan yang anda terima",
+      "certificateAlerts": "Amaran Sijil",
+      "certificateAlertsDesc": "Dapat pemberitahuan apabila sijil halal akan tamat tempoh atau sudah tamat tempoh",
+      "inventoryAlerts": "Amaran Inventori",
+      "inventoryAlertsDesc": "Dapat pemberitahuan apabila tahap stok rendah",
+      "shipmentAlerts": "Amaran Penghantaran",
+      "shipmentAlertsDesc": "Dapat pemberitahuan apabila penghantaran tertangguh",
+      "invitationEmails": "E-mel Jemputan",
+      "invitationEmailsDesc": "Terima e-mel apabila pengguna dijemput ke platform",
+      "updateSuccess": "Keutamaan berjaya dikemas kini",
+      "saved": "Keutamaan pemberitahuan disimpan",
+      "saveFailed": "Gagal menyimpan keutamaan pemberitahuan"
+    },
+    "preferences": {
+      "title": "Keutamaan Paparan",
+      "description": "Tuai suai pengalaman platform anda"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuatkan tetapan"
+    }
+  },
+  "acceptInvite": {
+    "title": "Terima Jemputan",
+    "description": "Anda telah dijemput untuk menyertai HalalChain. Tetapkan kata laluan anda untuk mengaktifkan akaun anda.",
+    "submit": "Aktifkan Akaun",
+    "errors": {
+      "invalidToken": "Pautan jemputan ini tidak sah atau telah tamat tempoh."
+    }
+  },
+  "errors": {
+    "notFound": "Halaman tidak ditemui"
+  },
+  "userMenu": {
+    "myProfile": "Profil Saya",
+    "accountSettings": "Tetapan Akaun",
+    "changePassword": "Tukar Kata Laluan",
+    "signOut": "Log Keluar",
+    "roles": {
+      "admin": "Pentadbir",
+      "manager": "Pengurus",
+      "staff": "Kakitangan"
+    }
+  }
+}
