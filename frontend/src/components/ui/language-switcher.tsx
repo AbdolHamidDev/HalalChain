@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 
 export function LanguageSwitcher() {
   const { locale, setLanguage, locales } = useTranslation();
+  const activeFlag = LOCALE_FLAGS[locale as keyof typeof LOCALE_FLAGS] ?? "";
 
   return (
     <DropdownMenu>
@@ -21,10 +22,13 @@ export function LanguageSwitcher() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative"
+          className="relative flex items-center gap-1"
           aria-label="Switch language"
         >
           <Globe className="h-4 w-4" />
+          {activeFlag && (
+            <span className="text-sm leading-none">{activeFlag}</span>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">

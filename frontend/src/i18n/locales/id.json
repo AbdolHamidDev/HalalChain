@@ -1,0 +1,1257 @@
+{
+  "common": {
+    "save": "Simpan",
+    "saving": "Menyimpan…",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "unsavedChanges": "Perubahan belum disimpan",
+    "unsavedChangesDesc": "Anda memiliki perubahan yang belum disimpan. Jika Anda meninggalkan halaman ini, perubahan Anda akan hilang.",
+    "leave": "Tinggalkan",
+    "stay": "Tetap",
+    "updated": "diperbarui",
+    "added": "ditambahkan",
+    "edit": "Edit",
+    "create": "Buat",
+    "add": "Tambah",
+    "remove": "Hapus",
+    "search": "Cari",
+    "filter": "Filter",
+    "clear": "Hapus",
+    "confirm": "Konfirmasi",
+    "close": "Tutup",
+    "back": "Kembali",
+    "next": "Berikutnya",
+    "previous": "Sebelumnya",
+    "loading": "Memuat…",
+    "retry": "Coba Lagi",
+    "noResults": "Tidak ada hasil yang ditemukan.",
+    "noData": "Tidak ada data yang tersedia.",
+    "actions": "Tindakan",
+    "status": "Status",
+    "all": "Semua",
+    "none": "Tidak ada",
+    "required": "Wajib",
+    "optional": "Opsional",
+    "yes": "Ya",
+    "no": "Tidak",
+    "or": "atau",
+    "and": "dan",
+    "more": "Lebih",
+    "less": "Kurang",
+    "today": "Hari ini",
+    "yesterday": "Kemarin",
+    "thisWeek": "Minggu ini",
+    "thisMonth": "Bulan ini",
+    "from": "Dari",
+    "to": "Ke",
+    "export": "Ekspor",
+    "import": "Impor",
+    "download": "Unduh",
+    "upload": "Unggah",
+    "print": "Cetak",
+    "view": "Lihat",
+    "show": "Tampilkan",
+    "hide": "Sembunyikan",
+    "expand": "Perluas",
+    "collapse": "Ciutkan",
+    "toggle": "Alihkan",
+    "role": "Peran",
+    "openMenu": "Buka menu",
+    "closeMenu": "Tutup menu",
+    "page": "Halaman",
+    "of": "dari",
+    "items": "item",
+    "item": "item",
+    "selected": "dipilih",
+    "errors": {
+      "generic": "Terjadi kesalahan. Silakan coba lagi."
+    }
+  },
+  "auth": {
+    "signIn": "Masuk",
+    "signingIn": "Sedang masuk…",
+    "signOut": "Keluar",
+    "signUp": "Daftar",
+    "register": "Daftar",
+    "createAccount": "Buat akun",
+    "getStarted": "Mulai",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "currentPassword": "Kata Sandi Saat Ini",
+    "newPassword": "Kata Sandi Baru",
+    "confirmPassword": "Konfirmasi Kata Sandi",
+    "name": "Nama",
+    "forgotPassword": "Lupa kata sandi?",
+    "rememberMe": "Ingat saya",
+    "noAccount": "Belum punya akun?",
+    "hasAccount": "Sudah punya akun?",
+    "signInToContinue": "Masuk untuk melanjutkan",
+    "halalChainTitle": "HalalChain",
+    "errors": {
+      "emailRequired": "Email wajib diisi",
+      "emailInvalid": "Silakan masukkan alamat email yang valid",
+      "passwordRequired": "Kata sandi wajib diisi",
+      "passwordMinLength": "Kata sandi harus minimal 8 karakter",
+      "passwordMismatch": "Kata sandi tidak cocok",
+      "nameRequired": "Nama wajib diisi",
+      "signInFailed": "Gagal masuk. Silakan periksa kredensial Anda.",
+      "signUpFailed": "Pendaftaran gagal. Silakan coba lagi."
+    }
+  },
+  "navigation": {
+    "website": "Situs Web",
+    "dashboard": "Dasbor",
+    "suppliers": "Pemasok",
+    "products": "Produk",
+    "inventory": "Inventaris",
+    "warehouses": "Gudang",
+    "purchaseOrders": "Pesanan Pembelian",
+    "shipments": "Pengiriman",
+    "certificates": "Sertifikat",
+    "reports": "Laporan",
+    "analytics": "Analitik",
+    "userManagement": "Manajemen Pengguna",
+    "settings": "Pengaturan"
+  },
+  "sidebar": {
+    "brand": "HalalChain",
+    "platform": "Platform Kepatuhan",
+    "navigation": "Navigasi",
+    "collapseSidebar": "Ciutkan bilah sisi",
+    "expandSidebar": "Perluas bilah sisi",
+    "groups": {
+      "overview": "Ikhtisar",
+      "supplyChain": "Rantai Pasok",
+      "operations": "Operasi",
+      "insights": "Wawasan",
+      "administration": "Administrasi"
+    }
+  },
+  "notifications": {
+    "title": "Notifikasi",
+    "unread": "{{count}} belum dibaca",
+    "markAllRead": "Tandai semua sudah dibaca",
+    "noNotifications": "Belum ada notifikasi",
+    "types": {
+      "lowStock": "Stok Rendah",
+      "certificateExpiring": "Akan Habis",
+      "certificateExpired": "Habis",
+      "shipmentDelayed": "Tertunda",
+      "system": "Sistem"
+    }
+  },
+  "landing": {
+    "header": {
+      "features": "Fitur",
+      "workflow": "Alur Jejak Sarana",
+      "compliance": "Kepatuhan",
+      "automation": "Otomatisasi",
+      "architecture": "Arsitektur",
+      "techStack": "Teknologi",
+      "signIn": "Masuk",
+      "getStarted": "Mulai",
+      "toggleMenu": "Alihkan menu",
+      "dashboard": "Dasbor",
+      "logout": "Keluar"
+    },
+    "hero": {
+      "badge": "Platform Kepatuhan & Jejak Sarana Rantai Pasok",
+      "title": "Rantai Pasok",
+      "titleAccent": "Kepatuhan & Jejak Sarana",
+      "subtitle": "Lacak produk, pemasok, sertifikasi, inventaris, dan pengiriman melalui platform terpadu dengan pemantauan kepatuhan otomatis, peringatan real-time, dan deteksi risiko cerdas.",
+      "getStarted": "Mulai",
+      "viewDemo": "Lihat Demo",
+      "dashboardPreview": "app.halalchain.io/dashboard",
+      "sidebar": {
+        "dashboard": "Dasbor",
+        "products": "Produk",
+        "suppliers": "Pemasok",
+        "shipments": "Pengiriman",
+        "certifications": "Sertifikasi",
+        "reports": "Laporan"
+      },
+      "stats": {
+        "products": "Produk",
+        "suppliers": "Pemasok",
+        "shipments": "Pengiriman"
+      },
+      "activity": {
+        "title": "Aktivitas Terbaru",
+        "today": "Hari ini",
+        "newShipment": "Pengiriman baru diterima",
+        "certificateExpiring": "Sertifikat akan habis tidak lama lagi",
+        "inventoryAdjusted": "Inventaris disesuaikan",
+        "minutesAgo": "menit lalu",
+        "hourAgo": "jam lalu",
+        "hoursAgo": "jam lalu"
+      }
+    },
+    "features": {
+      "title": "Dari CRUD ke pemantauan kepatuhan cerdas",
+      "subtitle": "HalalChain bukan sekadar sistem manajemen. Ini adalah platform otomatisasi berbasis kepatuhan yang memantau, memberi peringatan, dan menilai kesehatan rantai pasok Anda.",
+      "items": {
+        "traceability": {
+          "title": "Jejak Sarana Produk",
+          "description": "Pelacakan ujung ke ujung dari pemasok ke konsumen dengan verifikasi kode QR. Halaman jejak sarana publik tidak memerlukan login."
+        },
+        "compliance": {
+          "title": "Pemantauan Kepatuhan",
+          "description": "Deteksi kedaluwarsa sertifikat otomatis, peringatan sertifikat kedaluwarsa, pelacakan masalah kepatuhan, dan skor kepatuhan transparan (0-100) dengan faktor yang dapat dijelaskan."
+        },
+        "automation": {
+          "title": "Mesin Otomatisasi",
+          "description": "Empat aturan otomatis berjalan setiap hari: peringatan kedaluwarsa sertifikat, eskalasi sertifikat kedaluwarsa, peringatan inventaris rendah, dan deteksi keterlambatan pengiriman. Idempoten dengan pencegahan duplikat bawaan."
+        },
+        "certifications": {
+          "title": "Sertifikasi Halal",
+          "description": "Pusatkan manajemen sertifikat dengan penyimpanan dokumen digital, pemantauan kedaluwarsa, unggah file ke Cloudinary, dan pengingat pembaruan otomatis."
+        },
+        "analytics": {
+          "title": "Analitik & Pelaporan",
+          "description": "Dasbor komprehensif, analitik rentang tanggal untuk inventaris, PO, pengiriman, sertifikat, dan laporan yang dapat diekspor dalam format CSV/XLSX/PDF."
+        },
+        "notifications": {
+          "title": "Notifikasi Real-time",
+          "description": "Peringatan dalam aplikasi melalui Server-Sent Events untuk stok rendah, acara sertifikat, dan keterlambatan pengiriman. Pengiriman email fire-and-forget melalui Resend atau SMTP dengan percobaan ulang eksponensial."
+        }
+      }
+    },
+    "workflow": {
+      "title": "Alur Jejak Sarana",
+      "subtitle": "Dari pendaftaran pemasok hingga verifikasi konsumen, setiap langkah dilacak, disertifikasi, dan dapat diverifikasi melalui kode QR.",
+      "steps": {
+        "supplier": {
+          "label": "Pemasok",
+          "description": "Pendaftaran pemasok bersertifikat halal dengan dokumentasi"
+        },
+        "product": {
+          "label": "Produk",
+          "description": "Catat produk dengan SKU, batch, dan status halal"
+        },
+        "certification": {
+          "label": "Sertifikasi",
+          "description": "Lampirkan sertifikat dengan pemantauan kedaluwarsa otomatis"
+        },
+        "warehouse": {
+          "label": "Gudang",
+          "description": "Kelola inventaris dengan peringatan tingkat pemesanan ulang"
+        },
+        "shipment": {
+          "label": "Pengiriman",
+          "description": "Lacak pengiriman dengan deteksi keterlambatan"
+        },
+        "consumer": {
+          "label": "Konsumen",
+          "description": "Verifikasi keaslian melalui kode QR — tidak perlu login"
+        }
+      },
+      "explanation": {
+        "title": "Transparansi rantai pasok penuh dengan kepatuhan yang terintegrasi",
+        "p1": "HalalChain menciptakan benang digital yang menghubungkan setiap entitas dalam rantai pasok Anda. Setiap batch produk menerima kode QR unik yang mengikutinya dari bahan baku hingga konsumen akhir, memungkinkan verifikasi instan.",
+        "p2": "Pemasok didaftarkan dengan sertifikat halal yang dapat diverifikasi. Platform secara otomatis memantau tanggal kedaluwarsa sertifikat dan menaikkan level sertifikat kedaluwarsa dengan peringatan severity tinggi ke tim kepatuhan.",
+        "p3": "Mesin otomatisasi menjalankan pemeriksaan harian: mendeteksi pengiriman terlambat, memindai inventaris untuk item stok rendah, dan menghasilkan skor kepatuhan yang memberikan manajemen satu KPI untuk kesehatan rantai pasok."
+      }
+    },
+    "compliance": {
+      "title": "Pemantauan Kepatuhan Otomatis",
+      "subtitle": "Platform secara terus-menerus memantau kesehatan rantai pasok Anda dan memberi peringatan tentang risiko sebelum menjadi masalah.",
+      "items": {
+        "certificateExpiry": {
+          "title": "Deteksi Kedaluwarsa Sertifikat",
+          "subtitle": "Memindai semua sertifikat setiap hari. Mendeteksi kedaluwarsa dalam 30 hari dan mengirim peringatan kepada manajer dan admin melalui notifikasi dalam aplikasi dan email."
+        },
+        "certificateExpired": {
+          "title": "Eskalasi Sertifikat Kedaluwarsa",
+          "subtitle": "Mengidentifikasi sertifikat yang sudah kedaluwarsa dan membuat masalah kepatuhan severity tinggi. Memicu notifikasi segera ke tim yang bertanggung jawab."
+        },
+        "lowInventory": {
+          "title": "Deteksi Inventaris Rendah",
+          "subtitle": "Membandingkan stok saat ini dengan tingkat pemesanan ulang. Menghasilkan peringatan yang menyarankan tindakan pengisian ulang tanpa secara otomatis membuat pesanan."
+        },
+        "shipmentDelay": {
+          "title": "Deteksi Keterlambatan Pengiriman",
+          "subtitle": "Secara otomatis mendeteksi pengiriman yang melewati tanggal kedatangan estimasi yang belum ditandai terkirim. Mencegah peringatan harian duplikat."
+        },
+        "complianceScore": {
+          "title": "Penilaian Kepatuhan",
+          "subtitle": "Skor transparan 0-100 berdasarkan 5 faktor: sertifikat kedaluwarsa (-30pt), sertifikat akan kedaluwarsa (-15pt), pengiriman tertunda (hingga -20pt), inventaris rendah (hingga -15pt), dan cakupan sertifikat (hingga -20pt). Setiap pengurangan dapat dijelaskan."
+        },
+        "realTimeAlerts": {
+          "title": "Peringatan Real-time",
+          "subtitle": "Semua acara otomatis disiarkan melalui Server-Sent Events ke dasbor secara instan. Pengiriman email bersifat fire-and-forget dengan 3 percobaan ulang dan backoff eksponensial."
+        }
+      },
+      "scoreNote": "Lihat KPI Skor Kepatuhan di dasbor Anda. Setiap pengurangan bersifat transparan — arahkan kursor atau klik untuk melihat mengapa setiap poin dikurangi."
+    },
+    "verificationDemo": {
+      "title": "Verifikasi Kode QR Publik",
+      "subtitle": "Konsumen akhir dapat memverifikasi keaslian produk secara instan dengan memindai kode QR pada kemasan. Tidak perlu akun atau login.",
+      "steps": {
+        "qrScanning": {
+          "title": "Pemindaian Kode QR",
+          "description": "Setiap produk memiliki kode QR unik pada kemasan. Konsumen memindai dengan kamera smartphone apa pun — tidak perlu aplikasi."
+        },
+        "productVerification": {
+          "title": "Detail Produk",
+          "description": "Portal publik menampilkan asal produk, pemasok, nomor batch, dan status sertifikasi halal secara instan."
+        },
+        "certificateValidation": {
+          "title": "Validasi Sertifikat",
+          "description": "Lihat semua sertifikat halal yang dilampirkan dengan badan sertifikasi, tanggal penerbitan, dan informasi kedaluwarsa dalam sekilas."
+        },
+        "shipmentHistory": {
+          "title": "Perjalanan Rantai Pasok",
+          "description": "Lacak perjalanan lengkap dari pemasok melalui gudang ke riteler dengan cap waktu dan data lokasi."
+        }
+      },
+      "cta": {
+        "tryText": "Coba sekarang dengan produk seed nyata dari database kami",
+        "button": "Verifikasi Santan Organik"
+      }
+    },
+    "architecture": {
+      "title": "Arsitektur Platform",
+      "subtitle": "Arsitektur bertingkat modern dengan mesin otomatisasi khusus untuk pemantauan kepatuhan cerdas.",
+      "mainStack": {
+        "nextjs": {
+          "label": "Next.js 15",
+          "description": "Frontend dengan SSR"
+        },
+        "express": {
+          "label": "Express 5 API",
+          "description": "Backend RESTful"
+        },
+        "automation": {
+          "label": "Mesin Otomatisasi",
+          "description": "4 aturan, cron harian, idempoten"
+        },
+        "prisma": {
+          "label": "Prisma ORM",
+          "description": "Akses PostgreSQL type-safe"
+        },
+        "postgresql": {
+          "label": "PostgreSQL",
+          "description": "Basis data relasional"
+        }
+      },
+      "externalServices": "Layanan Eksternal",
+      "services": {
+        "cloudinary": {
+          "label": "Cloudinary",
+          "description": "Unggah file avatar & sertifikat"
+        },
+        "resend": {
+          "label": "Resend / SMTP",
+          "description": "Pengiriman email dengan percobaan ulang"
+        },
+        "sse": {
+          "label": "Siaran SSE",
+          "description": "Pembaruan dasbor real-time"
+        }
+      },
+      "flow": {
+        "title": "Cara Kerja Otomatisasi",
+        "description": "Mesin Otomatisasi berjalan setiap hari pukul 08:00, mengevaluasi 4 aturan secara transaksional. Setiap aturan memeriksa kondisi terhadap basis data, membuat notifikasi dengan deduplikasi, dan mengirim email secara asinkron.",
+        "steps": [
+          "Cron memicu evaluasi harian",
+          "Mesin membuka transaksi basis data",
+          "Semua 4 aturan dievaluasi secara paralel",
+          "Notifikasi dibuat dengan pemeriksaan dedup",
+          "Email dikirim secara fire-and-forget",
+          "Hasil disiarkan ke dasbor secara real-time"
+        ]
+      }
+    },
+    "stats": {
+      "title": "Fitur kepatuhan tingkat perusahaan",
+      "subtitle": "Dibangun untuk bisnis yang memerlukan visibilitas lengkap, pemantauan otomatis, dan kepatuhan yang dapat diverifikasi di seluruh rantai pasok halal mereka.",
+      "notifications": "Notifikasi Real-time",
+      "auditLogging": "Pencatatan Audit",
+      "multiRoleAccess": "Peran RBAC",
+      "secureAuth": "JWT + Token Penyegar",
+      "qrVerification": "Verifikasi QR",
+      "reportingExports": "Format Laporan",
+      "complianceMonitoring": "Pemantauan Kepatuhan",
+      "suffixPercent": "%",
+      "suffixRoles": "+ peran",
+      "suffixFormats": "+ format",
+      "suffixRules": " aturan"
+    },
+    "screenshots": {
+      "title": "Lihat HalalChain Bertindak",
+      "subtitle": "Dasbor berfokus kepatuhan dengan peringatan otomatis, tampilan jejak sarana, dan kontrol manajemen.",
+      "slides": {
+        "dashboard": {
+          "title": "Dasbor Kepatuhan",
+          "description": "Kartu KPI termasuk Skor Kepatuhan, peringatan otomatis langsung, dan widget operasi"
+        },
+        "inventory": {
+          "title": "Inventaris dengan Peringatan Stok Rendah",
+          "description": "Tingkat stok real-time dengan deteksi inventaris rendah otomatis dan saran pengisian ulang"
+        },
+        "traceability": {
+          "title": "Portal Jejak Sarana Publik",
+          "description": "Verifikasi produk untuk konsumen dengan garis waktu rantai pasok lengkap — tidak perlu login"
+        },
+        "users": {
+          "title": "Manajemen Pengguna RBAC",
+          "description": "Kontrol akses berbasis peran dengan peran ADMIN, MANAGER, dan STAFF, log audit, dan alur undangan"
+        }
+      },
+      "aria": {
+        "prevSlide": "Slide sebelumnya",
+        "nextSlide": "Slide berikutnya",
+        "goToSlide": "Pergi ke slide {{number}}"
+      }
+    },
+    "techStack": {
+      "title": "Dibangun dengan Teknologi Modern",
+      "subtitle": "Alat dan framework tingkat perusahaan yang menggerakkan platform kepatuhan HalalChain."
+    },
+    "cta": {
+      "title": "Siap Mengubah",
+      "titleAccent": "Rantai Pasok Halal",
+      "titleSuffix": "Kepatuhan Anda?",
+      "subtitle": "Bergabung dengan bisnis halal yang berpikiran maju yang mempercayai HalalChain untuk jejak sarana ujung ke ujung, pemantauan kepatuhan otomatis, dan kecerdasan operasional.",
+      "exploreDemo": "Jelajahi Demo",
+      "signIn": "Masuk"
+    },
+    "footer": {
+      "description": "Platform Kepatuhan & Jejak Sarana Rantai Pasok — pemantauan kepatuhan otomatis, verifikasi QR, dan kecerdasan operasional untuk bisnis halal modern.",
+      "product": "Produk",
+      "resources": "Sumber Daya",
+      "company": "Perusahaan",
+      "features": "Fitur",
+      "workflow": "Alur Jejak Sarana",
+      "compliance": "Kepatuhan",
+      "automation": "Otomatisasi",
+      "architecture": "Arsitektur",
+      "techStack": "Teknologi",
+      "apiDocs": "Dokumentasi API",
+      "traceabilityDemo": "Demo Jejak Sarana",
+      "status": "Status",
+      "about": "Tentang",
+      "privacy": "Privasi",
+      "terms": "Syarat",
+      "copyright": "Hak cipta dilindungi.",
+      "privacyPolicy": "Kebijakan Privasi",
+      "termsOfService": "Syarat Layanan"
+    }
+  },
+  "dashboard": {
+    "pageTitle": "Dasbor Operasi",
+    "pageDescription": "Pantau inventaris, pengadaan, pengiriman, dan kepatuhan sertifikasi halal",
+    "warehouseOpsTitle": "Operasi Gudang",
+    "warehouseOpsDescription": "Akses cepat ke pergerakan stok masuk dan keluar",
+    "warehouseOpsCardTitle": "Operasi Gudang",
+    "warehouseOpsCardDescription": "Proses penerimaan masuk dan pesanan pengiriman keluar",
+    "goToInventory": "Ke Inventaris",
+    "recentActivity": "Aktivitas Terbaru",
+    "kpis": {
+      "totalProducts": "Total Produk",
+      "activeSuppliers": "Pemasok Aktif",
+      "totalSuppliers": "Total Pemasok",
+      "activeCertificates": "Sertifikat Aktif",
+      "expiringCertificates": "Akan Habis",
+      "inventoryValue": "Nilai Inventaris",
+      "openPOs": "PO Terbuka",
+      "delayedShipments": "Tertunda",
+      "pendingShipments": "Tertunda"
+    },
+    "widgets": {
+      "lowStockAlerts": "Peringatan Stok Rendah",
+      "expiringCertificates": "Sertifikat Akan Habis",
+      "shipmentDelays": "Keterlambatan Pengiriman",
+      "stockHealthy": "Tingkat stok sehat",
+      "stockHealthyDesc": "Tidak ada inventaris yang dilacak berada di bawah tingkat pemesanan ulang.",
+      "noExpiries": "Tidak ada kedaluwarsa mendatang",
+      "noExpiriesDesc": "Tidak ada sertifikat yang kedaluwarsa dalam jendela pemantauan yang dipilih.",
+      "noDelays": "Tidak ada pengiriman tertunda",
+      "noDelaysDesc": "Semua pengiriman aktif saat ini berjalan sesuai jadwal.",
+      "delayed": "Tertunda"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuat analitik dasbor"
+    }
+  },
+  "products": {
+    "pageTitle": "Produk",
+    "pageDescription": "Kelola produk bersertifikat halal di seluruh rantai pasok Anda",
+    "createProduct": "Buat Produk",
+    "createProductDescription": "Tambahkan produk bersertifikat halal baru ke katalog Anda",
+    "editProduct": "Edit Produk",
+    "productDetails": "Detail Produk",
+    "productDeleted": "Produk berhasil dihapus",
+    "productCreated": "Produk berhasil dibuat",
+    "productUpdated": "Produk berhasil diperbarui",
+    "fields": {
+      "name": "Nama Produk",
+      "namePlaceholder": "Masukkan nama produk",
+      "sku": "SKU",
+      "skuPlaceholder": "cth. HAL-COCO-001",
+      "category": "Kategori",
+      "categoryPlaceholder": "Pilih kategori",
+      "unit": "Satuan",
+      "unitPlaceholder": "cth. kg, karton, botol",
+      "unitPrice": "Harga Satuan",
+      "unitPricePlaceholder": "0.00",
+      "supplier": "Pemasok"
+    },
+    "categories": {
+      "beverages": "Minuman",
+      "condiments": "Bumbu",
+      "grains": "Serealia",
+      "meatPoultry": "Daging & Unggas",
+      "snacks": "Camilan & Buah Kering"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuat produk",
+      "loadFailedSingle": "Gagal memuat detail produk",
+      "createFailed": "Gagal membuat produk",
+      "updateFailed": "Gagal memperbarui produk",
+      "deleteFailed": "Gagal menghapus produk",
+      "skuExists": "Produk dengan SKU ini sudah ada"
+    },
+    "addProduct": "Tambah Produk",
+    "newProduct": "Produk Baru",
+    "saveChanges": "Simpan Perubahan",
+    "deleteProduct": "Hapus Produk",
+    "deleteConfirm": "Hapus Produk?",
+    "deleteDescription": "Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan.",
+    "productAdded": "Produk berhasil ditambahkan",
+    "productSaved": "Produk berhasil disimpan",
+    "productDeleteFailed": "Gagal menghapus produk",
+    "common": {
+      "editItem": "Edit Produk",
+      "deleteItem": "Hapus Produk",
+      "viewTraceability": "Lihat Jejak Sarana",
+      "viewQrCode": "Lihat Kode QR",
+      "qrCodeFor": "Kode QR untuk"
+    },
+    "form": {
+      "name": "Nama Produk",
+      "namePlaceholder": "Masukkan nama produk",
+      "sku": "SKU",
+      "skuPlaceholder": "cth. HAL-COCO-001",
+      "category": "Kategori",
+      "categoryPlaceholder": "Pilih kategori",
+      "unit": "Satuan",
+      "unitPlaceholder": "cth. kg, karton, botol",
+      "unitPrice": "Harga Satuan",
+      "supplier": "Pemasok",
+      "selectSupplier": "Pilih pemasok",
+      "newProductDescription": "Tambahkan produk bersertifikat halal baru ke katalog Anda",
+      "editProductDescription": "Perbarui informasi produk"
+    },
+    "table": {
+      "sku": "SKU",
+      "name": "Nama",
+      "category": "Kategori",
+      "supplier": "Pemasok",
+      "unit": "Satuan",
+      "price": "Harga",
+      "stock": "Stok",
+      "traceability": "Jejak Sarana",
+      "qrCode": "Kode QR",
+      "trace": "Jejak",
+      "qr": "QR",
+      "actions": "Tindakan"
+    },
+    "qrDialog": {
+      "title": "Kode QR Produk",
+      "scanDescription": "Pindai kode QR ini untuk melihat halaman jejak sarana publik",
+      "download": "Unduh Kode QR"
+    }
+  },
+  "inventory": {
+    "pageTitle": "Manajemen Inventaris",
+    "pageDescription": "Lacak tingkat stok dan pergerakan di seluruh gudang",
+    "movementsPageTitle": "Pergerakan Inventaris",
+    "movementsPageDescription": "Lihat riwayat masuk, keluar, dan penyesuaian",
+    "inbound": "Masuk",
+    "outbound": "Keluar",
+    "adjustment": "Penyesuaian",
+    "inboundTitle": "Terima Stok",
+    "inboundDescription": "Catat inventaris masuk dari pesanan pembelian atau pemasok",
+    "outboundTitle": "Kirim Stok",
+    "outboundDescription": "Catat inventaris keluar untuk pengiriman atau penghapusan",
+    "warehouseSections": "Gudang",
+    "lowStock": "Stok Rendah",
+    "currentStock": "Stok Saat Ini",
+    "reorderLevel": "Tingkat Pemesanan Ulang",
+    "movementDate": "Tanggal",
+    "movementType": "Jenis",
+    "movementQuantity": "Jumlah",
+    "movementNote": "Catatan",
+    "performedBy": "Dilakukan Oleh",
+    "stockValue": "Nilai Stok",
+    "filterByWarehouse": "Filter berdasarkan gudang",
+    "filterByProduct": "Filter berdasarkan produk",
+    "showLowStockOnly": "Tampilkan stok rendah saja",
+    "errors": {
+      "loadFailed": "Gagal memuat inventaris",
+      "movementFailed": "Gagal mencatat pergerakan",
+      "insufficientStock": "Stok tidak mencukupi untuk pergerakan keluar",
+      "loadMovementsFailed": "Gagal memuat pergerakan"
+    },
+    "recordInbound": "Catat Masuk",
+    "recordOutbound": "Catat Keluar",
+    "confirmInbound": "Konfirmasi Penerimaan Masuk",
+    "confirmOutbound": "Konfirmasi Pengiriman Keluar",
+    "inboundRecorded": "Masuk berhasil dicatat",
+    "outboundRecorded": "Keluar berhasil dicatat",
+    "movementRecorded": "Pergerakan berhasil dicatat",
+    "actionReceived": "Diterima",
+    "actionDispatched": "Dikirim",
+    "recording": "Mencatat…",
+    "qty": "Jumlah",
+    "value": "Nilai",
+    "date": "Tanggal",
+    "type": "Jenis",
+    "note": "Catatan",
+    "notePlaceholderInbound": "cth. Diterima dari pengiriman pemasok",
+    "notePlaceholderOutbound": "cth. Dikirim ke toko",
+    "optional": "Opsional",
+    "enterQuantity": "Masukkan jumlah",
+    "recentMovements": "Pergerakan Terbaru",
+    "allWarehouses": "Semua Gudang",
+    "allProducts": "Semua Produk",
+    "filters": "Filter",
+    "clearFilters": "Hapus Filter",
+    "clear": "Hapus",
+    "lowStockOnly": "Stok Rendah Saja",
+    "lowStockActive": "Filter stok rendah aktif",
+    "stockOk": "Semua tingkat stok sehat",
+    "noMatchFilters": "Tidak ada item inventaris yang cocok dengan filter Anda saat ini",
+    "showingRecords": "Menampilkan {{count}} catatan",
+    "by": "oleh",
+    "table": {
+      "sku": "SKU",
+      "product": "Produk",
+      "warehouse": "Gudang",
+      "quantity": "Jumlah",
+      "reorderLevel": "Tingkat Pemesanan Ulang",
+      "status": "Status"
+    }
+  },
+  "suppliers": {
+    "pageTitle": "Pemasok",
+    "pageDescription": "Kelola jaringan pemasok bersertifikat halal",
+    "createSupplier": "Tambah Pemasok",
+    "createSupplierDescription": "Daftarkan pemasok bersertifikat halal baru",
+    "editSupplier": "Edit Pemasok",
+    "supplierDetails": "Detail Pemasok",
+    "supplierDeleted": "Pemasok berhasil dihapus",
+    "supplierCreated": "Pemasok berhasil dibuat",
+    "supplierUpdated": "Pemasok berhasil diperbarui",
+    "fields": {
+      "name": "Nama Pemasok",
+      "namePlaceholder": "Masukkan nama pemasok",
+      "country": "Negara",
+      "email": "Email",
+      "emailPlaceholder": "pemasok@contoh.com",
+      "phone": "Telepon",
+      "phonePlaceholder": "+84 123 456 789",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Tidak Aktif"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuat pemasok",
+      "createFailed": "Gagal membuat pemasok",
+      "updateFailed": "Gagal memperbarui pemasok",
+      "deleteFailed": "Gagal menghapus pemasok"
+    },
+    "addSupplier": "Tambah Pemasok",
+    "newSupplier": "Pemasok Baru",
+    "saveChanges": "Simpan Perubahan",
+    "deleteSupplier": "Hapus Pemasok",
+    "deleteConfirm": "Hapus Pemasok?",
+    "deleteDescription": "Apakah Anda yakin ingin menghapus pemasok ini? Tindakan ini tidak dapat dibatalkan.",
+    "supplierAdded": "Pemasok berhasil ditambahkan",
+    "supplierEdited": "Pemasok berhasil diperbarui",
+    "supplierDeleteFailed": "Gagal menghapus pemasok",
+    "common": {
+      "editItem": "Edit Pemasok",
+      "deleteItem": "Hapus Pemasok"
+    },
+    "form": {
+      "name": "Nama Pemasok",
+      "namePlaceholder": "Masukkan nama pemasok",
+      "country": "Negara",
+      "countryPlaceholder": "Pilih negara",
+      "email": "Email",
+      "emailPlaceholder": "pemasok@contoh.com",
+      "phone": "Telepon",
+      "phonePlaceholder": "+1 234 567 890",
+      "status": "Status",
+      "statusActive": "Aktif",
+      "statusInactive": "Tidak Aktif",
+      "optional": "Opsional"
+    },
+    "table": {
+      "name": "Nama",
+      "country": "Negara",
+      "contact": "Kontak",
+      "status": "Status",
+      "certificates": "Sertifikat",
+      "products": "Produk",
+      "actions": "Tindakan"
+    }
+  },
+  "warehouses": {
+    "pageTitle": "Gudang",
+    "pageDescription": "Kelola lokasi gudang di seluruh jaringan Anda",
+    "createWarehouse": "Tambah Gudang",
+    "createWarehouseDescription": "Daftarkan lokasi gudang baru",
+    "editWarehouse": "Edit Gudang",
+    "warehouseDetails": "Detail Gudang",
+    "warehouseDeleted": "Gudang berhasil dihapus",
+    "warehouseCreated": "Gudang berhasil dibuat",
+    "warehouseUpdated": "Gudang berhasil diperbarui",
+    "fields": {
+      "name": "Nama Gudang",
+      "namePlaceholder": "Masukkan nama gudang",
+      "location": "Lokasi",
+      "locationPlaceholder": "Kota, Negara"
+    },
+    "stockSummary": "Ringkasan Stok",
+    "errors": {
+      "loadFailed": "Gagal memuat gudang",
+      "loadFailedSingle": "Gagal memuat detail gudang",
+      "createFailed": "Gagal membuat gudang",
+      "updateFailed": "Gagal memperbarui gudang",
+      "deleteFailed": "Gagal menghapus gudang"
+    },
+    "addWarehouse": "Tambah Gudang",
+    "newWarehouse": "Gudang Baru",
+    "saveChanges": "Simpan Perubahan",
+    "deleteWarehouse": "Hapus Gudang",
+    "deleteConfirm": "Hapus Gudang?",
+    "deleteDescription": "Apakah Anda yakin ingin menghapus gudang ini? Tindakan ini tidak dapat dibatalkan.",
+    "warehouseAdded": "Gudang berhasil ditambahkan",
+    "warehouseEdited": "Gudang berhasil diperbarui",
+    "warehouseDeleteFailed": "Gagal menghapus gudang",
+    "common": {
+      "editItem": "Edit Gudang",
+      "deleteItem": "Hapus Gudang"
+    },
+    "form": {
+      "name": "Nama Gudang",
+      "namePlaceholder": "Masukkan nama gudang",
+      "location": "Lokasi",
+      "locationPlaceholder": "Kota, Negara"
+    },
+    "table": {
+      "name": "Nama",
+      "location": "Lokasi",
+      "items": "Item",
+      "actions": "Tindakan"
+    }
+  },
+  "purchaseOrders": {
+    "pageTitle": "Pesanan Pembelian",
+    "pageDescription": "Kelola pengadaan di seluruh jaringan pemasok",
+    "createPO": "Buat PO",
+    "createPODescription": "Buat pesanan pembelian baru dengan item baris",
+    "poDetails": "Detail Pesanan Pembelian",
+    "poDeleted": "Pesanan pembelian berhasil dihapus",
+    "poCreated": "Pesanan pembelian berhasil dibuat",
+    "poStatusUpdated": "Status pesanan pembelian diperbarui",
+    "status": {
+      "draft": "Draf",
+      "approved": "Disetujui",
+      "shipping": "Mengirim",
+      "received": "Diterima",
+      "cancelled": "Dibatalkan",
+      "partial": "Sebagian"
+    },
+    "fields": {
+      "poNumber": "Nomor PO",
+      "supplier": "Pemasok",
+      "items": "Item Baris",
+      "totalAmount": "Jumlah Total",
+      "status": "Status",
+      "createdAt": "Dibuat"
+    },
+    "noItems": "Belum ada item baris",
+    "addItem": "Tambah Item",
+    "itemProduct": "Produk",
+    "itemQuantity": "Jumlah",
+    "itemPrice": "Harga Satuan",
+    "itemSubtotal": "Subtotal",
+    "actions": {
+      "approve": "Setujui",
+      "markShipping": "Tandai Mengirim",
+      "markReceived": "Tandai Diterima",
+      "cancel": "Batal"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuat pesanan pembelian",
+      "loadFailedSingle": "Gagal memuat detail pesanan pembelian",
+      "createFailed": "Gagal membuat pesanan pembelian",
+      "statusUpdateFailed": "Gagal memperbarui status",
+      "deleteFailed": "Gagal menghapus pesanan pembelian"
+    },
+    "newPO": "Pesanan Pembelian Baru",
+    "deleteConfirm": "Hapus Pesanan Pembelian?",
+    "deleteDescription": "Apakah Anda yakin ingin menghapus pesanan pembelian ini? Tindakan ini tidak dapat dibatalkan.",
+    "deletePO": "Hapus Pesanan Pembelian",
+    "creating": "Membuat…",
+    "created": "Pesanan pembelian dibuat",
+    "poCreatedDesc": "Pesanan pembelian berhasil dibuat",
+    "poDeleteFailed": "Gagal menghapus pesanan pembelian",
+    "statusUpdated": "Status Diperbarui",
+    "statusUpdatedDesc": "Status pesanan pembelian telah diperbarui",
+    "statusUpdateFailed": "Gagal memperbarui status",
+    "items": "Item",
+    "qty": "Jumlah",
+    "price": "Harga",
+    "amount": "Jumlah",
+    "total": "Total",
+    "shipments": "Pengiriman",
+    "removeItem": "Hapus item",
+    "common": {
+      "deleteItem": "Hapus Pesanan Pembelian"
+    },
+    "table": {
+      "poNumber": "Nomor PO",
+      "supplier": "Pemasok",
+      "status": "Status",
+      "actions": "Tindakan"
+    }
+  },
+  "shipments": {
+    "pageTitle": "Pengiriman",
+    "pageDescription": "Lacak dan kelola pengiriman rantai pasok",
+    "createShipment": "Buat Pengiriman",
+    "createShipmentDescription": "Daftarkan pengiriman baru untuk pesanan pembelian",
+    "shipmentDetails": "Detail Pengiriman",
+    "shipmentCreated": "Pengiriman berhasil dibuat",
+    "shipmentUpdated": "Pengiriman berhasil diperbarui",
+    "status": {
+      "pending": "Tertunda",
+      "inTransit": "Dalam Perjalanan",
+      "delivered": "Terkirim",
+      "delayed": "Tertunda"
+    },
+    "fields": {
+      "trackingNumber": "Nomor Pelacakan",
+      "trackingPlaceholder": "cth. MY-HAL-784521",
+      "origin": "Asal",
+      "destination": "Tujuan",
+      "estimatedArrival": "Perkiraan Kedatangan",
+      "status": "Status",
+      "purchaseOrder": "Pesanan Pembelian",
+      "supplier": "Pemasok"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuat pengiriman",
+      "loadFailedSingle": "Gagal memuat detail pengiriman",
+      "createFailed": "Gagal membuat pengiriman",
+      "updateFailed": "Gagal memperbarui pengiriman",
+      "trackingExists": "Nomor pelacakan sudah ada"
+    },
+    "newShipment": "Pengiriman Baru",
+    "newShipmentCta": "Buat Pengiriman",
+    "updateShipment": "Perbarui Pengiriman",
+    "saveChanges": "Simpan Perubahan",
+    "createDescription": "Daftarkan pengiriman baru untuk pesanan pembelian",
+    "creating": "Membuat…",
+    "shipmentCreatedDesc": "Pengiriman berhasil dibuat",
+    "shipmentUpdatedDesc": "Pengiriman berhasil diperbarui",
+    "trackingNumber": "Nomor Pelacakan",
+    "trackingPlaceholder": "cth. MY-HAL-784521",
+    "origin": "Asal",
+    "originPlaceholder": "cth. Jakarta",
+    "destination": "Tujuan",
+    "destinationPlaceholder": "cth. Surabaya",
+    "estimatedArrival": "Perkiraan Kedatangan",
+    "eta": "ETA",
+    "purchaseOrder": "Pesanan Pembelian",
+    "selectPO": "Pilih pesanan pembelian",
+    "route": "Rute",
+    "statusOptions": {
+      "pending": "Tertunda",
+      "inTransit": "Dalam Perjalanan",
+      "delivered": "Terkirim",
+      "delayed": "Tertunda"
+    },
+    "common": {
+      "editItem": "Edit Pengiriman"
+    },
+    "table": {
+      "trackingNumber": "Nomor Pelacakan",
+      "supplier": "Pemasok",
+      "poNumber": "Nomor PO",
+      "status": "Status",
+      "actions": "Tindakan"
+    }
+  },
+  "certificates": {
+    "pageTitle": "Sertifikat Halal",
+    "pageDescription": "Kelola sertifikasi halal di seluruh rantai pasok Anda",
+    "createCertificate": "Tambah Sertifikat",
+    "createCertificateDescription": "Daftarkan sertifikat halal baru untuk pemasok",
+    "editCertificate": "Edit Sertifikat",
+    "certificateDetails": "Detail Sertifikat",
+    "certificateDeleted": "Sertifikat berhasil dihapus",
+    "certificateCreated": "Sertifikat berhasil dibuat",
+    "certificateUpdated": "Sertifikat berhasil diperbarui",
+    "status": {
+      "valid": "Berlaku",
+      "expiringSoon": "Akan Habis",
+      "expired": "Kedaluwarsa"
+    },
+    "fields": {
+      "certificateNumber": "Nomor Sertifikat",
+      "certificatePlaceholder": "cth. JAKIM-2024-00123",
+      "supplier": "Pemasok",
+      "issuedBy": "Diterbitkan Oleh",
+      "issueDate": "Tanggal Penerbitan",
+      "expiryDate": "Tanggal Kedaluwarsa",
+      "file": "File Sertifikat",
+      "currentFile": "File Saat Ini"
+    },
+    "upload": {
+      "dropzone": "Letakkan file sertifikat di sini atau klik untuk menjelajahi",
+      "uploading": "Mengunggah…",
+      "success": "File berhasil diunggah",
+      "error": "Gagal mengunggah",
+      "fileTooLarge": "File melebihi batas 10 MB"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuat sertifikat",
+      "loadFailedSingle": "Gagal memuat detail sertifikat",
+      "createFailed": "Gagal membuat sertifikat",
+      "updateFailed": "Gagal memperbarui sertifikat",
+      "deleteFailed": "Gagal menghapus sertifikat"
+    },
+    "addCertificate": "Tambah Sertifikat",
+    "newCertificate": "Sertifikat Baru",
+    "saveChanges": "Simpan Perubahan",
+    "deleteCertificate": "Hapus Sertifikat",
+    "deleteConfirm": "Hapus Sertifikat?",
+    "deleteDescription": "Apakah Anda yakin ingin menghapus sertifikat ini? Tindakan ini tidak dapat dibatalkan.",
+    "certificateDeleteFailed": "Gagal menghapus sertifikat",
+    "uploadDocument": "Unggah Dokumen",
+    "common": {
+      "editItem": "Edit Sertifikat",
+      "deleteItem": "Hapus Sertifikat"
+    },
+    "form": {
+      "certificateNumber": "Nomor Sertifikat",
+      "certificateNumberPlaceholder": "cth. JAKIM-2024-00123",
+      "supplier": "Pemasok",
+      "issuedBy": "Diterbitkan Oleh",
+      "issuedByPlaceholder": "cth. JAKIM, MUI, BPJPH",
+      "issueDate": "Tanggal Penerbitan",
+      "expiryDate": "Tanggal Kedaluwarsa",
+      "newCertificateDescription": "Daftarkan sertifikat halal baru untuk pemasok",
+      "editCertificateDescription": "Perbarui informasi sertifikat"
+    },
+    "table": {
+      "certificateNumber": "Nomor Sertifikat",
+      "supplier": "Pemasok",
+      "issuedBy": "Diterbitkan Oleh",
+      "issueDate": "Tanggal Penerbitan",
+      "expiryDate": "Tanggal Kedaluwarsa",
+      "status": "Status",
+      "actions": "Tindakan"
+    }
+  },
+  "reports": {
+    "pageTitle": "Laporan",
+    "pageDescription": "Ekspor data rantai pasok dan hasilkan laporan kepatuhan",
+    "summary": {
+      "0": "R",
+      "1": "i",
+      "2": "n",
+      "3": "g",
+      "4": "k",
+      "5": "a",
+      "6": "s",
+      "7": "a",
+      "8": "n",
+      "9": " ",
+      "10": "L",
+      "11": "a",
+      "12": "p",
+      "13": "o",
+      "14": "r",
+      "title": "Ringkasan Laporan"
+    },
+    "export": "Ekspor Data",
+    "format": {
+      "csv": "CSV",
+      "xlsx": "XLSX",
+      "pdf": "PDF"
+    },
+    "modules": {
+      "products": "Produk",
+      "inventory": "Inventaris",
+      "suppliers": "Pemasok",
+      "certificates": "Sertifikat",
+      "purchase-orders": "Pesanan Pembelian",
+      "shipments": "Pengiriman"
+    },
+    "dateRange": "Rentang Tanggal",
+    "errors": {
+      "loadFailed": "Gagal memuat ringkasan laporan",
+      "exportFailed": "Gagal mengekspor laporan"
+    },
+    "empty": {
+      "title": "Tidak ada data laporan yang tersedia"
+    }
+  },
+  "analytics": {
+    "pageTitle": "Analitik",
+    "pageDescription": "Analisis mendalam operasi rantai pasok",
+    "tabs": {
+      "inventory": "Inventaris",
+      "purchaseOrders": "Pesanan Pembelian",
+      "shipments": "Pengiriman",
+      "certificates": "Sertifikat"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuat analitik"
+    },
+    "loadFailed": "Gagal memuat data analitik",
+    "inventory": {
+      "title": "Analitik Inventaris",
+      "valueTrend": "Tren Nilai Stok",
+      "value": "Nilai",
+      "byWarehouse": "Stok per Gudang",
+      "topStocked": "Produk Stok Tertinggi",
+      "product": "Produk",
+      "qty": "Jumlah",
+      "inboundOutbound": "Masuk vs Keluar",
+      "unitsOut": "Unit Keluar",
+      "fastMoving": "Bergerak Cepat",
+      "slowMoving": "Bergerak Lambat",
+      "noOutbound": "Tidak ada pergerakan keluar dalam periode ini"
+    },
+    "purchaseOrders": {
+      "title": "Analitik Pesanan Pembelian",
+      "ordersPerMonth": "Pesanan per Bulan",
+      "statusDistribution": "Distribusi Status",
+      "statusBreakdown": "Rincian Status",
+      "statusBreakdownNote": "Distribusi pesanan pembelian berdasarkan status saat ini",
+      "approvalRate": "Tingkat Persetujuan",
+      "approvalRateNote": "Persentase pesanan yang telah disetujui atau lebih",
+      "fulfillmentRate": "Tingkat Pemenuhan",
+      "fulfillmentRateNote": "Persentase pesanan yang telah diterima",
+      "avgProcessingTime": "Rata-rata Waktu Pemrosesan",
+      "avgProcessingTimeNote": "Rata-rata hari dari pembuatan ke status diterima",
+      "notEnoughData": "Data tidak cukup untuk menampilkan analitik"
+    },
+    "shipments": {
+      "title": "Analitik Pengiriman",
+      "volumeTrend": "Tren Volume Pengiriman",
+      "statusDistribution": "Distribusi Status",
+      "shipmentStatusDistribution": "Distribusi Status Pengiriman",
+      "statusDistributionNote": "Distribusi pengiriman berdasarkan status saat ini",
+      "onTimeDelivery": "Tingkat Pengiriman Tepat Waktu",
+      "onTimeDeliveryNote": "Persentase pengiriman yang terkirim tanpa keterlambatan",
+      "delayedRate": "Tingkat Keterlambatan",
+      "delayedRateNote": "Persentase pengiriman yang saat ini tertunda"
+    },
+    "certificates": {
+      "title": "Analitik Sertifikat",
+      "totalCerts": "Total Sertifikat",
+      "active": "Aktif",
+      "activeCerts": "Sertifikat Aktif",
+      "activeNote": "Sertifikat yang saat ini berlaku",
+      "expiring": "Akan Habis",
+      "expiringNote": "Sertifikat yang akan kedaluwarsa dalam 30 hari",
+      "expired": "Kedaluwarsa",
+      "expiredNote": "Sertifikat yang sudah kedaluwarsa",
+      "score": "Skor Kepatuhan",
+      "supplierScore": "Kepatuhan Pemasok",
+      "noSupplierData": "Tidak ada data sertifikat pemasok yang tersedia"
+    }
+  },
+  "users": {
+    "pageTitle": "Manajemen Pengguna",
+    "pageDescription": "Kelola pengguna platform, peran, dan undangan",
+    "inviteUser": "Undang Pengguna",
+    "inviteUserDescription": "Kirim email undangan ke pengguna baru",
+    "userDetails": "Detail Pengguna",
+    "stats": {
+      "total": "Total Pengguna",
+      "active": "Aktif",
+      "suspended": "Ditangguhkan",
+      "unverified": "Belum Diverifikasi",
+      "admins": "Admin",
+      "managers": "Manajer",
+      "staff": "Staf"
+    },
+    "actions": {
+      "verify": "Verifikasi Pengguna",
+      "suspend": "Tangguhkan",
+      "activate": "Aktifkan",
+      "resetPassword": "Atur Ulang Kata Sandi",
+      "changeRole": "Ubah Peran"
+    },
+    "status": {
+      "active": "Aktif",
+      "suspended": "Ditangguhkan"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuat pengguna",
+      "inviteFailed": "Gagal mengundang pengguna",
+      "updateFailed": "Gagal memperbarui pengguna"
+    },
+    "totalUsers": "Total Pengguna",
+    "activeUsers": "Pengguna Aktif",
+    "suspendedUsers": "Pengguna Ditangguhkan",
+    "unverifiedUsers": "Pengguna Belum Diverifikasi",
+    "searchPlaceholder": "Cari berdasarkan nama atau email…",
+    "allRoles": "Semua Peran",
+    "allStatuses": "Semua Status",
+    "noUsers": "Tidak ada pengguna yang ditemukan",
+    "manage": "Kelola",
+    "cancel": "Batal",
+    "change": "Ubah",
+    "role": "Peran",
+    "roleLabel": "Peran",
+    "displayName": "Nama Tampilan",
+    "emailLabel": "Email",
+    "userId": "ID Pengguna",
+    "joined": "Bergabung",
+    "invitations": "Undangan",
+    "invitedDesc": "Undangan tertunda",
+    "verifiedUser": "Pengguna Terverifikasi",
+    "verifiedDesc": "Pengguna ini telah memverifikasi alamat email mereka",
+    "notVerified": "Belum Diverifikasi",
+    "activeDesc": "Akun pengguna ini aktif",
+    "suspendedDesc": "Akun pengguna ini ditangguhkan",
+    "accountStatus": "Status Akun",
+    "accountActive": "Akun aktif",
+    "accountSuspended": "Akun ditangguhkan",
+    "verificationStatus": "Status Verifikasi",
+    "verify": "Verifikasi Pengguna",
+    "verifyUser": "Verifikasi Pengguna",
+    "verifyDesc": "Secara manual verifikasi alamat email pengguna ini",
+    "unverify": "Hapus Verifikasi",
+    "unverifyDesc": "Hapus verifikasi email dari pengguna ini",
+    "removeVerification": "Hapus Verifikasi",
+    "suspend": "Tangguhkan Pengguna",
+    "suspendConfirm": "Tangguhkan pengguna ini?",
+    "suspendDesc": "Pengguna ini tidak akan bisa masuk sampai diaktifkan kembali.",
+    "reactivate": "Aktifkan Kembali Pengguna",
+    "reactivateConfirm": "Aktifkan kembali pengguna ini?",
+    "reactivateDesc": "Pengguna ini akan bisa masuk kembali.",
+    "changeRole": "Ubah Peran",
+    "changeRoleDesc": "Ubah peran untuk pengguna ini",
+    "saveRole": "Simpan Peran",
+    "roleUpdated": "Peran berhasil diperbarui",
+    "roleUpdateFailed": "Gagal memperbarui peran",
+    "saveName": "Simpan Nama",
+    "nameUpdated": "Nama berhasil diperbarui",
+    "nameUpdateFailed": "Gagal memperbarui nama",
+    "nameEmpty": "Nama tidak boleh kosong",
+    "nameMinLength": "Nama harus minimal 2 karakter",
+    "accountUpdated": "Akun berhasil diperbarui",
+    "accountUpdateFailed": "Gagal memperbarui akun",
+    "verificationUpdated": "Status verifikasi diperbarui",
+    "verificationUpdateFailed": "Gagal memperbarui status verifikasi",
+    "reset": "Atur Ulang",
+    "resetPassword": "Atur Ulang Kata Sandi",
+    "resetPasswordConfirm": "Atur ulang kata sandi pengguna ini?",
+    "resetPasswordConfirmDesc": "Email pengaturan ulang kata sandi akan dikirim ke pengguna.",
+    "resetPasswordDesc": "Kirim email pengaturan ulang kata sandi ke pengguna ini",
+    "passwordReset": "Email pengaturan ulang kata sandi dikirim",
+    "passwordResetFailed": "Gagal mengirim pengaturan ulang kata sandi",
+    "sendInvite": "Kirim Undangan",
+    "sendFailed": "Gagal mengirim undangan",
+    "revoke": "Batalkan Undangan",
+    "revoked": "Undangan dibatalkan",
+    "revokeFailed": "Gagal membatalkan undangan",
+    "statusActive": "Aktif",
+    "statusSuspended": "Ditangguhkan"
+  },
+  "settings": {
+    "pageTitle": "Pengaturan",
+    "pageDescription": "Kelola akun dan preferensi platform Anda",
+    "tabs": {
+      "profile": "Profil",
+      "security": "Keamanan",
+      "notifications": "Notifikasi",
+      "preferences": "Preferensi"
+    },
+    "navigation": {
+      "profile": "Profil",
+      "security": "Keamanan",
+      "preferences": "Preferensi",
+      "notifications": "Notifikasi"
+    },
+    "profile": {
+      "title": "Informasi Profil",
+      "description": "Perbarui informasi pribadi dan avatar Anda",
+      "nameLabel": "Nama Tampilan",
+      "namePlaceholder": "Nama tampilan Anda",
+      "emailLabel": "Email",
+      "emailDescription": "Alamat email Anda tidak dapat diubah",
+      "updateSuccess": "Profil berhasil diperbarui",
+      "saved": "Profil berhasil disimpan",
+      "saveFailed": "Gagal menyimpan profil",
+      "avatarLabel": "Avatar",
+      "roleLabel": "Peran"
+    },
+    "security": {
+      "title": "Ubah Kata Sandi",
+      "description": "Perbarui kata sandi akun Anda",
+      "currentPassword": "Kata Sandi Saat Ini",
+      "newPassword": "Kata Sandi Baru",
+      "confirmPassword": "Konfirmasi Kata Sandi",
+      "updateSuccess": "Kata sandi berhasil diubah"
+    },
+    "notifications": {
+      "title": "Preferensi Notifikasi",
+      "description": "Pilih notifikasi yang ingin Anda terima",
+      "certificateAlerts": "Peringatan Sertifikat",
+      "certificateAlertsDesc": "Dapatkan notifikasi ketika sertifikat halal akan habis atau sudah kedaluwarsa",
+      "inventoryAlerts": "Peringatan Inventaris",
+      "inventoryAlertsDesc": "Dapatkan notifikasi ketika tingkat stok rendah",
+      "shipmentAlerts": "Peringatan Pengiriman",
+      "shipmentAlertsDesc": "Dapatkan notifikasi ketika pengiriman tertunda",
+      "invitationEmails": "Email Undangan",
+      "invitationEmailsDesc": "Terima email ketika pengguna diundang ke platform",
+      "updateSuccess": "Preferensi berhasil diperbarui",
+      "saved": "Preferensi notifikasi disimpan",
+      "saveFailed": "Gagal menyimpan preferensi notifikasi"
+    },
+    "preferences": {
+      "title": "Preferensi Tampilan",
+      "description": "Kustomisasi pengalaman platform Anda"
+    },
+    "errors": {
+      "loadFailed": "Gagal memuat pengaturan"
+    }
+  },
+  "acceptInvite": {
+    "title": "Terima Undangan",
+    "description": "Anda telah diundang untuk bergabung dengan HalalChain. Atur kata sandi Anda untuk mengaktifkan akun Anda.",
+    "submit": "Aktifkan Akun",
+    "errors": {
+      "invalidToken": "Tautan undangan ini tidak valid atau sudah kedaluwarsa."
+    }
+  },
+  "errors": {
+    "notFound": "Halaman tidak ditemukan"
+  },
+  "userMenu": {
+    "myProfile": "Profil Saya",
+    "accountSettings": "Pengaturan Akun",
+    "changePassword": "Ubah Kata Sandi",
+    "signOut": "Keluar",
+    "roles": {
+      "admin": "Admin",
+      "manager": "Manajer",
+      "staff": "Staf"
+    }
+  }
+}

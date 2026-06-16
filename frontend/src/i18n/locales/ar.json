@@ -1,0 +1,1254 @@
+{
+  "common": {
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ…",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "unsavedChanges": "تغييرات غير محفوظة",
+    "unsavedChangesDesc": "لديك تغييرات غير محفوظة. إذا غادرت هذه الصفحة، ستفقد تغييراتك.",
+    "leave": "مغادرة",
+    "stay": "البقاء",
+    "updated": "تم التحديث",
+    "added": "تمت الإضافة",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "search": "بحث",
+    "filter": "تصفية",
+    "clear": "مسح",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "loading": "جارٍ التحميل…",
+    "retry": "إعادة المحاولة",
+    "noResults": "لم يتم العثور على نتائج.",
+    "noData": "لا تتوفر بيانات.",
+    "actions": "الإجراءات",
+    "status": "الحالة",
+    "all": "الكل",
+    "none": "لا شيء",
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "yes": "نعم",
+    "no": "لا",
+    "or": "أو",
+    "and": "و",
+    "more": "المزيد",
+    "less": "أقل",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "thisWeek": "هذا الأسبوع",
+    "thisMonth": "هذا الشهر",
+    "from": "من",
+    "to": "إلى",
+    "export": "تصدير",
+    "import": "استيراد",
+    "download": "تنزيل",
+    "upload": "رفع",
+    "print": "طباعة",
+    "view": "عرض",
+    "show": "إظهار",
+    "hide": "إخفاء",
+    "expand": "توسيع",
+    "collapse": "طي",
+    "toggle": "تبديل",
+    "role": "الدور",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "page": "صفحة",
+    "of": "من",
+    "items": "عناصر",
+    "item": "عنصر",
+    "selected": "محدد",
+    "errors": {
+      "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "auth": {
+    "signIn": "تسجيل الدخول",
+    "signingIn": "جارٍ تسجيل الدخول…",
+    "signOut": "تسجيل الخروج",
+    "signUp": "التسجيل",
+    "register": "التسجيل",
+    "createAccount": "إنشاء حساب",
+    "getStarted": "ابدأ",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "name": "الاسم",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "rememberMe": "تذكرني",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "signInToContinue": "سجّل الدخول للمتابعة",
+    "halalChainTitle": "هالالتشين",
+    "errors": {
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
+      "passwordRequired": "كلمة المرور مطلوبة",
+      "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+      "passwordMismatch": "كلمتا المرور غير متطابقتين",
+      "nameRequired": "الاسم مطلوب",
+      "signInFailed": "فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
+      "signUpFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "navigation": {
+    "website": "الموقع الإلكتروني",
+    "dashboard": "لوحة التحكم",
+    "suppliers": "الموردون",
+    "products": "المنتجات",
+    "inventory": "المخزون",
+    "warehouses": "المستودعات",
+    "purchaseOrders": "طلبات الشراء",
+    "shipments": "الشحنات",
+    "certificates": "الشهادات",
+    "reports": "التقارير",
+    "analytics": "التحليلات",
+    "userManagement": "إدارة المستخدمين",
+    "settings": "الإعدادات"
+  },
+  "sidebar": {
+    "brand": "هالالتشين",
+    "platform": "منصة الامتثال",
+    "navigation": "التنقل",
+    "collapseSidebar": "طي الشريط الجانبي",
+    "expandSidebar": "توسيع الشريط الجانبي",
+    "groups": {
+      "overview": "نظرة عامة",
+      "supplyChain": "سلسلة التوريد",
+      "operations": "العمليات",
+      "insights": "الرؤى",
+      "administration": "الإدارة"
+    }
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "unread": "{{count}} غير مقروءة",
+    "markAllRead": "تحديد الكل كمقروء",
+    "noNotifications": "لا توجد إشعارات بعد",
+    "types": {
+      "lowStock": "مخزون منخفض",
+      "certificateExpiring": "ستنتهي الصلاحية قريباً",
+      "certificateExpired": "انتهت الصلاحية",
+      "shipmentDelayed": "متأخر",
+      "system": "النظام"
+    }
+  },
+  "landing": {
+    "header": {
+      "features": "المميزات",
+      "workflow": "تدفق التتبع",
+      "compliance": "الامتثال",
+      "automation": "الأتمتة",
+      "architecture": "الهيكل المعماري",
+      "techStack": "التقنية",
+      "signIn": "تسجيل الدخول",
+      "getStarted": "ابدأ",
+      "toggleMenu": "تبديل القائمة",
+      "dashboard": "لوحة التحكم",
+      "logout": "تسجيل الخروج"
+    },
+    "hero": {
+      "badge": "منصة امتثال وتتبع سلسلة التوريد",
+      "title": "سلسلة التوريد",
+      "titleAccent": "الامتثال والتتبع",
+      "subtitle": "تتبع المنتجات والموردين والشهادات والمخزون والشحنات من خلال منصة موحدة مع مراقبة الامتثال الآلي والتنبيهات في الوقت الفعلي واكتشاف المخاطر الذكي.",
+      "getStarted": "ابدأ",
+      "viewDemo": "عرض العرض التوضيحي",
+      "dashboardPreview": "app.halalchain.io/dashboard",
+      "sidebar": {
+        "dashboard": "لوحة التحكم",
+        "products": "المنتجات",
+        "suppliers": "الموردون",
+        "shipments": "الشحنات",
+        "certifications": "الشهادات",
+        "reports": "التقارير"
+      },
+      "stats": {
+        "products": "المنتجات",
+        "suppliers": "الموردون",
+        "shipments": "الشحنات"
+      },
+      "activity": {
+        "title": "النشاط الأخير",
+        "today": "اليوم",
+        "newShipment": "تم استلام شحنة جديدة",
+        "certificateExpiring": "ستنتهي صلاحية الشهادة قريباً",
+        "inventoryAdjusted": "تم تعديل المخزون",
+        "minutesAgo": "دقائق مضت",
+        "hourAgo": "ساعة مضت",
+        "hoursAgo": "ساعات مضت"
+      }
+    },
+    "features": {
+      "title": "من CRUD إلى مراقبة الامتثال الذكية",
+      "subtitle": "هالالتشين ليس مجرد نظام إدارة. إنه منصة أتمتة قائمة على الامتثال تراقب وتنبه وتقييم صحة سلسلة التوريد الخاصة بك.",
+      "items": {
+        "traceability": {
+          "title": "تتبع المنتجات",
+          "description": "تتبع شامل من المورد إلى المستهلك مع التحقق عبر رمز QR. صفحات التتبع العامة لا تتطلب تسجيل دخول."
+        },
+        "compliance": {
+          "title": "مراقبة الامتثال",
+          "description": "اكتشاف انتهاء صلاحية الشهادات آلياً، وتنبيهات انتهاء صلاحية الشهادات، وتتبع مشكلات الامتثال، ودرجة امتثال شفافة (0-100) مع عوامل قابلة للشرح."
+        },
+        "automation": {
+          "title": "محرك الأتمتة",
+          "description": "أربع قواعد آلية تعمل يومياً: تنبيهات انتهاء صلاحية الشهادات، وتصعيد الشهادات المنتهية، وتنبيهات المخزون المنخفض، واكتشاف تأخر الشحنات. متساوي النتائج مع منع التكرار المدمج."
+        },
+        "certifications": {
+          "title": "شهادات الحلال",
+          "description": "توحيد إدارة الشهادات مع التخزين الرقمي للمستندات، ومراقبة انتهاء الصلاحية، ورفع الملفات إلى Cloudinary، وتذكيرات التجديد الآلية."
+        },
+        "analytics": {
+          "title": "التحليلات والتقارير",
+          "description": "لوحات تحكم شاملة، وتحليلات نطاق التاريخ للمخزون وطلبات الشراء والشحنات والشهادات، وتقارير قابلة للتصدير بصيغ CSV/XLSX/PDF."
+        },
+        "notifications": {
+          "title": "الإشعارات الفورية",
+          "description": "تنبيهات داخل التطبيق عبر Server-Sent Events للمخزون المنخفض وأحداث الشهادات وتأخر الشحنات. إرسال البريد الإلكتروني بشكل فوري عبر Resend أو SMTP مع محاولات إعادة آلية."
+        }
+      }
+    },
+    "workflow": {
+      "title": "تدفق التتبع",
+      "subtitle": "من تسجيل المورد إلى التحقق من المستهلك، كل خطوة يتم تتبعها واعتمادها ويمكن التحقق منها عبر رمز QR.",
+      "steps": {
+        "supplier": {
+          "label": "المورد",
+          "description": "إدراج الموردين الحاصلين على شهادة الحلال مع التوثيق"
+        },
+        "product": {
+          "label": "المنتج",
+          "description": "تسجيل المنتجات بالرمز المعرفي والدفعة وحالة الحلال"
+        },
+        "certification": {
+          "label": "الشهادة",
+          "description": "إرفاق الشهادات مع مراقبة انتهاء الصلاحية الآلية"
+        },
+        "warehouse": {
+          "label": "المستودع",
+          "description": "إدارة المخزون مع تنبيهات مستوى إعادة الطلب"
+        },
+        "shipment": {
+          "label": "الشحنة",
+          "description": "تتبع الشحنات مع اكتشاف التأخر"
+        },
+        "consumer": {
+          "label": "المستهلك",
+          "description": "التحقق من الأصالة عبر رمز QR — لا يتطلب تسجيل دخول"
+        }
+      },
+      "explanation": {
+        "title": "الشفافية الكاملة لسلسلة التوريد مع الامتثال المدمج",
+        "p1": "هالالتشين يخلق خيطاً رسمياً يربط كل كيان في سلسلة التوريد الخاصة بك. كل دفعة من المنتجات تتلقى رمز QR فريداً يتابعها من المواد الخام إلى المستهلك النهائي، مما يتيح التحقق الفوري.",
+        "p2": "يتم تسجيل الموردين بشهادات حلال قابلة للتحقق. تراقب المنصة تواريخ انتهاء صلاحية الشهادات تلقائياً وتصعيد الشهادات المنتهية بتنبيهات عالية الخطورة لفرق الامتثال.",
+        "p3": "يقوم محرك الأتمتة بتنفيذ فحوصات يومية: اكتشاف الشحنات المتأخرة، وفحص المخزون للعناصر المنخفضة، وإنشاء درجات امتثال توفر للإدارة مؤشراً واحداً لصحة سلسلة التوريد."
+      }
+    },
+    "compliance": {
+      "title": "مراقبة الامتثال الآلية",
+      "subtitle": "تراقب المنصة باستمرار صحة سلسلة التوريد الخاصة بك وتنبهك بالمخاطر قبل أن تصبح مشاكل.",
+      "items": {
+        "certificateExpiry": {
+          "title": "اكتشاف انتهاء صلاحية الشهادات",
+          "subtitle": "يفحص جميع الشهادات يومياً. يكتشف انتهاء الصلاحية خلال 30 يوماً ويرسل تنبيهات للمديرين والمسؤولين عبر الإشعارات داخل التطبيق والبريد الإلكتروني."
+        },
+        "certificateExpired": {
+          "title": "تصعيد الشهادات المنتهية",
+          "subtitle": "يحدد الشهادات التي انتهت صلاحيتها بالفعل وينشئ مشكلات امتثال عالية الخطورة. يطلق إشعارات فورية للفرق المعنية."
+        },
+        "lowInventory": {
+          "title": "اكتشاف المخزون المنخفض",
+          "subtitle": "يقارن المخزون الحالي مع مستويات إعادة الطلب. ينشئ تنبيهات تقترح إجراءات إعادة التعبئة دون إنشاء طلبات تلقائياً."
+        },
+        "shipmentDelay": {
+          "title": "اكتشاف تأخر الشحنات",
+          "subtitle": "يكتشف تلقائياً الشحنات التي تجاوزت تاريخ الوصول المتوقع ولم يتم تحديدها كمسلم. يمنع التكرار اليومي للتنبيهات."
+        },
+        "complianceScore": {
+          "title": "تقييم الامتثال",
+          "subtitle": "درجة شفافة من 0 إلى 100 مبنية على 5 عوامل: الشهادات المنتهية (-30 نقطة)، والشهادات القريبة من الانتهاء (-15 نقطة)، والشحنات المتأخرة (حتى -20 نقطة)، والمخزون المنخفض (حتى -15 نقطة)، وتغطية الشهادات (حتى -20 نقطة). كل خصم يمكن تفسيره."
+        },
+        "realTimeAlerts": {
+          "title": "التنبيهات الفورية",
+          "subtitle": "جميع أحداث الأتمتة تُبث عبر Server-Sent Events إلى لوحة التحكم فوراً. يتم إرسال البريد الإلكتروني بشكل فوري مع 3 محاولات إعادة وتقاطع أسي."
+        }
+      },
+      "scoreNote": "شاهد مؤشر درجة الامتثال على لوحة التحكم الخاصة بك. كل خصم شفاف — مرر أو انقر لمعرفة سبب خصم كل نقطة."
+    },
+    "verificationDemo": {
+      "title": "التحقق العام عبر رمز QR",
+      "subtitle": "يمكن للمستهلك النهائي التحقق من أصالة المنتج فوراً عن طريق مسح رمز QR على التغليف. لا يتطلب حساباً أو تسجيل دخول.",
+      "steps": {
+        "qrScanning": {
+          "title": "مسح رمز QR",
+          "description": "كل منتج لديه رمز QR فريد على التغليف. يمسح المستهلك بكاميرا أي هاتف ذكي — لا يتطلب تطبيقاً."
+        },
+        "productVerification": {
+          "title": "تفاصيل المنتج",
+          "description": "يعرض الباب العام أصل المنتج والمورد ورقم الدفعة وحالة شهادة الحلال فوراً."
+        },
+        "certificateValidation": {
+          "title": "التحقق من الشهادة",
+          "description": "عرض جميع شهادات الحلال المرفقة مع هيئات الاعتماد Tarikh والتواريخ ومعلومات الصلاحية بنظرة واحدة."
+        },
+        "shipmentHistory": {
+          "title": "رحلة سلسلة التوريد",
+          "description": "تتبع الرحلة الكاملة من المورد عبر المستودعات إلى التاجر مع الطوابع الزمنية وبيانات الموقع."
+        }
+      },
+      "cta": {
+        "tryText": "جرّب الآن بمنتج حقيقي من قاعدة بياناتنا",
+        "button": "التحقق من حليب جوز الهند العضوي"
+      }
+    },
+    "architecture": {
+      "title": "الهيكل المعماري للمنصة",
+      "subtitle": "هيكل معماري حديث متعدد الطبقات مع محرك أتمتة مخصص لراقبة الامتثال الذكية.",
+      "mainStack": {
+        "nextjs": {
+          "label": "Next.js 15",
+          "description": "الواجهة الأمامية مع SSR"
+        },
+        "express": {
+          "label": "Express 5 API",
+          "description": "الخلفية RESTful"
+        },
+        "automation": {
+          "label": "محرك الأتمتة",
+          "description": "4 قواعد، جدولة يومية، متساوي النتائج"
+        },
+        "prisma": {
+          "label": "Prisma ORM",
+          "description": "وصول PostgreSQL آمن بالنوع"
+        },
+        "postgresql": {
+          "label": "PostgreSQL",
+          "description": "قاعدة بيانات علائقية"
+        }
+      },
+      "externalServices": "الخدمات الخارجية",
+      "services": {
+        "cloudinary": {
+          "label": "Cloudinary",
+          "description": "رفع ملفات الصور والشهادات"
+        },
+        "resend": {
+          "label": "Resend / SMTP",
+          "description": "إرسال البريد الإلكتروني مع محاولات إعادة"
+        },
+        "sse": {
+          "label": "بث SSE",
+          "description": "تحديثات لوحة التحكم الفورية"
+        }
+      },
+      "flow": {
+        "title": "كيف تعمل الأتمتة",
+        "description": "يعمل محرك الأتمتة يومياً في الساعة 08:00، ويقيم 4 قواعد بشكل معاملاتي. كل قاعدة تتحقق من الشروط مقابل قاعدة البيانات، وتنشئ إشعارات مع فحص التكرار، وترسل بريداً إلكترونياً بشكل غير متزامن.",
+        "steps": [
+          "الجدولة تطلق التقييم اليومي",
+          "المحرك يفتح معاملة قاعدة البيانات",
+          "جميع القواعد الأربع تُقيّم بشكل متواز",
+          "تنشأ الإشعارات مع فحص التكرار",
+          "يُرسل البريد الإلكتروني بشكل فوري",
+          "النتائج تُبث على لوحة التحكم في الوقت الفعلي"
+        ]
+      }
+    },
+    "stats": {
+      "title": "مميزات امتثال على مستوى المؤسسات",
+      "subtitle": "مبني للشركات التي تتطلب رؤية كاملة وراقبة آلية وامتثالاً قابلاً للتحقق عبر سلسلة توريد الحلال.",
+      "notifications": "إشعارات فورية",
+      "auditLogging": "تسجيل المراجعات",
+      "multiRoleAccess": "أدوار RBAC",
+      "secureAuth": "JWT + رموز التحديث",
+      "qrVerification": "التحقق عبر QR",
+      "reportingExports": "تنسيقات التقارير",
+      "complianceMonitoring": "راقبة الامتثال",
+      "suffixPercent": "%",
+      "suffixRoles": "+ أدوار",
+      "suffixFormats": "+ صيغ",
+      "suffixRules": " قواعد"
+    },
+    "screenshots": {
+      "title": "شاهد هالالتشين أثناء العمل",
+      "subtitle": "لوحة تحكم تركز على الامتثال مع تنبيهات الأتمتة وعروض التتبع وضوابط الإدارة.",
+      "slides": {
+        "dashboard": {
+          "title": "لوحة تحكم الامتثال",
+          "description": "بطاقات مؤشرات الأداء الرئيسية بما في ذلك درجة الامتثال وتنبيهات الأتمتة المباشرة وأدوات العمليات"
+        },
+        "inventory": {
+          "title": "المخزون مع تنبيهات المخزون المنخفض",
+          "description": "مستويات المخزون في الوقت الفعلي مع اكتشاف المخزون المنخفض الآلي واقتراحات إعادة التعبئة"
+        },
+        "traceability": {
+          "title": "بوابة التتبع العامة",
+          "description": "التحقق من المنتجات للمستهلك مع الجدول الزمني الكامل لسلسلة التوريد — لا يتطلب تسجيل دخول"
+        },
+        "users": {
+          "title": "إدارة المستخدمين RBAC",
+          "description": "التحكم في الوصول القائم على الأدوار مع أدوار ADMIN وMANAGER وSTAFF وسجلات المراجعات وتدفق الدعوات"
+        }
+      },
+      "aria": {
+        "prevSlide": "الشريحة السابقة",
+        "nextSlide": "الشريحة التالية",
+        "goToSlide": "الانتقال إلى الشريحة {{number}}"
+      }
+    },
+    "techStack": {
+      "title": "مبني بتقنيات حديثة",
+      "subtitle": "أدوات وأطر عمل على مستوى المؤسسات تدعم منصة امتثال هالالتشين."
+    },
+    "cta": {
+      "title": "مستعد لتحويل",
+      "titleAccent": "سلسلة توريد الحلال",
+      "titleSuffix": "امتثالك؟",
+      "subtitle": "انضم إلى شركات الحلال المتطورة التي تثق في هالالتشين للتتبع الشامل وراقبة الامتثال الآلية والذكاء التشغيلي.",
+      "exploreDemo": "استكشف العرض التوضيحي",
+      "signIn": "تسجيل الدخول"
+    },
+    "footer": {
+      "description": "منصة امتثال وتتبع سلسلة التوريد — راقبة الامتثال الآلية والتحقق عبر QR والذكاء التشغيلي لشركات الحلال الحديثة.",
+      "product": "المنتج",
+      "resources": "الموارد",
+      "company": "الشركة",
+      "features": "المميزات",
+      "workflow": "تدفق التتبع",
+      "compliance": "الامتثال",
+      "automation": "الأتمتة",
+      "architecture": "الهيكل المعماري",
+      "techStack": "التقنية",
+      "apiDocs": "وثائق API",
+      "traceabilityDemo": "عرض التتبع التوضيحي",
+      "status": "الحالة",
+      "about": "حول",
+      "privacy": "الخصوصية",
+      "terms": "الشروط",
+      "copyright": "جميع الحقوق محفوظة.",
+      "privacyPolicy": "سياسة الخصوصية",
+      "termsOfService": "شروط الخدمة"
+    }
+  },
+  "dashboard": {
+    "pageTitle": "لوحة التحكم التشغيلية",
+    "pageDescription": "راقب المخزون والمشتريات والشحنات وامتثال شهادات الحلال",
+    "warehouseOpsTitle": "عمليات المستودع",
+    "warehouseOpsDescription": "وصول سريع لحركات المخزون الوارد والصادر",
+    "warehouseOpsCardTitle": "عمليات المستودع",
+    "warehouseOpsCardDescription": "معالجة الاستلامات الوارد وطلبات الشحن الصادر",
+    "goToInventory": "الذهاب إلى المخزون",
+    "recentActivity": "النشاط الأخير",
+    "kpis": {
+      "totalProducts": "إجمالي المنتجات",
+      "activeSuppliers": "الموردون النشطون",
+      "totalSuppliers": "إجمالي الموردين",
+      "activeCertificates": "الشهادات النشطة",
+      "expiringCertificates": "ستنتهي قريباً",
+      "inventoryValue": "قيمة المخزون",
+      "openPOs": "طلبات الشراء المفتوحة",
+      "delayedShipments": "متأخرة",
+      "pendingShipments": "معلقة"
+    },
+    "widgets": {
+      "lowStockAlerts": "تنبيهات المخزون المنخفض",
+      "expiringCertificates": "الشهادات القريبة من الانتهاء",
+      "shipmentDelays": "تأخر الشحنات",
+      "stockHealthy": "مستويات المخزون صحية",
+      "stockHealthyDesc": "لا يوجد مخزون متعقب تحت مستوى إعادة الطلب.",
+      "noExpiries": "لا توجد انتهاء صلاحية قادمة",
+      "noExpiriesDesc": "لا توجد شهادات تنتهي صلاحيتها خلال نافذة المراقبة المحددة.",
+      "noDelays": "لا توجد شحنات متأخرة",
+      "noDelaysDesc": "جميع الشحنات النشطة حالياً على المسار الصحيح.",
+      "delayed": "متأخرة"
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل تحليلات لوحة التحكم"
+    }
+  },
+  "products": {
+    "pageTitle": "المنتجات",
+    "pageDescription": "إدارة المنتجات الحاصلة على شهادة الحلال عبر سلسلة التوريد",
+    "createProduct": "إنشاء منتج",
+    "createProductDescription": "إضافة منتج جديد حاصل على شهادة الحلال إلى الكتالوج",
+    "editProduct": "تعديل المنتج",
+    "productDetails": "تفاصيل المنتج",
+    "productDeleted": "تم حذف المنتج بنجاح",
+    "productCreated": "تم إنشاء المنتج بنجاح",
+    "productUpdated": "تم تحديث المنتج بنجاح",
+    "fields": {
+      "name": "اسم المنتج",
+      "namePlaceholder": "أدخل اسم المنتج",
+      "sku": "الرمز المعرفي",
+      "skuPlaceholder": "مثال: HAL-COCO-001",
+      "category": "الفئة",
+      "categoryPlaceholder": "اختر فئة",
+      "unit": "الوحدة",
+      "unitPlaceholder": "مثال: كجم، كرتون، زجاجة",
+      "unitPrice": "سعر الوحدة",
+      "unitPricePlaceholder": "0.00",
+      "supplier": "المورد"
+    },
+    "categories": {
+      "beverages": "المشروبات",
+      "condiments": "التوابل",
+      "grains": "الحبوب",
+      "meatPoultry": "اللحوم والدواجن",
+      "snacks": "الوجبات الخفيفة والفواكه المجففة"
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل المنتجات",
+      "loadFailedSingle": "فشل تحميل تفاصيل المنتج",
+      "createFailed": "فشل إنشاء المنتج",
+      "updateFailed": "فشل تحديث المنتج",
+      "deleteFailed": "فشل حذف المنتج",
+      "skuExists": "يوجد منتج بهذا الرمز المعرفي بالفعل"
+    },
+    "addProduct": "إضافة منتج",
+    "newProduct": "منتج جديد",
+    "saveChanges": "حفظ التغييرات",
+    "deleteProduct": "حذف المنتج",
+    "deleteConfirm": "حذف المنتج؟",
+    "deleteDescription": "هل أنت متأكد أنك تريد حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.",
+    "productAdded": "تمت إضافة المنتج بنجاح",
+    "productSaved": "تم حفظ المنتج بنجاح",
+    "productDeleteFailed": "فشل حذف المنتج",
+    "common": {
+      "editItem": "تعديل المنتج",
+      "deleteItem": "حذف المنتج",
+      "viewTraceability": "عرض التتبع",
+      "viewQrCode": "عرض رمز QR",
+      "qrCodeFor": "رمز QR لـ"
+    },
+    "form": {
+      "name": "اسم المنتج",
+      "namePlaceholder": "أدخل اسم المنتج",
+      "sku": "الرمز المعرفي",
+      "skuPlaceholder": "مثال: HAL-COCO-001",
+      "category": "الفئة",
+      "categoryPlaceholder": "اختر فئة",
+      "unit": "الوحدة",
+      "unitPlaceholder": "مثال: كجم، كرتون، زجاجة",
+      "unitPrice": "سعر الوحدة",
+      "supplier": "المورد",
+      "selectSupplier": "اختر مورداً",
+      "newProductDescription": "إضافة منتج جديد حاصل على شهادة الحلال إلى الكتالوج",
+      "editProductDescription": "تحديث معلومات المنتج"
+    },
+    "table": {
+      "sku": "الرمز المعرفي",
+      "name": "الاسم",
+      "category": "الفئة",
+      "supplier": "المورد",
+      "unit": "الوحدة",
+      "price": "السعر",
+      "stock": "المخزون",
+      "traceability": "التتبع",
+      "qrCode": "رمز QR",
+      "trace": "تتبع",
+      "qr": "QR",
+      "actions": "الإجراءات"
+    },
+    "qrDialog": {
+      "title": "رمز QR للمنتج",
+      "scanDescription": "امسح رمز QR هذا لعرض صفحة التتبع العامة",
+      "download": "تنزيل رمز QR"
+    }
+  },
+  "inventory": {
+    "pageTitle": "إدارة المخزون",
+    "pageDescription": "تتبع مستويات المخزون والحركات عبر جميع المستودعات",
+    "movementsPageTitle": "حركات المخزون",
+    "movementsPageDescription": "عرض سجل الوارد والصادر والتعديلات",
+    "inbound": "وارد",
+    "outbound": "صادر",
+    "adjustment": "تعديل",
+    "inboundTitle": "استلام المخزون",
+    "inboundDescription": "تسجيل المخزون الوارد من طلب شراء أو مورد",
+    "outboundTitle": "إرسال المخزون",
+    "outboundDescription": "تسجيل المخزون الصادر للشحنة أو الكتابة-offs",
+    "warehouseSections": "المستودعات",
+    "lowStock": "مخزون منخفض",
+    "currentStock": "المخزون الحالي",
+    "reorderLevel": "مستوى إعادة الطلب",
+    "movementDate": "التاريخ",
+    "movementType": "النوع",
+    "movementQuantity": "الكمية",
+    "movementNote": "ملاحظة",
+    "performedBy": "تم بواسطة",
+    "stockValue": "قيمة المخزون",
+    "filterByWarehouse": "تصفية حسب المستودع",
+    "filterByProduct": "تصفية حسب المنتج",
+    "showLowStockOnly": "إظهار المخزون المنخفض فقط",
+    "errors": {
+      "loadFailed": "فشل تحميل المخزون",
+      "movementFailed": "فشل تسجيل الحركة",
+      "insufficientStock": "مخزون غير كافٍ للحركة الصادرة",
+      "loadMovementsFailed": "فشل تحميل الحركات"
+    },
+    "recordInbound": "تسجيل الوارد",
+    "recordOutbound": "تسجيل الصادر",
+    "confirmInbound": "تأكيد الاستلام",
+    "confirmOutbound": "تأكيد الإرسال",
+    "inboundRecorded": "تم تسجيل الوارد بنجاح",
+    "outboundRecorded": "تم تسجيل الصادر بنجاح",
+    "movementRecorded": "تم تسجيل الحركة بنجاح",
+    "actionReceived": "تم الاستلام",
+    "actionDispatched": "تم الإرسال",
+    "recording": "جارٍ التسجيل…",
+    "qty": "الكمية",
+    "value": "القيمة",
+    "date": "التاريخ",
+    "type": "النوع",
+    "note": "ملاحظة",
+    "notePlaceholderInbound": "مثال: تم الاستلام من شحنة المورد",
+    "notePlaceholderOutbound": "مثال: تم الإرسال إلى المتجر",
+    "optional": "اختياري",
+    "enterQuantity": "أدخل الكمية",
+    "recentMovements": "الحركات الأخيرة",
+    "allWarehouses": "جميع المستودعات",
+    "allProducts": "جميع المنتجات",
+    "filters": "التصفية",
+    "clearFilters": "مسح التصفية",
+    "clear": "مسح",
+    "lowStockOnly": "المخزون المنخفض فقط",
+    "lowStockActive": "تصفية المخزون المنخفض نشطة",
+    "stockOk": "جميع مستويات المخزون صحية",
+    "noMatchFilters": "لا توجد عناصر مخزون تطابق تصفيتك الحالية",
+    "showingRecords": "عرض {{count}} سجل",
+    "by": "بواسطة",
+    "table": {
+      "sku": "الرمز المعرفي",
+      "product": "المنتج",
+      "warehouse": "المستودع",
+      "quantity": "الكمية",
+      "reorderLevel": "مستوى إعادة الطلب",
+      "status": "الحالة"
+    }
+  },
+  "suppliers": {
+    "pageTitle": "الموردون",
+    "pageDescription": "إدارة شبكة الموردين الحاصلين على شهادة الحلال",
+    "createSupplier": "إضافة مورد",
+    "createSupplierDescription": "تسجيل مورد جديد حاصل على شهادة الحلال",
+    "editSupplier": "تعديل المورد",
+    "supplierDetails": "تفاصيل المورد",
+    "supplierDeleted": "تم حذف المورد بنجاح",
+    "supplierCreated": "تم إنشاء المورد بنجاح",
+    "supplierUpdated": "تم تحديث المورد بنجاح",
+    "fields": {
+      "name": "اسم المورد",
+      "namePlaceholder": "أدخل اسم المورد",
+      "country": "الدولة",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "maword@contoh.com",
+      "phone": "الهاتف",
+      "phonePlaceholder": "+84 123 456 789",
+      "status": "الحالة"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل الموردين",
+      "createFailed": "فشل إنشاء المورد",
+      "updateFailed": "فشل تحديث المورد",
+      "deleteFailed": "فشل حذف المورد"
+    },
+    "addSupplier": "إضافة مورد",
+    "newSupplier": "مورد جديد",
+    "saveChanges": "حفظ التغييرات",
+    "deleteSupplier": "حذف المورد",
+    "deleteConfirm": "حذف المورد؟",
+    "deleteDescription": "هل أنت متأكد أنك تريد حذف هذا المورد؟ لا يمكن التراجع عن هذا الإجراء.",
+    "supplierAdded": "تمت إضافة المورد بنجاح",
+    "supplierEdited": "تم تحديث المورد بنجاح",
+    "supplierDeleteFailed": "فشل حذف المورد",
+    "common": {
+      "editItem": "تعديل المورد",
+      "deleteItem": "حذف المورد"
+    },
+    "form": {
+      "name": "اسم المورد",
+      "namePlaceholder": "أدخل اسم المورد",
+      "country": "الدولة",
+      "countryPlaceholder": "اختر دولة",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "maword@contoh.com",
+      "phone": "الهاتف",
+      "phonePlaceholder": "+1 234 567 890",
+      "status": "الحالة",
+      "statusActive": "نشط",
+      "statusInactive": "غير نشط",
+      "optional": "اختياري"
+    },
+    "table": {
+      "name": "الاسم",
+      "country": "الدولة",
+      "contact": "جهة الاتصال",
+      "status": "الحالة",
+      "certificates": "الشهادات",
+      "products": "المنتجات",
+      "actions": "الإجراءات"
+    }
+  },
+  "warehouses": {
+    "pageTitle": "المستودعات",
+    "pageDescription": "إدارة مواقع المستودعات عبر شبكتك",
+    "createWarehouse": "إضافة مستودع",
+    "createWarehouseDescription": "تسجيل موقع مستودع جديد",
+    "editWarehouse": "تعديل المستودع",
+    "warehouseDetails": "تفاصيل المستودع",
+    "warehouseDeleted": "تم حذف المستودع بنجاح",
+    "warehouseCreated": "تم إنشاء المستودع بنجاح",
+    "warehouseUpdated": "تم تحديث المستودع بنجاح",
+    "fields": {
+      "name": "اسم المستودع",
+      "namePlaceholder": "أدخل اسم المستودع",
+      "location": "الموقع",
+      "locationPlaceholder": "المدينة، الدولة"
+    },
+    "stockSummary": "ملخص المخزون",
+    "errors": {
+      "loadFailed": "فشل تحميل المستودعات",
+      "loadFailedSingle": "فشل تحميل تفاصيل المستودع",
+      "createFailed": "فشل إنشاء المستودع",
+      "updateFailed": "فشل تحديث المستودع",
+      "deleteFailed": "فشل حذف المستودع"
+    },
+    "addWarehouse": "إضافة مستودع",
+    "newWarehouse": "مستودع جديد",
+    "saveChanges": "حفظ التغييرات",
+    "deleteWarehouse": "حذف المستودع",
+    "deleteConfirm": "حذف المستودع؟",
+    "deleteDescription": "هل أنت متأكد أنك تريد حذف هذا المستودع؟ لا يمكن التراجع عن هذا الإجراء.",
+    "warehouseAdded": "تمت إضافة المستودع بنجاح",
+    "warehouseEdited": "تم تحديث المستودع بنجاح",
+    "warehouseDeleteFailed": "فشل حذف المستودع",
+    "common": {
+      "editItem": "تعديل المستودع",
+      "deleteItem": "حذف المستودع"
+    },
+    "form": {
+      "name": "اسم المستودع",
+      "namePlaceholder": "أدخل اسم المستودع",
+      "location": "الموقع",
+      "locationPlaceholder": "المدينة، الدولة"
+    },
+    "table": {
+      "name": "الاسم",
+      "location": "الموقع",
+      "items": "العناصر",
+      "actions": "الإجراءات"
+    }
+  },
+  "purchaseOrders": {
+    "pageTitle": "طلبات الشراء",
+    "pageDescription": "إدارة المشتريات عبر شبكة الموردين",
+    "createPO": "إنشاء طلب شراء",
+    "createPODescription": "إنشاء طلب شراء جديد مع بنود",
+    "poDetails": "تفاصيل طلب الشراء",
+    "poDeleted": "تم حذف طلب الشراء بنجاح",
+    "poCreated": "تم إنشاء طلب الشراء بنجاح",
+    "poStatusUpdated": "تم تحديث حالة طلب الشراء",
+    "status": {
+      "draft": "مسودة",
+      "approved": "معتمد",
+      "shipping": "قيد الشحن",
+      "received": "تم الاستلام",
+      "cancelled": "ملغى",
+      "partial": "جزئي"
+    },
+    "fields": {
+      "poNumber": "رقم طلب الشراء",
+      "supplier": "المورد",
+      "items": "البنود",
+      "totalAmount": "المبلغ الإجمالي",
+      "status": "الحالة",
+      "createdAt": "أنشئ في"
+    },
+    "noItems": "لا توجد بنود بعد",
+    "addItem": "إضافة بند",
+    "itemProduct": "المنتج",
+    "itemQuantity": "الكمية",
+    "itemPrice": "سعر الوحدة",
+    "itemSubtotal": "المجموع الفرعي",
+    "actions": {
+      "approve": "اعتماد",
+      "markShipping": "تحديد كمشحن",
+      "markReceived": "تحديد كمستلم",
+      "cancel": "إلغاء"
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل طلبات الشراء",
+      "loadFailedSingle": "فشل تحميل تفاصيل طلب الشراء",
+      "createFailed": "فشل إنشاء طلب الشراء",
+      "statusUpdateFailed": "فشل تحديث الحالة",
+      "deleteFailed": "فشل حذف طلب الشراء"
+    },
+    "newPO": "طلب شراء جديد",
+    "deleteConfirm": "حذف طلب الشراء؟",
+    "deleteDescription": "هل أنت متأكد أنك تريد حذف طلب الشراء هذا؟ لا يمكن التراجع عن هذا الإجراء.",
+    "deletePO": "حذف طلب الشراء",
+    "creating": "جارٍ الإنشاء…",
+    "created": "تم إنشاء طلب الشراء",
+    "poCreatedDesc": "تم إنشاء طلب الشراء بنجاح",
+    "poDeleteFailed": "فشل حذف طلب الشراء",
+    "statusUpdated": "تم تحديث الحالة",
+    "statusUpdatedDesc": "تم تحديث حالة طلب الشراء",
+    "statusUpdateFailed": "فشل تحديث الحالة",
+    "items": "البنود",
+    "qty": "الكمية",
+    "price": "السعر",
+    "amount": "المبلغ",
+    "total": "الإجمالي",
+    "shipments": "الشحنات",
+    "removeItem": "إزالة البند",
+    "common": {
+      "deleteItem": "حذف طلب الشراء"
+    },
+    "table": {
+      "poNumber": "رقم طلب الشراء",
+      "supplier": "المورد",
+      "status": "الحالة",
+      "actions": "الإجراءات"
+    }
+  },
+  "shipments": {
+    "pageTitle": "الشحنات",
+    "pageDescription": "تتبع وإدارة شحنات سلسلة التوريد",
+    "createShipment": "إنشاء شحنة",
+    "createShipmentDescription": "تسجيل شحنة جديدة لطلب شراء",
+    "shipmentDetails": "تفاصيل الشحنة",
+    "shipmentCreated": "تم إنشاء الشحنة بنجاح",
+    "shipmentUpdated": "تم تحديث الشحنة بنجاح",
+    "status": {
+      "pending": "معلقة",
+      "inTransit": "في الطريق",
+      "delivered": "تم التسليم",
+      "delayed": "متأخرة"
+    },
+    "fields": {
+      "trackingNumber": "رقم التتبع",
+      "trackingPlaceholder": "مثال: MY-HAL-784521",
+      "origin": "المصدر",
+      "destination": "الوجهة",
+      "estimatedArrival": "الوصول المتوقع",
+      "status": "الحالة",
+      "purchaseOrder": "طلب الشراء",
+      "supplier": "المورد"
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل الشحنات",
+      "loadFailedSingle": "فشل تحميل تفاصيل الشحنة",
+      "createFailed": "فشل إنشاء الشحنة",
+      "updateFailed": "فشل تحديث الشحنة",
+      "trackingExists": "رقم التتبع موجود بالفعل"
+    },
+    "newShipment": "شحنة جديدة",
+    "newShipmentCta": "إنشاء شحنة",
+    "updateShipment": "تحديث الشحنة",
+    "saveChanges": "حفظ التغييرات",
+    "createDescription": "تسجيل شحنة جديدة لطلب شراء",
+    "creating": "جارٍ الإنشاء…",
+    "shipmentCreatedDesc": "تم إنشاء الشحنة بنجاح",
+    "shipmentUpdatedDesc": "تم تحديث الشحنة بنجاح",
+    "trackingNumber": "رقم التتبع",
+    "trackingPlaceholder": "مثال: MY-HAL-784521",
+    "origin": "المصدر",
+    "originPlaceholder": "مثال: كوالالمبور",
+    "destination": "الوجهة",
+    "destinationPlaceholder": "مثال: مدينة هوشي منه",
+    "estimatedArrival": "الوصول المتوقع",
+    "eta": "الوقت المقدر للوصول",
+    "purchaseOrder": "طلب الشراء",
+    "selectPO": "اختر طلب شراء",
+    "route": "المسار",
+    "statusOptions": {
+      "pending": "معلقة",
+      "inTransit": "في الطريق",
+      "delivered": "تم التسليم",
+      "delayed": "متأخرة"
+    },
+    "common": {
+      "editItem": "تعديل الشحنة"
+    },
+    "table": {
+      "trackingNumber": "رقم التتبع",
+      "supplier": "المورد",
+      "poNumber": "رقم طلب الشراء",
+      "status": "الحالة",
+      "actions": "الإجراءات"
+    }
+  },
+  "certificates": {
+    "pageTitle": "شهادات الحلال",
+    "pageDescription": "إدارة شهادة الحلال عبر سلسلة التوريد",
+    "createCertificate": "إضافة شهادة",
+    "createCertificateDescription": "تسجيل شهادة حلال جديدة لمورد",
+    "editCertificate": "تعديل الشهادة",
+    "certificateDetails": "تفاصيل الشهادة",
+    "certificateDeleted": "تم حذف الشهادة بنجاح",
+    "certificateCreated": "تم إنشاء الشهادة بنجاح",
+    "certificateUpdated": "تم تحديث الشهادة بنجاح",
+    "status": {
+      "valid": "صالحة",
+      "expiringSoon": "ستنتهي قريباً",
+      "expired": "منتهية الصلاحية"
+    },
+    "fields": {
+      "certificateNumber": "رقم الشهادة",
+      "certificatePlaceholder": "مثال: JAKIM-2024-00123",
+      "supplier": "المورد",
+      "issuedBy": " صدرت بواسطة",
+      "issueDate": "تاريخ الإصدار",
+      "expiryDate": "تاريخ الانتهاء",
+      "file": "ملف الشهادة",
+      "currentFile": "الملف الحالي"
+    },
+    "upload": {
+      "dropzone": "ضع ملف الشهادة هنا أو انقر للتصفح",
+      "uploading": "جارٍ الرفع…",
+      "success": "تم رفع الملف بنجاح",
+      "error": "فشل الرفع",
+      "fileTooLarge": "الملف يتجاوز الحد الأقصى 10 ميغابايت"
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل الشهادات",
+      "loadFailedSingle": "فشل تحميل تفاصيل الشهادة",
+      "createFailed": "فشل إنشاء الشهادة",
+      "updateFailed": "فشل تحديث الشهادة",
+      "deleteFailed": "فشل حذف الشهادة"
+    },
+    "addCertificate": "إضافة شهادة",
+    "newCertificate": "شهادة جديدة",
+    "saveChanges": "حفظ التغييرات",
+    "deleteCertificate": "حذف الشهادة",
+    "deleteConfirm": "حذف الشهادة؟",
+    "deleteDescription": "هل أنت متأكد أنك تريد حذف هذه الشهادة؟ لا يمكن التراجع عن هذا الإجراء.",
+    "certificateDeleteFailed": "فشل حذف الشهادة",
+    "uploadDocument": "رفع مستند",
+    "common": {
+      "editItem": "تعديل الشهادة",
+      "deleteItem": "حذف الشهادة"
+    },
+    "form": {
+      "certificateNumber": "رقم الشهادة",
+      "certificateNumberPlaceholder": "مثال: JAKIM-2024-00123",
+      "supplier": "المورد",
+      "issuedBy": "صدرت بواسطة",
+      "issuedByPlaceholder": "مثال: JAKIM, MUI, BPJPH",
+      "issueDate": "تاريخ الإصدار",
+      "expiryDate": "تاريخ الانتهاء",
+      "newCertificateDescription": "تسجيل شهادة حلال جديدة لمورد",
+      "editCertificateDescription": "تحديث معلومات الشهادة"
+    },
+    "table": {
+      "certificateNumber": "رقم الشهادة",
+      "supplier": "المورد",
+      "issuedBy": "صدرت بواسطة",
+      "issueDate": "تاريخ الإصدار",
+      "expiryDate": "تاريخ الانتهاء",
+      "status": "الحالة",
+      "actions": "الإجراءات"
+    }
+  },
+  "reports": {
+    "pageTitle": "التقارير",
+    "pageDescription": "تصدير بيانات سلسلة التوريد وإنشاء تقارير الامتثال",
+    "summary": {
+      "0": "ت",
+      "1": "ق",
+      "2": "ر",
+      "3": "ي",
+      "4": "ب",
+      "5": " ",
+      "6": "إ",
+      "7": "ج",
+      "8": "م",
+      "9": "ا",
+      "10": "ل",
+      "11": "ي",
+      "title": "ملخص التقرير"
+    },
+    "export": "تصدير البيانات",
+    "format": {
+      "csv": "CSV",
+      "xlsx": "XLSX",
+      "pdf": "PDF"
+    },
+    "modules": {
+      "products": "المنتجات",
+      "inventory": "المخزون",
+      "suppliers": "الموردون",
+      "certificates": "الشهادات",
+      "purchase-orders": "طلبات الشراء",
+      "shipments": "الشحنات"
+    },
+    "dateRange": "نطاق التاريخ",
+    "errors": {
+      "loadFailed": "فشل تحميل ملخص التقرير",
+      "exportFailed": "فشل تصدير التقرير"
+    },
+    "empty": {
+      "title": "لا تتوفر بيانات التقارير"
+    }
+  },
+  "analytics": {
+    "pageTitle": "التحليلات",
+    "pageDescription": "تحليل شامل لعمليات سلسلة التوريد",
+    "tabs": {
+      "inventory": "المخزون",
+      "purchaseOrders": "طلبات الشراء",
+      "shipments": "الشحنات",
+      "certificates": "الشهادات"
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل التحليلات"
+    },
+    "loadFailed": "فشل تحميل بيانات التحليلات",
+    "inventory": {
+      "title": "تحليلات المخزون",
+      "valueTrend": "اتجاه قيمة المخزون",
+      "value": "القيمة",
+      "byWarehouse": "المخزون حسب المستودع",
+      "topStocked": "المنتجات الأكثر مخزوناً",
+      "product": "المنتج",
+      "qty": "الكمية",
+      "inboundOutbound": "الوارد مقابل الصادر",
+      "unitsOut": "الوحدات الصادرة",
+      "fastMoving": "سريع الحركة",
+      "slowMoving": "بطيء الحركة",
+      "noOutbound": "لا توجد حركات صادرة في هذه الفترة"
+    },
+    "purchaseOrders": {
+      "title": "تحليلات طلبات الشراء",
+      "ordersPerMonth": "الطلبات شهرياً",
+      "statusDistribution": "توزيع الحالات",
+      "statusBreakdown": "تفصيل الحالات",
+      "statusBreakdownNote": "توزيع طلبات الشراء حسب الحالة الحالية",
+      "approvalRate": "معدل الاعتماد",
+      "approvalRateNote": "النسبة المئوية للطلبات التي تم اعتمادها أو ما فوق",
+      "fulfillmentRate": "معدل التنفيذ",
+      "fulfillmentRateNote": "النسبة المئوية للطلبات التي تم استلامها",
+      "avgProcessingTime": "متوسط وقت المعالجة",
+      "avgProcessingTimeNote": "متوسط الأيام من الإنشاء إلى حالة الاستلام",
+      "notEnoughData": "بيانات غير كافية لعرض التحليلات"
+    },
+    "shipments": {
+      "title": "تحليلات الشحنات",
+      "volumeTrend": "اتجاه حجم الشحنات",
+      "statusDistribution": "توزيع الحالات",
+      "shipmentStatusDistribution": "توزيع حالات الشحنات",
+      "statusDistributionNote": "توزيع الشحنات حسب الحالة الحالية",
+      "onTimeDelivery": "معدل التسليم في الوقت المحدد",
+      "onTimeDeliveryNote": "النسبة المئوية للشحنات المسلمة بدون تأخر",
+      "delayedRate": "معدل التأخر",
+      "delayedRateNote": "النسبة المئوية للشحنات المتأخرة حالياً"
+    },
+    "certificates": {
+      "title": "تحليلات الشهادات",
+      "totalCerts": "إجمالي الشهادات",
+      "active": "نشط",
+      "activeCerts": "الشهادات النشطة",
+      "activeNote": "الشهادات السارية حالياً",
+      "expiring": "ستنتهي قريباً",
+      "expiringNote": "الشهادات التي تنتهي صلاحيتها خلال 30 يوماً",
+      "expired": "منتهية الصلاحية",
+      "expiredNote": "الشهادات التي انتهت صلاحيتها بالفعل",
+      "score": "درجة الامتثال",
+      "supplierScore": "امتثال المورد",
+      "noSupplierData": "لا تتوفر بيانات شهادات الموردين"
+    }
+  },
+  "users": {
+    "pageTitle": "إدارة المستخدمين",
+    "pageDescription": "إدارة مستخدمي المنصة والأدوار والدعوات",
+    "inviteUser": "دعوة مستخدم",
+    "inviteUserDescription": "إرسال بريد إلكتروني للدعوة إلى مستخدم جديد",
+    "userDetails": "تفاصيل المستخدم",
+    "stats": {
+      "total": "إجمالي المستخدمين",
+      "active": "نشط",
+      "suspended": "معلق",
+      "unverified": "غير متحقق",
+      "admins": "المديرون",
+      "managers": "المدراء",
+      "staff": "الموظفون"
+    },
+    "actions": {
+      "verify": "تحقق من المستخدم",
+      "suspend": "تعليق",
+      "activate": "تفعيل",
+      "resetPassword": "إعادة تعيين كلمة المرور",
+      "changeRole": "تغيير الدور"
+    },
+    "status": {
+      "active": "نشط",
+      "suspended": "معلق"
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل المستخدمين",
+      "inviteFailed": "فشل دعوة المستخدم",
+      "updateFailed": "فشل تحديث المستخدم"
+    },
+    "totalUsers": "إجمالي المستخدمين",
+    "activeUsers": "المستخدمون النشطون",
+    "suspendedUsers": "المستخدمون المعلقون",
+    "unverifiedUsers": "المستخدمون غير المتحققين",
+    "searchPlaceholder": "بحث بالاسم أو البريد الإلكتروني…",
+    "allRoles": "جميع الأدوار",
+    "allStatuses": "جميع الحالات",
+    "noUsers": "لم يتم العثور على مستخدمين",
+    "manage": "إدارة",
+    "cancel": "إلغاء",
+    "change": "تغيير",
+    "role": "الدور",
+    "roleLabel": "الدور",
+    "displayName": "الاسم المعروض",
+    "emailLabel": "البريد الإلكتروني",
+    "userId": "معرّف المستخدم",
+    "joined": "انضم",
+    "invitations": "الدعوات",
+    "invitedDesc": "دعوة معلقة",
+    "verifiedUser": "مستخدم متحقق",
+    "verifiedDesc": "هذا المستخدم تحقق من عنوان بريده الإلكتروني",
+    "notVerified": "غير متحقق",
+    "activeDesc": "حساب هذا المستخدم نشط",
+    "suspendedDesc": "حساب هذا المستخدم معلق",
+    "accountStatus": "حالة الحساب",
+    "accountActive": "الحساب نشط",
+    "accountSuspended": "الحساب معلق",
+    "verificationStatus": "حالة التحقق",
+    "verify": "تحقق من المستخدم",
+    "verifyUser": "تحقق من المستخدم",
+    "verifyDesc": "التحقق يدوياً من عنوان بريد هذا المستخدم الإلكتروني",
+    "unverify": "إزالة التحقق",
+    "unverifyDesc": "إزالة التحقق من البريد الإلكتروني لهذا المستخدم",
+    "removeVerification": "إزالة التحقق",
+    "suspend": "تعليق المستخدم",
+    "suspendConfirm": "تعليق هذا المستخدم؟",
+    "suspendDesc": "لن يتمكن هذا المستخدم من تسجيل الدخول حتى يتم تفعيله مرة أخرى.",
+    "reactivate": "إعادة تفعيل المستخدم",
+    "reactivateConfirm": "إعادة تفعيل هذا المستخدم؟",
+    "reactivateDesc": "سيتمكن هذا المستخدم من تسجيل الدخول مرة أخرى.",
+    "changeRole": "تغيير الدور",
+    "changeRoleDesc": "تغيير دور هذا المستخدم",
+    "saveRole": "حفظ الدور",
+    "roleUpdated": "تم تحديث الدور بنجاح",
+    "roleUpdateFailed": "فشل تحديث الدور",
+    "saveName": "حفظ الاسم",
+    "nameUpdated": "تم تحديث الاسم بنجاح",
+    "nameUpdateFailed": "فشل تحديث الاسم",
+    "nameEmpty": "لا يمكن أن يكون الاسم فارغاً",
+    "nameMinLength": "يجب أن يكون الاسم حرفين على الأقل",
+    "accountUpdated": "تم تحديث الحساب بنجاح",
+    "accountUpdateFailed": "فشل تحديث الحساب",
+    "verificationUpdated": "تم تحديث حالة التحقق",
+    "verificationUpdateFailed": "فشل تحديث حالة التحقق",
+    "reset": "إعادة تعيين",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "resetPasswordConfirm": "إعادة تعيين كلمة مرور هذا المستخدم؟",
+    "resetPasswordConfirmDesc": "سيتم إرسال بريد إلكتروني لإعادة تعيين كلمة المرور إلى المستخدم.",
+    "resetPasswordDesc": "إرسال بريد إلكتروني لإعادة تعيين كلمة المرور إلى هذا المستخدم",
+    "passwordReset": "تم إرسال بريد إعادة تعيين كلمة المرور",
+    "passwordResetFailed": "فشل إرسال إعادة تعيين كلمة المرور",
+    "sendInvite": "إرسال الدعوة",
+    "sendFailed": "فشل إرسال الدعوة",
+    "revoke": "إلغاء الدعوة",
+    "revoked": "تم إلغاء الدعوة",
+    "revokeFailed": "فشل إلغاء الدعوة",
+    "statusActive": "نشط",
+    "statusSuspended": "معلق"
+  },
+  "settings": {
+    "pageTitle": "الإعدادات",
+    "pageDescription": "إدارة حسابك وتفضيلات المنصة",
+    "tabs": {
+      "profile": "الملف الشخصي",
+      "security": "الأمان",
+      "notifications": "الإشعارات",
+      "preferences": "التفضيلات"
+    },
+    "navigation": {
+      "profile": "الملف الشخصي",
+      "security": "الأمان",
+      "preferences": "التفضيلات",
+      "notifications": "الإشعارات"
+    },
+    "profile": {
+      "title": "معلومات الملف الشخصي",
+      "description": "تحديث معلوماتك الشخصية والصورة الرمزية",
+      "nameLabel": "الاسم المعروض",
+      "namePlaceholder": "اسمك المعروض",
+      "emailLabel": "البريد الإلكتروني",
+      "emailDescription": "لا يمكن تغيير عنوان بريدك الإلكتروني",
+      "updateSuccess": "تم تحديث الملف الشخصي بنجاح",
+      "saved": "تم حفظ الملف الشخصي بنجاح",
+      "saveFailed": "فشل حفظ الملف الشخصي",
+      "avatarLabel": "الصورة الرمزية",
+      "roleLabel": "الدور"
+    },
+    "security": {
+      "title": "تغيير كلمة المرور",
+      "description": "تحديث كلمة مرور حسابك",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "updateSuccess": "تم تغيير كلمة المرور بنجاح"
+    },
+    "notifications": {
+      "title": "تفضيلات الإشعارات",
+      "description": "اختر الإشعارات التي تتلقاها",
+      "certificateAlerts": "تنبيهات الشهادات",
+      "certificateAlertsDesc": "تلقَّ إشعارات عند اقتراب انتهاء صلاحية شهادات الحلال أو انتهائها",
+      "inventoryAlerts": "تنبيهات المخزون",
+      "inventoryAlertsDesc": "تلقَّ إشعارات عند انخفاض مستويات المخزون",
+      "shipmentAlerts": "تنبيهات الشحنات",
+      "shipmentAlertsDesc": "تلقَّ إشعارات عند تأخر الشحنات",
+      "invitationEmails": "رسائل الدعوات",
+      "invitationEmailsDesc": "تلقَّ رسائل إلكترونية عند دعوة المستخدمين إلى المنصة",
+      "updateSuccess": "تم تحديث التفضيلات بنجاح",
+      "saved": "تم حفظ تفضيلات الإشعارات",
+      "saveFailed": "فشل حفظ تفضيلات الإشعارات"
+    },
+    "preferences": {
+      "title": "تفضيلات العرض",
+      "description": "تخصيص تجربتك على المنصة"
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل الإعدادات"
+    }
+  },
+  "acceptInvite": {
+    "title": "قبول الدعوة",
+    "description": "تمت دعوتك للانضمام إلى هالالتشين. قم بتعيين كلمة المرور لتفعيل حسابك.",
+    "submit": "تفعيل الحساب",
+    "errors": {
+      "invalidToken": "رابط الدعوة هذا غير صالح أو انتهت صلاحيته."
+    }
+  },
+  "errors": {
+    "notFound": "الصفحة غير موجودة"
+  },
+  "userMenu": {
+    "myProfile": "ملفي الشخصي",
+    "accountSettings": "إعدادات الحساب",
+    "changePassword": "تغيير كلمة المرور",
+    "signOut": "تسجيل الخروج",
+    "roles": {
+      "admin": "مدير",
+      "manager": "مشرف",
+      "staff": "موظف"
+    }
+  }
+}

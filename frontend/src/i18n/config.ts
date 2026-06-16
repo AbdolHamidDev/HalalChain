@@ -1,4 +1,4 @@
-export const SUPPORTED_LOCALES = ["en", "vi", "ms"] as const;
+export const SUPPORTED_LOCALES = ["en", "vi", "ms", "id", "ar", "th"] as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -8,18 +8,27 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   vi: "Tiếng Việt",
   ms: "Bahasa Melayu",
+  id: "Bahasa Indonesia",
+  ar: "العربية",
+  th: "ไทย",
 };
 
 export const LOCALE_FLAGS: Record<Locale, string> = {
   en: "🇬🇧",
   vi: "🇻🇳",
   ms: "🇲🇾",
+  id: "🇮🇩",
+  ar: "🇸🇦",
+  th: "🇹🇭",
 };
 
 export const LOCALE_DIRECTIONS: Record<Locale, "ltr" | "rtl"> = {
   en: "ltr",
   vi: "ltr",
   ms: "ltr",
+  id: "ltr",
+  ar: "rtl",
+  th: "ltr",
 };
 
 export const LANGUAGE_COOKIE_NAME = "halalchain_lang";
