@@ -18,6 +18,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n/hooks";
 import { useAuth } from "@/components/providers/auth-provider";
+import { GitHubCommitBadge } from "@/components/landing/github-commit-badge";
 
 function getInitials(name: string): string {
   return name
@@ -82,10 +83,11 @@ export function LandingHeader() {
             href="https://github.com/AbdolHamidDev/HalalChain"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-md px-2 py-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             aria-label="View source on GitHub"
           >
             <Github className="h-4 w-4" />
+            <GitHubCommitBadge />
           </a>
           <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2">
