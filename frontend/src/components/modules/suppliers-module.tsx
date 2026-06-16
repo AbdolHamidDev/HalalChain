@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { api, Supplier, SupplierStatus } from "@/lib/api";
 import { countryFlag } from "@/lib/countryFlag";
+import { CountryPicker } from "@/components/ui/country-picker";
 import { useAuth } from "@/components/providers/auth-provider";
 import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
@@ -288,12 +289,12 @@ export function SuppliersModule() {
           </InputWrapper>
           <InputWrapper>
             <InputLabel htmlFor="supplier-country">{t("suppliers.form.country")} <span className="text-destructive" aria-hidden="true">*</span></InputLabel>
-            <Input
+            <CountryPicker
               id="supplier-country"
-              required
               value={form.country}
-              onChange={(e) => setForm({ ...form, country: e.target.value })}
+              onChange={(v) => setForm({ ...form, country: v })}
               placeholder={t("suppliers.form.countryPlaceholder")}
+              required
             />
           </InputWrapper>
           <InputWrapper>
