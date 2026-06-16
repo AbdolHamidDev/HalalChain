@@ -12,6 +12,7 @@ import { useNotificationStream } from "@/lib/useNotificationStream";
 import { useMobileNav } from "@/components/layout/mobile-nav-provider";
 import { useSidebar } from "@/components/layout/sidebar-provider";
 import { useTranslation } from "@/i18n/hooks";
+import { useMobileStatusBar } from "@/lib/use-mobile-status-bar";
 import {
   type Notification,
   fetchNotifications,
@@ -45,6 +46,9 @@ export function DashboardHeader() {
   const notifications: Notification[] = data?.notifications ?? [];
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
+  // Dynamic status bar color for mobile (matches sidebar)
+  useMobileStatusBar("var(--sidebar)");
+
   return (
     <header className="sticky top-0 z-30 bg-sidebar text-sidebar-foreground">
       <div className="mx-auto flex h-12 w-full min-w-0 items-center gap-2 px-4 sm:gap-3 sm:px-5">
@@ -53,11 +57,11 @@ export function DashboardHeader() {
           type="button"
           variant="ghost"
           size="icon"
-          className="shrink-0 lg:hidden h-8 w-8 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+          className="shrink-0 lg:hidden h-11 w-11 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
           onClick={toggle}
           aria-label="Open menu"
         >
-          <Menu className="h-4 w-4" />
+          <Menu className="h-5 w-5" />
         </Button>
 
         {/* Desktop: sidebar collapse toggle */}

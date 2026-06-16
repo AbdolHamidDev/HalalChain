@@ -81,10 +81,12 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   error?: boolean;
+  /** When true, sets inputMode="search" and autoCorrect/spellCheck off for mobile */
+  search?: boolean;
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, leftIcon, rightIcon, error, ...props }, ref) => {
+    ({ className, leftIcon, rightIcon, error, search, ...props }, ref) => {
     const ctx = useInputContext();
     const hasError = error ?? ctx.error;
 
@@ -115,6 +117,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         <input
           ref={ref}
+          inputMode={search ? "search" : props.inputMode}
+          autoCorrect={search ? "off" : props.autoCorrect}
+          spellCheck={search ? false : props.spellCheck}
           className={cn(
             "h-full w-full bg-transparent text-sm text-foreground",
             "placeholder:text-muted-foreground",

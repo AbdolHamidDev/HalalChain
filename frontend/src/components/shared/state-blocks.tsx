@@ -226,24 +226,24 @@ export function EmptyState({
 
   return (
     <div
-      className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/20 px-6 py-16 text-center"
+      className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/20 px-6 py-12 sm:py-16 text-center"
       role="status"
       aria-label={typeof displayTitle === "string" ? displayTitle : undefined}
     >
       <Icon
-        className="mb-3 h-10 w-10 text-muted-foreground/40"
+        className="mb-3 h-10 w-10 sm:h-10 sm:w-10 h-12 w-12 text-muted-foreground/40"
         aria-hidden="true"
       />
-      <p className="text-sm font-semibold text-foreground">{displayTitle}</p>
+      <p className="text-sm sm:text-sm text-base font-semibold text-foreground">{displayTitle}</p>
       {displayDescription && (
-        <p className="mt-1 max-w-xs text-xs text-muted-foreground leading-relaxed">
+        <p className="mt-1 max-w-xs text-xs sm:text-xs text-sm text-muted-foreground leading-relaxed">
           {displayDescription}
         </p>
       )}
       {displayCtaLabel && onAction && (
         <Button
-          size="sm"
-          className="mt-5"
+          size="default"
+          className="mt-5 min-h-[48px] px-6 text-sm"
           onClick={onAction}
           aria-label={displayCtaLabel}
         >

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
-import { Toaster } from "sonner";
+import { ResponsiveToaster } from "@/components/shared/responsive-toaster";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -40,6 +40,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8f9fa" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f171d" },
+  ],
 };
 
 export default async function RootLayout({
@@ -75,15 +81,7 @@ export default async function RootLayout({
               <AuthProvider>{children}</AuthProvider>
             </QueryProvider>
             <UltraDialogHost />
-            <Toaster
-              position="top-center"
-              expand
-              gap={8}
-              offset={16}
-              toastOptions={{
-                duration: 4000,
-              }}
-            />
+            <ResponsiveToaster />
           </I18nProvider>
         </ThemeProvider>
       </body>

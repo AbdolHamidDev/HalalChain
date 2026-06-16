@@ -44,17 +44,15 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-1/2 top-1/2 z-50 w-[calc(100%-1.5rem)] max-w-md",
-        "-translate-x-1/2 -translate-y-1/2",
+        "fixed z-50",
+        /* Mobile: full-screen with safe areas */
+        "inset-0 m-0 w-full h-full rounded-none border-0 p-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(1.5rem+env(safe-area-inset-bottom))] overflow-y-auto",
+        /* Desktop: centered card */
+        "sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-1.5rem)] sm:max-w-md sm:h-auto sm:max-h-[85vh]",
+        "sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:border sm:border-border/70 sm:p-6",
+        "sm:shadow-[0_12px_40px_rgba(0,0,0,0.12)]",
 
-        /* surface */
-        "rounded-2xl border border-border/70 bg-background",
-        "p-6",
-
-        /* subtle SaaS depth (NOT heavy shadow) */
-        "shadow-[0_12px_40px_rgba(0,0,0,0.12)]",
-
-        /* NO hover, NO animation drama */
+        "bg-background",
         "transition-none",
 
         className

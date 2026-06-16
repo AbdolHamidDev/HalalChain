@@ -164,10 +164,28 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     @apply bg-background text-foreground font-sans text-[15px] antialiased;
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    min-height: 100dvh;
+  }
+
+  /* Mobile viewport height fix — 100vh includes address bar, 100dvh doesn't */
+  .h-dvh {
+    height: 100dvh;
+  }
+
+  .min-h-dvh {
+    min-height: 100dvh;
+  }
+
+  .max-h-dvh {
+    max-height: 100dvh;
   }
 
   h1,
@@ -431,5 +449,54 @@
 
   .container-genesis {
     @apply mx-auto w-full max-w-[1280px] px-6;
+  }
+
+  /* ── Safe Area Utilities ─────────────────────────────────────── */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* ── Page Transitions ───────────────────────────────────────── */
+  @keyframes page-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-page-in {
+    animation: page-in 0.3s ease-out both;
+  }
+
+  /* ── Pull-to-Refresh ────────────────────────────────────────── */
+  @keyframes ptr-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .ptr-spinner {
+    animation: ptr-spin 0.8s linear infinite;
+  }
+
+  /* ── iOS-like rubber band overscroll ────────────────────────── */
+  .overscroll-contain {
+    overscroll-behavior-y: contain;
   }
 }

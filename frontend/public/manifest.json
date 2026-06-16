@@ -1,6 +1,7 @@
 {
   "name": "HalalChain",
   "short_name": "HalalChain",
+  "description": "Supply Chain Compliance & Traceability Platform",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +16,11 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#0F172A",
-  "background_color": "#0F172A",
-  "display": "standalone"
+  "theme_color": "#105b49",
+  "background_color": "#f8f9fa",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "categories": ["business", "productivity"]
 }
