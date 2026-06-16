@@ -62,7 +62,10 @@
     "of": "của",
     "items": "mục",
     "item": "mục",
-    "selected": "đã chọn"
+    "selected": "đã chọn",
+    "errors": {
+      "generic": "Đã xảy ra lỗi. Vui lòng thử lại."
+    }
   },
   "auth": {
     "signIn": "Đăng nhập",
@@ -497,6 +500,56 @@
       "updateFailed": "Không thể cập nhật sản phẩm",
       "deleteFailed": "Không thể xóa sản phẩm",
       "skuExists": "SKU này đã tồn tại"
+    },
+    "addProduct": "Thêm sản phẩm",
+    "newProduct": "Sản phẩm mới",
+    "saveChanges": "Lưu thay đổi",
+    "deleteProduct": "Xóa sản phẩm",
+    "deleteConfirm": "Xóa sản phẩm?",
+    "deleteDescription": "Bạn có chắc muốn xóa sản phẩm này? Hành động này không thể hoàn tác.",
+    "productAdded": "Đã thêm sản phẩm thành công",
+    "productSaved": "Đã lưu sản phẩm thành công",
+    "productDeleteFailed": "Không thể xóa sản phẩm",
+    "common": {
+      "editItem": "Sửa sản phẩm",
+      "deleteItem": "Xóa sản phẩm",
+      "viewTraceability": "Xem truy xuất",
+      "viewQrCode": "Xem mã QR",
+      "qrCodeFor": "Mã QR cho"
+    },
+    "form": {
+      "name": "Tên sản phẩm",
+      "namePlaceholder": "Nhập tên sản phẩm",
+      "sku": "SKU",
+      "skuPlaceholder": "VD: HAL-COCO-001",
+      "category": "Danh mục",
+      "categoryPlaceholder": "Chọn danh mục",
+      "unit": "Đơn vị",
+      "unitPlaceholder": "VD: kg, thùng, chai",
+      "unitPrice": "Đơn giá",
+      "supplier": "Nhà cung cấp",
+      "selectSupplier": "Chọn nhà cung cấp",
+      "newProductDescription": "Thêm sản phẩm chứng nhận halal mới vào danh mục",
+      "editProductDescription": "Cập nhật thông tin sản phẩm"
+    },
+    "table": {
+      "sku": "SKU",
+      "name": "Tên",
+      "category": "Danh mục",
+      "supplier": "Nhà cung cấp",
+      "unit": "Đơn vị",
+      "price": "Giá",
+      "stock": "Tồn kho",
+      "traceability": "Truy xuất",
+      "qrCode": "Mã QR",
+      "trace": "Truy xuất",
+      "qr": "QR",
+      "actions": "Thao tác"
+    },
+    "qrDialog": {
+      "title": "Mã QR sản phẩm",
+      "scanDescription": "Quét mã QR này để xem trang truy xuất công khai",
+      "download": "Tải mã QR"
     }
   },
   "inventory": {
@@ -529,6 +582,45 @@
       "movementFailed": "Không thể ghi nhận biến động",
       "insufficientStock": "Không đủ tồn kho để xuất",
       "loadMovementsFailed": "Không thể tải biến động"
+    },
+    "recordInbound": "Ghi nhập kho",
+    "recordOutbound": "Ghi xuất kho",
+    "confirmInbound": "Xác nhận Nhập kho",
+    "confirmOutbound": "Xác nhận Xuất kho",
+    "inboundRecorded": "Đã ghi nhập kho thành công",
+    "outboundRecorded": "Đã ghi xuất kho thành công",
+    "movementRecorded": "Đã ghi biến động thành công",
+    "actionReceived": "Đã nhận",
+    "actionDispatched": "Đã xuất",
+    "recording": "Đang ghi…",
+    "qty": "SL",
+    "value": "Giá trị",
+    "date": "Ngày",
+    "type": "Loại",
+    "note": "Ghi chú",
+    "notePlaceholderInbound": "VD: Nhận từ lô hàng nhà cung cấp",
+    "notePlaceholderOutbound": "VD: Xuất cho cửa hàng",
+    "optional": "Tùy chọn",
+    "enterQuantity": "Nhập số lượng",
+    "recentMovements": "Biến động gần đây",
+    "allWarehouses": "Tất cả kho",
+    "allProducts": "Tất cả sản phẩm",
+    "filters": "Bộ lọc",
+    "clearFilters": "Xóa bộ lọc",
+    "clear": "Xóa",
+    "lowStockOnly": "Chỉ tồn thấp",
+    "lowStockActive": "Đang lọc tồn thấp",
+    "stockOk": "Tất cả mức tồn kho ổn định",
+    "noMatchFilters": "Không có mặt hàng nào khớp bộ lọc hiện tại",
+    "showingRecords": "Hiển thị {{count}} bản ghi",
+    "by": "bởi",
+    "table": {
+      "sku": "SKU",
+      "product": "Sản phẩm",
+      "warehouse": "Kho",
+      "quantity": "Số lượng",
+      "reorderLevel": "Mức đặt lại",
+      "status": "Trạng thái"
     }
   },
   "suppliers": {
@@ -560,6 +652,42 @@
       "createFailed": "Không thể tạo nhà cung cấp",
       "updateFailed": "Không thể cập nhật nhà cung cấp",
       "deleteFailed": "Không thể xóa nhà cung cấp"
+    },
+    "addSupplier": "Thêm nhà cung cấp",
+    "newSupplier": "Nhà cung cấp mới",
+    "saveChanges": "Lưu thay đổi",
+    "deleteSupplier": "Xóa nhà cung cấp",
+    "deleteConfirm": "Xóa nhà cung cấp?",
+    "deleteDescription": "Bạn có chắc muốn xóa nhà cung cấp này? Hành động này không thể hoàn tác.",
+    "supplierAdded": "Đã thêm nhà cung cấp thành công",
+    "supplierEdited": "Đã cập nhật nhà cung cấp thành công",
+    "supplierDeleteFailed": "Không thể xóa nhà cung cấp",
+    "common": {
+      "editItem": "Sửa nhà cung cấp",
+      "deleteItem": "Xóa nhà cung cấp"
+    },
+    "form": {
+      "name": "Tên nhà cung cấp",
+      "namePlaceholder": "Nhập tên nhà cung cấp",
+      "country": "Quốc gia",
+      "countryPlaceholder": "Chọn quốc gia",
+      "email": "Email",
+      "emailPlaceholder": "ncc@example.com",
+      "phone": "Điện thoại",
+      "phonePlaceholder": "+84 234 567 890",
+      "status": "Trạng thái",
+      "statusActive": "Hoạt động",
+      "statusInactive": "Ngưng hoạt động",
+      "optional": "Tùy chọn"
+    },
+    "table": {
+      "name": "Tên",
+      "country": "Quốc gia",
+      "contact": "Liên hệ",
+      "status": "Trạng thái",
+      "certificates": "Chứng chỉ",
+      "products": "Sản phẩm",
+      "actions": "Thao tác"
     }
   },
   "warehouses": {
@@ -585,6 +713,31 @@
       "createFailed": "Không thể tạo kho",
       "updateFailed": "Không thể cập nhật kho",
       "deleteFailed": "Không thể xóa kho"
+    },
+    "addWarehouse": "Thêm kho",
+    "newWarehouse": "Kho mới",
+    "saveChanges": "Lưu thay đổi",
+    "deleteWarehouse": "Xóa kho",
+    "deleteConfirm": "Xóa kho?",
+    "deleteDescription": "Bạn có chắc muốn xóa kho này? Hành động này không thể hoàn tác.",
+    "warehouseAdded": "Đã thêm kho thành công",
+    "warehouseEdited": "Đã cập nhật kho thành công",
+    "warehouseDeleteFailed": "Không thể xóa kho",
+    "common": {
+      "editItem": "Sửa kho",
+      "deleteItem": "Xóa kho"
+    },
+    "form": {
+      "name": "Tên kho",
+      "namePlaceholder": "Nhập tên kho",
+      "location": "Địa điểm",
+      "locationPlaceholder": "Thành phố, Quốc gia"
+    },
+    "table": {
+      "name": "Tên",
+      "location": "Địa điểm",
+      "items": "Mặt hàng",
+      "actions": "Thao tác"
     }
   },
   "purchaseOrders": {
@@ -630,6 +783,33 @@
       "createFailed": "Không thể tạo đơn mua",
       "statusUpdateFailed": "Không thể cập nhật trạng thái",
       "deleteFailed": "Không thể xóa đơn mua"
+    },
+    "newPO": "Đơn mua mới",
+    "deleteConfirm": "Xóa đơn mua?",
+    "deleteDescription": "Bạn có chắc muốn xóa đơn mua này? Hành động này không thể hoàn tác.",
+    "deletePO": "Xóa đơn mua",
+    "creating": "Đang tạo…",
+    "created": "Đã tạo đơn mua",
+    "poCreatedDesc": "Đơn mua đã được tạo thành công",
+    "poDeleteFailed": "Không thể xóa đơn mua",
+    "statusUpdated": "Đã cập nhật trạng thái",
+    "statusUpdatedDesc": "Trạng thái đơn mua đã được cập nhật",
+    "statusUpdateFailed": "Không thể cập nhật trạng thái",
+    "items": "Mặt hàng",
+    "qty": "SL",
+    "price": "Giá",
+    "amount": "Thành tiền",
+    "total": "Tổng cộng",
+    "shipments": "Lô hàng",
+    "removeItem": "Xóa mặt hàng",
+    "common": {
+      "deleteItem": "Xóa đơn mua"
+    },
+    "table": {
+      "poNumber": "Số PO",
+      "supplier": "Nhà cung cấp",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
     }
   },
   "shipments": {
@@ -662,6 +842,41 @@
       "createFailed": "Không thể tạo lô hàng",
       "updateFailed": "Không thể cập nhật lô hàng",
       "trackingExists": "Mã theo dõi đã tồn tại"
+    },
+    "newShipment": "Lô hàng mới",
+    "newShipmentCta": "Tạo lô hàng",
+    "updateShipment": "Cập nhật lô hàng",
+    "saveChanges": "Lưu thay đổi",
+    "createDescription": "Đăng ký lô hàng mới cho đơn mua",
+    "creating": "Đang tạo…",
+    "shipmentCreatedDesc": "Lô hàng đã được tạo thành công",
+    "shipmentUpdatedDesc": "Lô hàng đã được cập nhật thành công",
+    "trackingNumber": "Mã theo dõi",
+    "trackingPlaceholder": "VD: MY-HAL-784521",
+    "origin": "Nơi gửi",
+    "originPlaceholder": "VD: Kuala Lumpur",
+    "destination": "Nơi đến",
+    "destinationPlaceholder": "VD: TP. Hồ Chí Minh",
+    "estimatedArrival": "Dự kiến đến",
+    "eta": "DK đến",
+    "purchaseOrder": "Đơn mua",
+    "selectPO": "Chọn đơn mua",
+    "route": "Tuyến đường",
+    "statusOptions": {
+      "pending": "Chờ xử lý",
+      "inTransit": "Đang vận chuyển",
+      "delivered": "Đã giao",
+      "delayed": "Trễ"
+    },
+    "common": {
+      "editItem": "Sửa lô hàng"
+    },
+    "table": {
+      "trackingNumber": "Mã theo dõi",
+      "supplier": "Nhà cung cấp",
+      "poNumber": "Số PO",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
     }
   },
   "certificates": {
@@ -702,12 +917,63 @@
       "createFailed": "Không thể tạo chứng chỉ",
       "updateFailed": "Không thể cập nhật chứng chỉ",
       "deleteFailed": "Không thể xóa chứng chỉ"
+    },
+    "addCertificate": "Thêm chứng chỉ",
+    "newCertificate": "Chứng chỉ mới",
+    "saveChanges": "Lưu thay đổi",
+    "deleteCertificate": "Xóa chứng chỉ",
+    "deleteConfirm": "Xóa chứng chỉ?",
+    "deleteDescription": "Bạn có chắc muốn xóa chứng chỉ này? Hành động này không thể hoàn tác.",
+    "certificateDeleteFailed": "Không thể xóa chứng chỉ",
+    "uploadDocument": "Tải tài liệu",
+    "common": {
+      "editItem": "Sửa chứng chỉ",
+      "deleteItem": "Xóa chứng chỉ"
+    },
+    "form": {
+      "certificateNumber": "Số chứng chỉ",
+      "certificateNumberPlaceholder": "VD: JAKIM-2024-00123",
+      "supplier": "Nhà cung cấp",
+      "issuedBy": "Cấp bởi",
+      "issuedByPlaceholder": "VD: JAKIM, MUI, BPJPH",
+      "issueDate": "Ngày cấp",
+      "expiryDate": "Ngày hết hạn",
+      "newCertificateDescription": "Đăng ký chứng chỉ halal mới cho nhà cung cấp",
+      "editCertificateDescription": "Cập nhật thông tin chứng chỉ"
+    },
+    "table": {
+      "certificateNumber": "Số chứng chỉ",
+      "supplier": "Nhà cung cấp",
+      "issuedBy": "Cấp bởi",
+      "issueDate": "Ngày cấp",
+      "expiryDate": "Ngày hết hạn",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
     }
   },
   "reports": {
     "pageTitle": "Báo cáo",
     "pageDescription": "Xuất dữ liệu chuỗi cung ứng và tạo báo cáo tuân thủ",
-    "summary": "Tổng quan báo cáo",
+    "summary": {
+      "0": "T",
+      "1": "ổ",
+      "2": "n",
+      "3": "g",
+      "4": " ",
+      "5": "q",
+      "6": "u",
+      "7": "a",
+      "8": "n",
+      "9": " ",
+      "10": "b",
+      "11": "á",
+      "12": "o",
+      "13": " ",
+      "14": "c",
+      "15": "á",
+      "16": "o",
+      "title": "Tổng quan báo cáo"
+    },
     "export": "Xuất dữ liệu",
     "format": {
       "csv": "CSV",
@@ -726,6 +992,9 @@
     "errors": {
       "loadFailed": "Không thể tải báo cáo tổng quan",
       "exportFailed": "Không thể xuất báo cáo"
+    },
+    "empty": {
+      "title": "Không có dữ liệu báo cáo"
     }
   },
   "analytics": {
@@ -739,6 +1008,60 @@
     },
     "errors": {
       "loadFailed": "Không thể tải phân tích"
+    },
+    "loadFailed": "Không thể tải dữ liệu phân tích",
+    "inventory": {
+      "title": "Phân tích Tồn kho",
+      "valueTrend": "Xu hướng Giá trị Tồn kho",
+      "value": "Giá trị",
+      "byWarehouse": "Tồn kho theo Kho",
+      "topStocked": "Sản phẩm Tồn nhiều nhất",
+      "product": "Sản phẩm",
+      "qty": "SL",
+      "inboundOutbound": "Nhập kho vs Xuất kho",
+      "unitsOut": "Đơn vị Xuất",
+      "fastMoving": "Bán chạy",
+      "slowMoving": "Bán chậm",
+      "noOutbound": "Không có xuất kho trong kỳ này"
+    },
+    "purchaseOrders": {
+      "title": "Phân tích Đơn mua",
+      "ordersPerMonth": "Đơn hàng theo Tháng",
+      "statusDistribution": "Phân bổ Trạng thái",
+      "statusBreakdown": "Chi tiết Trạng thái",
+      "statusBreakdownNote": "Phân bổ đơn mua theo trạng thái hiện tại",
+      "approvalRate": "Tỉ lệ Duyệt",
+      "approvalRateNote": "Phần trăm đơn hàng đã duyệt hoặc cao hơn",
+      "fulfillmentRate": "Tỉ lệ Hoàn thành",
+      "fulfillmentRateNote": "Phần trăm đơn hàng đã nhận",
+      "avgProcessingTime": "Thời gian Xử lý TB",
+      "avgProcessingTimeNote": "Số ngày trung bình từ tạo đến trạng thái đã nhận",
+      "notEnoughData": "Không đủ dữ liệu để hiển thị phân tích"
+    },
+    "shipments": {
+      "title": "Phân tích Vận chuyển",
+      "volumeTrend": "Xu hướng Khối lượng Vận chuyển",
+      "statusDistribution": "Phân bổ Trạng thái",
+      "shipmentStatusDistribution": "Phân bổ Trạng thái Lô hàng",
+      "statusDistributionNote": "Phân bổ lô hàng theo trạng thái hiện tại",
+      "onTimeDelivery": "Tỉ lệ Giao đúng hạn",
+      "onTimeDeliveryNote": "Phần trăm lô hàng được giao không bị trễ",
+      "delayedRate": "Tỉ lệ Trễ",
+      "delayedRateNote": "Phần trăm lô hàng hiện đang bị trễ"
+    },
+    "certificates": {
+      "title": "Phân tích Chứng chỉ",
+      "totalCerts": "Tổng Chứng chỉ",
+      "active": "Còn hiệu lực",
+      "activeCerts": "Chứng chỉ hiệu lực",
+      "activeNote": "Chứng chỉ hiện đang còn hiệu lực",
+      "expiring": "Sắp hết hạn",
+      "expiringNote": "Chứng chỉ hết hạn trong 30 ngày tới",
+      "expired": "Hết hạn",
+      "expiredNote": "Chứng chỉ đã hết hạn",
+      "score": "Điểm Tuân thủ",
+      "supplierScore": "Tuân thủ Nhà cung cấp",
+      "noSupplierData": "Không có dữ liệu chứng chỉ nhà cung cấp"
     }
   },
   "users": {
@@ -771,7 +1094,75 @@
       "loadFailed": "Không thể tải người dùng",
       "inviteFailed": "Không thể mời người dùng",
       "updateFailed": "Không thể cập nhật người dùng"
-    }
+    },
+    "totalUsers": "Tổng người dùng",
+    "activeUsers": "Người dùng hoạt động",
+    "suspendedUsers": "Người dùng bị khóa",
+    "unverifiedUsers": "Người dùng chưa xác minh",
+    "searchPlaceholder": "Tìm theo tên hoặc email…",
+    "allRoles": "Tất cả vai trò",
+    "allStatuses": "Tất cả trạng thái",
+    "noUsers": "Không tìm thấy người dùng",
+    "manage": "Quản lý",
+    "cancel": "Hủy",
+    "change": "Thay đổi",
+    "role": "Vai trò",
+    "roleLabel": "Vai trò",
+    "displayName": "Tên hiển thị",
+    "emailLabel": "Email",
+    "userId": "ID người dùng",
+    "joined": "Ngày tham gia",
+    "invitations": "Lời mời",
+    "invitedDesc": "Đang chờ lời mời",
+    "verifiedUser": "Đã xác minh",
+    "verifiedDesc": "Người dùng này đã xác minh địa chỉ email",
+    "notVerified": "Chưa xác minh",
+    "activeDesc": "Tài khoản người dùng này đang hoạt động",
+    "suspendedDesc": "Tài khoản người dùng này đang bị khóa",
+    "accountStatus": "Trạng thái tài khoản",
+    "accountActive": "Tài khoản đang hoạt động",
+    "accountSuspended": "Tài khoản đang bị khóa",
+    "verificationStatus": "Trạng thái xác minh",
+    "verify": "Xác minh người dùng",
+    "verifyUser": "Xác minh người dùng",
+    "verifyDesc": "Xác minh thủ công địa chỉ email của người dùng",
+    "unverify": "Hủy xác minh",
+    "unverifyDesc": "Xóa xác minh email của người dùng",
+    "removeVerification": "Hủy xác minh",
+    "suspend": "Khóa người dùng",
+    "suspendConfirm": "Khóa người dùng này?",
+    "suspendDesc": "Người dùng sẽ không thể đăng nhập cho đến khi được kích hoạt lại.",
+    "reactivate": "Kích hoạt lại",
+    "reactivateConfirm": "Kích hoạt lại người dùng này?",
+    "reactivateDesc": "Người dùng sẽ có thể đăng nhập lại.",
+    "changeRole": "Đổi vai trò",
+    "changeRoleDesc": "Thay đổi vai trò cho người dùng này",
+    "saveRole": "Lưu vai trò",
+    "roleUpdated": "Đã cập nhật vai trò thành công",
+    "roleUpdateFailed": "Không thể cập nhật vai trò",
+    "saveName": "Lưu tên",
+    "nameUpdated": "Đã cập nhật tên thành công",
+    "nameUpdateFailed": "Không thể cập nhật tên",
+    "nameEmpty": "Tên không được để trống",
+    "nameMinLength": "Tên phải có ít nhất 2 ký tự",
+    "accountUpdated": "Đã cập nhật tài khoản thành công",
+    "accountUpdateFailed": "Không thể cập nhật tài khoản",
+    "verificationUpdated": "Đã cập nhật trạng thái xác minh",
+    "verificationUpdateFailed": "Không thể cập nhật trạng thái xác minh",
+    "reset": "Đặt lại",
+    "resetPassword": "Đặt lại mật khẩu",
+    "resetPasswordConfirm": "Đặt lại mật khẩu người dùng này?",
+    "resetPasswordConfirmDesc": "Email đặt lại mật khẩu sẽ được gửi đến người dùng.",
+    "resetPasswordDesc": "Gửi email đặt lại mật khẩu cho người dùng này",
+    "passwordReset": "Đã gửi email đặt lại mật khẩu",
+    "passwordResetFailed": "Không thể gửi đặt lại mật khẩu",
+    "sendInvite": "Gửi lời mời",
+    "sendFailed": "Không thể gửi lời mời",
+    "revoke": "Thu hồi lời mời",
+    "revoked": "Đã thu hồi lời mời",
+    "revokeFailed": "Không thể thu hồi lời mời",
+    "statusActive": "Hoạt động",
+    "statusSuspended": "Bị khóa"
   },
   "settings": {
     "pageTitle": "Cài đặt",
@@ -789,7 +1180,11 @@
       "namePlaceholder": "Tên hiển thị của bạn",
       "emailLabel": "Email",
       "emailDescription": "Địa chỉ email không thể thay đổi",
-      "updateSuccess": "Cập nhật hồ sơ thành công"
+      "updateSuccess": "Cập nhật hồ sơ thành công",
+      "saved": "Đã lưu hồ sơ thành công",
+      "saveFailed": "Không thể lưu hồ sơ",
+      "avatarLabel": "Ảnh đại diện",
+      "roleLabel": "Vai trò"
     },
     "security": {
       "title": "Đổi mật khẩu",
@@ -810,11 +1205,38 @@
       "shipmentAlertsDesc": "Nhận thông báo khi lô hàng bị trễ",
       "invitationEmails": "Email mời",
       "invitationEmailsDesc": "Nhận email khi người dùng được mời vào nền tảng",
-      "updateSuccess": "Cập nhật tùy chọn thành công"
+      "updateSuccess": "Cập nhật tùy chọn thành công",
+      "saved": "Đã lưu tùy chọn thông báo",
+      "saveFailed": "Không thể lưu tùy chọn thông báo"
     },
     "preferences": {
       "title": "Tùy chọn hiển thị",
       "description": "Tùy chỉnh trải nghiệm nền tảng"
+    },
+    "errors": {
+      "loadFailed": "Không thể tải cài đặt"
+    }
+  },
+  "acceptInvite": {
+    "title": "Chấp nhận Lời mời",
+    "description": "Bạn đã được mời tham gia HalalChain. Đặt mật khẩu để kích hoạt tài khoản.",
+    "submit": "Kích hoạt Tài khoản",
+    "errors": {
+      "invalidToken": "Liên kết mời này không hợp lệ hoặc đã hết hạn."
+    }
+  },
+  "errors": {
+    "notFound": "Không tìm thấy trang"
+  },
+  "userMenu": {
+    "myProfile": "Hồ sơ của tôi",
+    "accountSettings": "Cài đặt tài khoản",
+    "changePassword": "Đổi mật khẩu",
+    "signOut": "Đăng xuất",
+    "roles": {
+      "admin": "Quản trị viên",
+      "manager": "Quản lý",
+      "staff": "Nhân viên"
     }
   }
 }
