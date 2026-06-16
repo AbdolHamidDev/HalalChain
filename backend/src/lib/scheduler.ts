@@ -1,32 +1,44 @@
 import cron from "node-cron";
-import { prisma } from "./prisma";
-import { notifyCertificateExpiring } from "./notificationService";
+import { evaluateAllRules } from "./automation/engine";
 
+/**
+ * Start all automated scheduler jobs.
+ *
+ * Replaces the previous single-job scheduler with the automation engine
+ * which evaluates multiple rules in a single cron execution.
+ *
+ * Schedule: Daily at 08:00 AM (same as before)
+ * Rules evaluated:
+ *   - Certificate Expiring Soon
+ *   - Certificate Expired (NEW)
+ *   - Low Inventory Scan (NEW — scheduled, previously only movement-triggered)
+ *   - Shipment Delay Detection (NEW)
+ *
+ * All rules include deduplication logic to prevent duplicate notifications.
+ */
 export function startScheduler(): void {
   cron.schedule("0 8 * * *", async () => {
-    const now = new Date();
-    const thirtyDaysFromNow = new Date();
-    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-
+    console.log("[AutomationScheduler] Starting daily rule evaluation...");
     try {
-      const expiringCerts = await prisma.halalCertificate.findMany({
-        where: {
-          expiryDate: { lte: thirtyDaysFromNow, gte: now },
-        },
-        include: { supplier: { select: { name: true } } },
-      });
+      const results = await evaluateAllRules();
+      const triggered = results.filter((r) => r.triggered);
+      const totalActions = triggered.reduce((sum, r) => sum + r.actions.length, 0);
 
-      await prisma.$transaction(async (tx) => {
-        for (const cert of expiringCerts) {
-          await notifyCertificateExpiring(tx, {
-            certificateNumber: cert.certificateNumber,
-            supplierName: cert.supplier.name,
-            expiryDate: cert.expiryDate,
-          });
-        }
-      });
+      console.log(
+        `[AutomationScheduler] Completed. ` +
+        `${triggered.length}/${results.length} rules triggered, ` +
+        `${totalActions} actions executed.`
+      );
+
+      for (const result of triggered) {
+        console.log(
+          `  ✓ ${result.ruleName}: ${result.actions.length} action(s)`
+        );
+      }
     } catch (err) {
-      console.error("Scheduler error:", err);
+      console.error("[AutomationScheduler] Failed:", err);
     }
   });
+
+  console.log("[AutomationScheduler] Scheduled daily at 08:00");
 }

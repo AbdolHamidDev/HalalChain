@@ -10,6 +10,7 @@ import {
   getPurchaseOrderAnalytics,
   getShipmentAnalytics,
 } from "../lib/analyticsService";
+import { getComplianceScore } from "../lib/automation/engine";
 
 const router = Router();
 
@@ -135,6 +136,34 @@ router.get(
       return;
     }
 
+    // ── Compliance Score ───────────────────────────────────────────────────────
+    let complianceScore: { score: number; factors: { factor: string; weight: number; deduction: number; detail: string }[] };
+    try {
+      complianceScore = await getComplianceScore();
+    } catch (err) {
+      console.error("Compliance score query failed:", err);
+      complianceScore = { score: 0, factors: [] };
+    }
+
+    // ── Compliance Issues Summary ─────────────────────────────────────────────
+    const expiredCertificatesCount = await prisma.halalCertificate.count({
+      where: { expiryDate: { lt: now } },
+    });
+
+    const lowStockCountQuery = await prisma.$queryRaw<[{ count: bigint }]>`
+      SELECT COUNT(*)::bigint AS count
+      FROM inventory
+      WHERE quantity <= reorder_level
+    `;
+    const lowStockCountTotal = Number(lowStockCountQuery[0]?.count ?? 0);
+
+    const complianceIssues = [
+      { type: "expired_certificates", count: expiredCertificatesCount, severity: expiredCertificatesCount > 0 ? "high" : "none" },
+      { type: "expiring_certificates", count: expiringSoonCertificates, severity: expiringSoonCertificates > 0 ? "medium" : "none" },
+      { type: "delayed_shipments", count: delayedShipments, severity: delayedShipments > 0 ? "medium" : "none" },
+      { type: "low_stock_items", count: lowStockCountTotal, severity: lowStockCountTotal > 0 ? "low" : "none" },
+    ];
+
     res.json({
       kpis: {
         totalProducts,
@@ -176,6 +205,11 @@ router.get(
           supplierName: shipment.purchaseOrder.supplier.name,
           estimatedArrival: shipment.estimatedArrival,
         })),
+      },
+      compliance: {
+        score: complianceScore.score,
+        breakdown: complianceScore.factors,
+        issues: complianceIssues,
       },
     });
   }

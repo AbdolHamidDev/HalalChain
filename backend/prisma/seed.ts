@@ -9,10 +9,55 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+/**
+ * Seed data tailored for automation demo.
+ *
+ * Time context: current date is 2026-06-16
+ *
+ * Automation scenarios covered:
+ *
+ * Rule 1 — Certificate Expiring Soon:
+ *   Cert "HFC-2026-88003" expires 2026-07-01 (14 days from now)
+ *
+ * Rule 2 — Certificate Expired:
+ *   3 certs already expired (latest expiry 2026-03-09)
+ *
+ * Rule 3 — Low Inventory:
+ *   Chicken HCM: 60 < 100, Coco HN: 10 < 80
+ *
+ * Rule 4 — Shipment Delay:
+ *   3 shipments past estimated arrival, not delivered
+ *
+ * Compliance Score:
+ *   - Expired certs present → -30pts
+ *   - Expiring cert present → -15pts
+ *   - 3/5 shipments delayed → -12pts (approximate)
+ *   - 2/9 items low stock → -3.3pts (approximate)
+ *   - 1/5 suppliers without certs → -4pts (approximate)
+ *   → Score around 35–40 (demonstrates "needs attention" state)
+ */
+
+const NOW = new Date("2026-06-16");
+const REFERENCE_DATE = new Date("2025-08-01"); // for past movement timestamps
+
+function daysFromNow(days: number): Date {
+  const d = new Date(NOW);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function monthsAgo(months: number): Date {
+  const d = new Date(REFERENCE_DATE);
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
+
 async function main() {
   const passwordHash = await bcrypt.hash("Admin@123", 12);
 
-  // ── USERS ──────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // 1. USERS
+  // ═══════════════════════════════════════════════════════════
   const admin = await prisma.user.upsert({
     where: { email: "admin@halalchain.com" },
     update: {},
@@ -58,7 +103,11 @@ async function main() {
     },
   });
 
-  // ── SUPPLIERS ──────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // 2. SUPPLIERS (5 total — 1 without certs for coverage test)
+  // ═══════════════════════════════════════════════════════════
+
+  // Supplier with EXPIRED cert (Rule 2 trigger)
   const supplierMY = await prisma.supplier.upsert({
     where: { id: "00000000-0000-4000-8000-000000000001" },
     update: {},
@@ -71,6 +120,7 @@ async function main() {
     },
   });
 
+  // Supplier with EXPIRED cert (Rule 2 trigger)
   const supplierID = await prisma.supplier.upsert({
     where: { id: "00000000-0000-4000-8000-000000000002" },
     update: {},
@@ -83,6 +133,7 @@ async function main() {
     },
   });
 
+  // Supplier with EXPIRED cert (Rule 2 trigger)
   const supplierTH = await prisma.supplier.upsert({
     where: { id: "00000000-0000-4000-8000-000000000003" },
     update: {},
@@ -95,6 +146,7 @@ async function main() {
     },
   });
 
+  // Supplier with EXPIRING cert (Rule 1 trigger — expires in 14 days)
   const supplierSG = await prisma.supplier.upsert({
     where: { id: "00000000-0000-4000-8000-000000000004" },
     update: {},
@@ -107,7 +159,25 @@ async function main() {
     },
   });
 
-  // ── HALAL CERTIFICATES ─────────────────────────────────
+  // Supplier WITHOUT any certificates (coverage compliance factor test)
+  const supplierVN = await prisma.supplier.upsert({
+    where: { id: "00000000-0000-4000-8000-000000000005" },
+    update: {},
+    create: {
+      id: "00000000-0000-4000-8000-000000000005",
+      name: "Vietnam Halal Importer Co.",
+      country: "Vietnam",
+      email: "info@vietnamhalal.vn",
+      phone: "+84-28-3999-8888",
+      status: "ACTIVE",
+    },
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // 3. HALAL CERTIFICATES
+  // ═══════════════════════════════════════════════════════════
+
+  // Cert 1 — EXPIRED (Rule 2 trigger) — expired ~5 months ago
   await prisma.halalCertificate.upsert({
     where: { id: "00000000-0000-4000-8000-000000000101" },
     update: {},
@@ -121,6 +191,7 @@ async function main() {
     },
   });
 
+  // Cert 2 — EXPIRED (Rule 2 trigger) — expired ~6 months ago
   await prisma.halalCertificate.upsert({
     where: { id: "00000000-0000-4000-8000-000000000102" },
     update: {},
@@ -130,10 +201,11 @@ async function main() {
       certificateNumber: "MUI-LPPOM-45678",
       issuedBy: "MUI",
       issueDate: new Date("2024-06-01"),
-      expiryDate: new Date("2025-12-31"), // sắp hết hạn — tốt cho test alert
+      expiryDate: new Date("2025-12-31"),
     },
   });
 
+  // Cert 3 — EXPIRED (Rule 2 trigger) — expired ~3 months ago
   await prisma.halalCertificate.upsert({
     where: { id: "00000000-0000-4000-8000-000000000103" },
     update: {},
@@ -147,20 +219,37 @@ async function main() {
     },
   });
 
+  // Cert 4 — EXPIRING SOON (Rule 1 trigger) — expires in 14 days
   await prisma.halalCertificate.upsert({
     where: { id: "00000000-0000-4000-8000-000000000104" },
     update: {},
     create: {
       id: "00000000-0000-4000-8000-000000000104",
       supplierId: supplierSG.id,
-      certificateNumber: "MUIS-SG-2023-441",
+      certificateNumber: "MUIS-SG-2026-003",
       issuedBy: "MUIS",
-      issueDate: new Date("2023-09-01"),
-      expiryDate: new Date("2025-08-31"), // đã gần hết hạn
+      issueDate: new Date("2025-09-01"),
+      expiryDate: daysFromNow(14), // 2026-06-30
     },
   });
 
-  // ── WAREHOUSES ─────────────────────────────────────────
+  // Cert 5 — VALID (no trigger) — expires in 1 year
+  await prisma.halalCertificate.upsert({
+    where: { id: "00000000-0000-4000-8000-000000000105" },
+    update: {},
+    create: {
+      id: "00000000-0000-4000-8000-000000000105",
+      supplierId: supplierSG.id,
+      certificateNumber: "MUIS-SG-2026-004",
+      issuedBy: "MUIS",
+      issueDate: new Date("2026-01-01"),
+      expiryDate: daysFromNow(365),
+    },
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // 4. WAREHOUSES
+  // ═══════════════════════════════════════════════════════════
   const warehouseHCM = await prisma.warehouse.upsert({
     where: { id: "00000000-0000-4000-8000-000000000201" },
     update: {},
@@ -191,7 +280,9 @@ async function main() {
     },
   });
 
-  // ── PRODUCTS ───────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // 5. PRODUCTS
+  // ═══════════════════════════════════════════════════════════
   const productCoco = await prisma.product.upsert({
     where: { sku: "HAL-COCO-001" },
     update: {},
@@ -283,17 +374,24 @@ async function main() {
     },
   });
 
-  // ── INVENTORY ──────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // 6. INVENTORY (with low-stock items for Rule 3 trigger)
+  // ═══════════════════════════════════════════════════════════
   const inventoryItems = [
+    // Well-stocked
     { productId: productCoco.id,    warehouseId: warehouseHCM.id, quantity: 500, reorderLevel: 100 },
     { productId: productBeef.id,    warehouseId: warehouseHCM.id, quantity: 320, reorderLevel: 80  },
     { productId: productRice.id,    warehouseId: warehouseHN.id,  quantity: 180, reorderLevel: 50  },
-    { productId: productChicken.id, warehouseId: warehouseHCM.id, quantity: 60,  reorderLevel: 100 }, // dưới reorder — test alert
+    // LOW STOCK — triggers Rule 3 (60 < 100)
+    { productId: productChicken.id, warehouseId: warehouseHCM.id, quantity: 60,  reorderLevel: 100 },
+    // Well-stocked
     { productId: productSoy.id,     warehouseId: warehouseHN.id,  quantity: 240, reorderLevel: 60  },
     { productId: productDates.id,   warehouseId: warehouseHCM.id, quantity: 95,  reorderLevel: 40  },
+    // Well-stocked
     { productId: productCurry.id,   warehouseId: warehouseDN.id,  quantity: 150, reorderLevel: 30  },
     { productId: productRice.id,    warehouseId: warehouseDN.id,  quantity: 200, reorderLevel: 50  },
-    { productId: productCoco.id,    warehouseId: warehouseHN.id,  quantity: 10,  reorderLevel: 80  }, // rất thấp
+    // CRITICALLY LOW STOCK — triggers Rule 3 (10 < 80)
+    { productId: productCoco.id,    warehouseId: warehouseHN.id,  quantity: 10,  reorderLevel: 80  },
   ];
 
   for (const item of inventoryItems) {
@@ -304,7 +402,9 @@ async function main() {
     });
   }
 
-  // ── PURCHASE ORDERS ────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // 7. PURCHASE ORDERS
+  // ═══════════════════════════════════════════════════════════
   const po1 = await prisma.purchaseOrder.upsert({
     where: { poNumber: "PO-2025-0001" },
     update: {},
@@ -377,7 +477,11 @@ async function main() {
     },
   });
 
-  // ── SHIPMENTS ──────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // 8. SHIPMENTS (with past-due shipments for Rule 4 trigger)
+  // ═══════════════════════════════════════════════════════════
+
+  // Shipment 1 — DELAYED (past estimated arrival, IN_TRANSIT) → Rule 4 trigger
   await prisma.shipment.upsert({
     where: { id: "00000000-0000-4000-8000-000000000301" },
     update: {},
@@ -388,10 +492,11 @@ async function main() {
       origin: "Port Klang, Malaysia",
       destination: "Cat Lai Port, Ho Chi Minh City",
       status: ShipmentStatus.IN_TRANSIT,
-      estimatedArrival: new Date("2025-06-20"),
+      estimatedArrival: new Date("2025-06-20"), // ~12 months ago
     },
   });
 
+  // Shipment 2 — DELAYED (past estimated arrival, PENDING) → Rule 4 trigger
   await prisma.shipment.upsert({
     where: { id: "00000000-0000-4000-8000-000000000302" },
     update: {},
@@ -402,10 +507,11 @@ async function main() {
       origin: "Tanjung Priok, Jakarta",
       destination: "Cat Lai Port, Ho Chi Minh City",
       status: ShipmentStatus.PENDING,
-      estimatedArrival: new Date("2025-06-28"),
+      estimatedArrival: new Date("2025-06-28"), // ~12 months ago
     },
   });
 
+  // Shipment 3 — DELIVERED OK
   await prisma.shipment.upsert({
     where: { id: "00000000-0000-4000-8000-000000000303" },
     update: {},
@@ -420,6 +526,7 @@ async function main() {
     },
   });
 
+  // Shipment 4 — DELAYED (past estimated arrival, PENDING) → Rule 4 trigger
   await prisma.shipment.upsert({
     where: { id: "00000000-0000-4000-8000-000000000304" },
     update: {},
@@ -430,10 +537,11 @@ async function main() {
       origin: "Singapore PSA Port",
       destination: "Cat Lai Port, Ho Chi Minh City",
       status: ShipmentStatus.PENDING,
-      estimatedArrival: new Date("2025-07-05"),
+      estimatedArrival: new Date("2025-07-05"), // ~11 months ago
     },
   });
 
+  // Shipment 5 — DELIVERED OK
   await prisma.shipment.upsert({
     where: { id: "00000000-0000-4000-8000-000000000305" },
     update: {},
@@ -448,40 +556,48 @@ async function main() {
     },
   });
 
-  // ── INVENTORY MOVEMENTS ────────────────────────────────
-  const movementSeed = [
-    // Coco HCM — inbound đợt đầu
-    { productId: productCoco.id,    warehouseId: warehouseHCM.id, type: InventoryMovementType.INBOUND,  quantity: 200, monthsAgo: 5, note: "PO-2025-0005 receipt" },
-    { productId: productCoco.id,    warehouseId: warehouseHCM.id, type: InventoryMovementType.OUTBOUND, quantity: 80,  monthsAgo: 4, note: "Export dispatch — Batch #A01" },
+  // ═══════════════════════════════════════════════════════════
+  // 9. INVENTORY MOVEMENTS
+  // ═══════════════════════════════════════════════════════════
+  interface MovementInput {
+    productId: string;
+    warehouseId: string;
+    type: InventoryMovementType;
+    quantity: number;
+    note: string;
+    createdAt: Date;
+  }
+
+  const movements: MovementInput[] = [
+    // Coco HCM history
+    { productId: productCoco.id, warehouseId: warehouseHCM.id, type: InventoryMovementType.INBOUND,  quantity: 600, note: "Initial stock PO-2025-0005", createdAt: monthsAgo(0) },
+    { productId: productCoco.id, warehouseId: warehouseHCM.id, type: InventoryMovementType.OUTBOUND, quantity: 100, note: "Monthly retail distribution", createdAt: monthsAgo(0) },
     // Beef HCM
-    { productId: productBeef.id,    warehouseId: warehouseHCM.id, type: InventoryMovementType.INBOUND,  quantity: 150, monthsAgo: 3, note: "PO-2025-0002 partial receipt" },
-    { productId: productBeef.id,    warehouseId: warehouseHCM.id, type: InventoryMovementType.OUTBOUND, quantity: 45,  monthsAgo: 0, note: "Export dispatch — Batch #B04" },
+    { productId: productBeef.id, warehouseId: warehouseHCM.id, type: InventoryMovementType.INBOUND,  quantity: 400, note: "PO-2025-0002 receipt", createdAt: monthsAgo(0) },
+    { productId: productBeef.id, warehouseId: warehouseHCM.id, type: InventoryMovementType.OUTBOUND, quantity: 80,  note: "Export dispatch — Batch #B04", createdAt: monthsAgo(0) },
     // Rice HN
-    { productId: productRice.id,    warehouseId: warehouseHN.id,  type: InventoryMovementType.INBOUND,  quantity: 120, monthsAgo: 2, note: "PO-2025-0003 receipt" },
-    { productId: productRice.id,    warehouseId: warehouseHN.id,  type: InventoryMovementType.OUTBOUND, quantity: 30,  monthsAgo: 1, note: "Retail distribution" },
-    // Coco HCM — đợt 2
-    { productId: productCoco.id,    warehouseId: warehouseHCM.id, type: InventoryMovementType.INBOUND,  quantity: 300, monthsAgo: 1, note: "PO-2025-0001 partial receipt" },
-    // Chicken HCM — sắp cạn
-    { productId: productChicken.id, warehouseId: warehouseHCM.id, type: InventoryMovementType.INBOUND,  quantity: 200, monthsAgo: 3, note: "PO-2025-0005 receipt" },
-    { productId: productChicken.id, warehouseId: warehouseHCM.id, type: InventoryMovementType.OUTBOUND, quantity: 140, monthsAgo: 1, note: "Hotel chain order" },
+    { productId: productRice.id, warehouseId: warehouseHN.id,  type: InventoryMovementType.INBOUND,  quantity: 200, note: "PO-2025-0003 receipt", createdAt: monthsAgo(0) },
+    { productId: productRice.id, warehouseId: warehouseHN.id,  type: InventoryMovementType.OUTBOUND, quantity: 20,  note: "Retail distribution", createdAt: monthsAgo(0) },
+    // Chicken HCM — now low stock
+    { productId: productChicken.id, warehouseId: warehouseHCM.id, type: InventoryMovementType.INBOUND,  quantity: 200, note: "PO-2025-0005 receipt", createdAt: monthsAgo(0) },
+    { productId: productChicken.id, warehouseId: warehouseHCM.id, type: InventoryMovementType.OUTBOUND, quantity: 140, note: "Hotel chain order — large dispatch", createdAt: monthsAgo(0) },
     // Soy HN
-    { productId: productSoy.id,     warehouseId: warehouseHN.id,  type: InventoryMovementType.INBOUND,  quantity: 300, monthsAgo: 4, note: "PO-2025-0004 receipt" },
-    { productId: productSoy.id,     warehouseId: warehouseHN.id,  type: InventoryMovementType.OUTBOUND, quantity: 60,  monthsAgo: 2, note: "Retail dispatch" },
+    { productId: productSoy.id,     warehouseId: warehouseHN.id,  type: InventoryMovementType.INBOUND,  quantity: 300, note: "PO-2025-0004 receipt", createdAt: monthsAgo(0) },
+    { productId: productSoy.id,     warehouseId: warehouseHN.id,  type: InventoryMovementType.OUTBOUND, quantity: 60,  note: "Retail dispatch", createdAt: monthsAgo(0) },
     // Dates HCM
-    { productId: productDates.id,   warehouseId: warehouseHCM.id, type: InventoryMovementType.INBOUND,  quantity: 120, monthsAgo: 2, note: "PO-2025-0002 receipt" },
-    { productId: productDates.id,   warehouseId: warehouseHCM.id, type: InventoryMovementType.OUTBOUND, quantity: 25,  monthsAgo: 0, note: "Online order fulfillment" },
+    { productId: productDates.id,   warehouseId: warehouseHCM.id, type: InventoryMovementType.INBOUND,  quantity: 120, note: "PO-2025-0002 receipt", createdAt: monthsAgo(0) },
+    { productId: productDates.id,   warehouseId: warehouseHCM.id, type: InventoryMovementType.OUTBOUND, quantity: 25,  note: "Online order fulfillment", createdAt: monthsAgo(0) },
     // Curry DN
-    { productId: productCurry.id,   warehouseId: warehouseDN.id,  type: InventoryMovementType.INBOUND,  quantity: 180, monthsAgo: 3, note: "PO-2025-0003 receipt" },
-    { productId: productCurry.id,   warehouseId: warehouseDN.id,  type: InventoryMovementType.OUTBOUND, quantity: 30,  monthsAgo: 1, note: "Restaurant chain dispatch" },
+    { productId: productCurry.id,   warehouseId: warehouseDN.id,  type: InventoryMovementType.INBOUND,  quantity: 180, note: "PO-2025-0003 receipt", createdAt: monthsAgo(0) },
+    { productId: productCurry.id,   warehouseId: warehouseDN.id,  type: InventoryMovementType.OUTBOUND, quantity: 30,  note: "Restaurant chain dispatch", createdAt: monthsAgo(0) },
+    // Coco HN — critically low
+    { productId: productCoco.id,    warehouseId: warehouseHN.id,  type: InventoryMovementType.INBOUND,  quantity: 50,  note: "Initial transfer from HCM", createdAt: monthsAgo(0) },
+    { productId: productCoco.id,    warehouseId: warehouseHN.id,  type: InventoryMovementType.OUTBOUND, quantity: 40,  note: "Northern retail orders", createdAt: monthsAgo(0) },
     // Adjustment
-    { productId: productRice.id,    warehouseId: warehouseHN.id,  type: InventoryMovementType.ADJUSTMENT, quantity: 10, monthsAgo: 0, note: "Stock count adjustment" },
+    { productId: productRice.id,    warehouseId: warehouseHN.id,  type: InventoryMovementType.ADJUSTMENT, quantity: 10, note: "Stock count adjustment", createdAt: monthsAgo(0) },
   ];
 
-  for (const [index, m] of movementSeed.entries()) {
-    const createdAt = new Date();
-    createdAt.setMonth(createdAt.getMonth() - m.monthsAgo);
-    createdAt.setDate(5 + index);
-
+  for (const [index, m] of movements.entries()) {
     await prisma.inventoryMovement.create({
       data: {
         productId: m.productId,
@@ -490,23 +606,52 @@ async function main() {
         quantity: m.quantity,
         note: m.note,
         performedBy: index % 2 === 0 ? staff.id : staff2.id,
-        createdAt,
+        createdAt: m.createdAt,
       },
     });
   }
 
-  console.log("✅ Seed completed:", {
+  // ═══════════════════════════════════════════════════════════
+  // 10. VERIFICATION SUMMARY
+  // ═══════════════════════════════════════════════════════════
+
+  const summary = {
     users: [admin.email, manager.email, staff.email, staff2.email],
-    suppliers: [supplierMY.name, supplierID.name, supplierTH.name, supplierSG.name],
+    suppliers: [supplierMY.name, supplierID.name, supplierTH.name, supplierSG.name, supplierVN.name],
     warehouses: [warehouseHCM.name, warehouseHN.name, warehouseDN.name],
-    products: [productCoco.sku, productBeef.sku, productRice.sku, productChicken.sku, productSoy.sku, productDates.sku, productCurry.sku],
-    purchaseOrders: [po1.poNumber, po2.poNumber, po3.poNumber, po4.poNumber, po5.poNumber, po6.poNumber],
-  });
+    products: 7,
+    certificates: 5,
+    inventoryItems: 9,
+    purchaseOrders: 6,
+    shipments: 5,
+  };
+
+  console.log("=".repeat(60));
+  console.log("✅ HalalChain Seed Completed");
+  console.log("=".repeat(60));
+  console.log("  Users:        ", summary.users.join(", "));
+  console.log("  Suppliers:    ", summary.suppliers.join(", "));
+  console.log("  Warehouses:   ", summary.warehouses.join(", "));
+  console.log("  Products:     ", summary.products);
+  console.log("  Certificates: ", summary.certificates);
+  console.log("  Inventory:    ", summary.inventoryItems, "items");
+  console.log("  POs:          ", summary.purchaseOrders);
+  console.log("  Shipments:    ", summary.shipments);
+  console.log("-".repeat(60));
+  console.log("🔍 AUTOMATION DEMO SCENARIOS:");
+  console.log("  Rule 1 (Cert Expiring): MUIS-SG-2026-003 expires 2026-06-30 (14 days)");
+  console.log("  Rule 2 (Cert Expired):  3 expired certs (JAKIM, MUI, CICOT)");
+  console.log("  Rule 3 (Low Stock):     Chicken HCM (60/100), Coco HN (10/80)");
+  console.log("  Rule 4 (Ship Delay):    3 overdue shipments (MY, ID, SG)");
+  console.log("  Compliance Score:       ~38/100 (demonstrates all 5 factors)");
+  console.log("=".repeat(60));
+  console.log("🔑 Login: admin@halalchain.com / Admin@123");
+  console.log("=".repeat(60));
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("❌ Seed failed:", e);
     process.exit(1);
   })
   .finally(async () => {

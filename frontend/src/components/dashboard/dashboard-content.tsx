@@ -123,12 +123,34 @@ function DashboardSkeleton() {
 function OperationalWidgets({ data }: { data: Awaited<ReturnType<typeof api.dashboardStats>> }) {
   const { t } = useTranslation();
   const widgets = data?.widgets;
+  const compliance = data?.compliance;
   const lowStockAlerts = widgets?.lowStockAlerts ?? [];
   const expiringCertificates = widgets?.expiringCertificates ?? [];
   const shipmentDelays = widgets?.shipmentDelays ?? [];
+  const complianceIssues = compliance?.issues ?? [];
 
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
+    <div className="grid gap-4 lg:grid-cols-3 xl:grid-cols-4">
+      {/* Compliance Issues Widget */}
+      <WidgetCard title="Compliance Issues">
+        {complianceIssues.length === 0 ? (
+          <EmptyState title="All Clear" description="No compliance issues detected" />
+        ) : (
+          complianceIssues
+            .filter((issue) => issue.count > 0)
+            .map((issue) => (
+              <WidgetRow
+                key={issue.type}
+                title={issue.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                meta={`${issue.count} item(s)`}
+              >
+                <Badge variant={issue.severity === "high" ? "danger" : issue.severity === "medium" ? "warning" : "default"}>
+                  {issue.severity}
+                </Badge>
+              </WidgetRow>
+            ))
+        )}
+      </WidgetCard>
       <WidgetCard title={t("dashboard.widgets.lowStockAlerts")}>
         {lowStockAlerts.length === 0 ? (
           <EmptyState title={t("dashboard.widgets.stockHealthy")} description={t("dashboard.widgets.stockHealthyDesc")} />

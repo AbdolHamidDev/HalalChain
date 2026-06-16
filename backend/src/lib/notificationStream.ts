@@ -1,11 +1,13 @@
 import { Response } from "express";
-import { Notification } from "@prisma/client";
+import { Notification, NotificationType } from "@prisma/client";
 import { randomUUID } from "crypto";
 
 export type NotificationStreamEvent =
   | "notification_created"
   | "notification_read"
   | "certificate_expiring"
+  | "certificate_expired"
+  | "compliance_issue"
   | "low_stock"
   | "shipment_delayed";
 
@@ -66,11 +68,16 @@ export function publishCreatedNotifications(notifications: Notification[]) {
     if (!notification.userId) continue;
     publishNotificationEvent([notification.userId], "notification_created", notification);
 
-    if (notification.type === "LOW_STOCK") {
+    const type = notification.type;
+    if (type === NotificationType.LOW_STOCK) {
       publishNotificationEvent([notification.userId], "low_stock", notification);
-    } else if (notification.type === "CERTIFICATE_EXPIRING") {
+    } else if (type === NotificationType.CERTIFICATE_EXPIRING) {
       publishNotificationEvent([notification.userId], "certificate_expiring", notification);
-    } else if (notification.type === "SHIPMENT_DELAYED") {
+    } else if (type === NotificationType.CERTIFICATE_EXPIRED) {
+      publishNotificationEvent([notification.userId], "certificate_expired", notification);
+    } else if (type === NotificationType.COMPLIANCE_ISSUE) {
+      publishNotificationEvent([notification.userId], "compliance_issue", notification);
+    } else if (type === NotificationType.SHIPMENT_DELAYED) {
       publishNotificationEvent([notification.userId], "shipment_delayed", notification);
     }
   }

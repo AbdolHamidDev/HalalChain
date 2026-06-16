@@ -129,6 +129,19 @@ export interface Shipment {
   };
 }
 
+export interface ComplianceFactor {
+  factor: string;
+  weight: number;
+  deduction: number;
+  detail: string;
+}
+
+export interface ComplianceIssue {
+  type: string;
+  count: number;
+  severity: "high" | "medium" | "low" | "none";
+}
+
 export interface DashboardStats {
   kpis: {
     totalProducts: number;
@@ -170,6 +183,11 @@ export interface DashboardStats {
       supplierName: string;
       estimatedArrival: string | null;
     }[];
+  };
+  compliance: {
+    score: number;
+    breakdown: ComplianceFactor[];
+    issues: ComplianceIssue[];
   };
 }
 

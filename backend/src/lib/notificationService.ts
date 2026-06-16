@@ -144,3 +144,48 @@ export async function notifyCertificateExpiring(
     expiryDate: params.expiryDate,
   }).catch(() => {});
 }
+
+export async function notifyCertificateExpired(
+  tx: TxClient,
+  params: { certificateNumber: string; supplierName: string; expiryDate: Date }
+): Promise<void> {
+  // Kiểm tra duplicate trong cùng ngày
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const existingToday = await tx.notification.findFirst({
+    where: {
+      type: NotificationType.CERTIFICATE_EXPIRED,
+      message: { contains: params.certificateNumber },
+      createdAt: { gte: today },
+    },
+  });
+  if (existingToday) return;
+
+  const userIds = await getManagerAndAdminUserIds(tx);
+  const dateStr = isNaN(params.expiryDate.getTime())
+    ? "unknown"
+    : params.expiryDate.toISOString().split("T")[0];
+  const message = `Certificate ${params.certificateNumber} for ${params.supplierName} expired on ${dateStr}. Immediate renewal required.`;
+
+  const notifications = await Promise.all(
+    userIds.map((userId) =>
+      tx.notification.create({
+        data: {
+          userId,
+          title: "Certificate Expired — Compliance Issue",
+          message,
+          type: NotificationType.CERTIFICATE_EXPIRED,
+        },
+      })
+    )
+  );
+
+  setImmediate(() => publishCreatedNotifications(notifications));
+
+  // Fire-and-forget email dispatch — outside transaction, no await
+  dispatchCertExpiredEmails({
+    certificateNumber: params.certificateNumber,
+    supplierName: params.supplierName,
+    expiryDate: params.expiryDate,
+  }).catch(() => {});
+}

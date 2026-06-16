@@ -1,6 +1,6 @@
 "use client";
 
-import { Award, Boxes, CircleDollarSign, FileClock, Package, Truck, Users } from "lucide-react";
+import { Award, Boxes, CircleDollarSign, FileClock, Package, Shield, Truck, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { type DashboardStats } from "@/lib/api";
 
@@ -12,10 +12,24 @@ const money = new Intl.NumberFormat("en-US", {
 
 export function KpiCards({ data }: { data: DashboardStats }) {
   const kpis = data?.kpis;
+  const compliance = data?.compliance;
 
   if (!kpis) return null;
 
+  const complianceScore = compliance?.score ?? 0;
+  const scoreColor =
+    complianceScore >= 80 ? "text-success bg-success/10" :
+    complianceScore >= 50 ? "text-warning bg-warning/10" :
+    "text-destructive bg-destructive/10";
+
   const cards = [
+    {
+      title: "Compliance Score",
+      value: `${complianceScore}/100`,
+      note: complianceScore >= 80 ? "Good standing" : complianceScore >= 50 ? "Needs attention" : "Critical issues",
+      icon: Shield,
+      tone: scoreColor,
+    },
     {
       title: "Total Products",
       value: (kpis.totalProducts ?? 0).toLocaleString(),
@@ -61,7 +75,7 @@ export function KpiCards({ data }: { data: DashboardStats }) {
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
       {cards.map((card) => {
         const Icon = card.icon;
         return (
