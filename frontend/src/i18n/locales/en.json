@@ -99,6 +99,7 @@
     }
   },
   "navigation": {
+    "website": "Website",
     "dashboard": "Dashboard",
     "suppliers": "Suppliers",
     "products": "Products",

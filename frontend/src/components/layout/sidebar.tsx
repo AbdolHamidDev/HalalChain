@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LogOut, ChevronRight, X, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { LogOut, ChevronRight, X, PanelLeftClose, PanelLeftOpen, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getNavItemsForRole } from "@/lib/navigation";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -168,6 +168,61 @@ function SidebarPanel({
 )}
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4">
+          {/* Website link */}
+          <ul className="mb-2 space-y-0.5">
+            {(() => {
+              const active = pathname === "/";
+              const linkContent = (
+                <Link
+                  href="/"
+                  onClick={onNavigate}
+                  className={cn(
+                    "group flex items-center rounded-md py-2 text-sm font-medium transition-all duration-150",
+                    collapsed ? "justify-center px-0 w-full" : "gap-3 px-3",
+                    active
+                      ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  )}
+                >
+                  <WiggleIcon>
+                    <Globe
+                      className={cn(
+                        "h-4 w-4 shrink-0 transition-colors",
+                        active
+                          ? "text-sidebar-primary"
+                          : "text-sidebar-foreground/50 group-hover:text-sidebar-accent-foreground"
+                      )}
+                    />
+                  </WiggleIcon>
+
+                  {!collapsed && (
+                    <>
+                      <span className="truncate">{t("navigation.website")}</span>
+                      {active && (
+                        <ChevronRight className="ml-auto h-3 w-3 shrink-0 opacity-60" />
+                      )}
+                    </>
+                  )}
+                </Link>
+              );
+
+              return (
+                <li>
+                  {collapsed ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                      <TooltipContent side="right" className="text-xs">
+                        {t("navigation.website")}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    linkContent
+                  )}
+                </li>
+              );
+            })()}
+          </ul>
+
           {!collapsed && (
             <p className="text-overline mb-2 px-2 text-neutral">{t("sidebar.navigation")}</p>
           )}

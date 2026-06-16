@@ -99,6 +99,7 @@
     }
   },
   "navigation": {
+    "website": "Website",
     "dashboard": "Tổng quan",
     "suppliers": "Nhà cung cấp",
     "products": "Sản phẩm",
