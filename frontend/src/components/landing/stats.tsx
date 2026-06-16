@@ -84,13 +84,13 @@ export function StatsSection() {
             return (
               <Card
                 key={stat.labelKey}
-                className="group relative overflow-hidden border-border/50 hover:border-border transition-all duration-300"
+                className="group relative overflow-hidden transition-all duration-300"
               >
                 <div
                   className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${stat.gradient}`}
                 />
-                <CardContent className="relative p-6 space-y-4">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-muted text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300">
+                <CardContent className="relative p-8 space-y-4">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-muted text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300">
                     <Icon className="size-6" />
                   </div>
                   <AnimatedCounter value={stat.value} suffix={t(stat.suffixKey as TranslationKey)} />

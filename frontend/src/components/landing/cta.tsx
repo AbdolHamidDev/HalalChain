@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { ArrowRight, PlayCircle, LayoutDashboard } from "lucide-react";
 import { useTranslation } from "@/i18n/hooks";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export function CTASection() {
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <section className="py-20 md:py-28 relative overflow-hidden">
@@ -26,23 +28,34 @@ export function CTASection() {
             {t("landing.cta.subtitle")}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="w-full sm:w-auto min-w-[200px]" asChild>
-              <Link href="/register">
-                {t("landing.cta.exploreDemo")}
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full sm:w-auto min-w-[200px]"
-              asChild
-            >
-              <Link href="/login">
-                <PlayCircle className="mr-2 size-4" />
-                {t("landing.cta.signIn")}
-              </Link>
-            </Button>
+            {user ? (
+              <Button size="lg" className="w-full sm:w-auto min-w-[200px]" asChild>
+                <Link href="/dashboard">
+                  <LayoutDashboard className="mr-2 size-4" />
+                  {t("landing.header.dashboard")}
+                </Link>
+              </Button>
+            ) : (
+              <>
+                <Button size="lg" className="w-full sm:w-auto min-w-[200px]" asChild>
+                  <Link href="/register">
+                    {t("landing.cta.exploreDemo")}
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto min-w-[200px]"
+                  asChild
+                >
+                  <Link href="/login">
+                    <PlayCircle className="mr-2 size-4" />
+                    {t("landing.cta.signIn")}
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

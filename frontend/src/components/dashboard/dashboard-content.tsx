@@ -108,12 +108,12 @@ function DashboardSkeleton() {
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="h-32 animate-pulse rounded-lg border bg-muted/30" />
+          <div key={index} className="h-32 animate-pulse rounded-3xl bg-muted/30" />
         ))}
       </div>
       <div className="grid gap-4 xl:grid-cols-2">
         {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="h-80 animate-pulse rounded-lg border bg-muted/30" />
+          <div key={index} className="h-80 animate-pulse rounded-3xl bg-muted/30" />
         ))}
       </div>
     </div>
@@ -203,7 +203,7 @@ function WidgetCard({ title, children }: { title: string; children: React.ReactN
 
 function WidgetRow({ title, meta, children }: { title: string; meta: string; children: React.ReactNode }) {
   return (
-    <div className="flex min-h-14 items-center justify-between gap-3 rounded-md border px-3 py-2">
+    <div className="flex min-h-14 items-center justify-between gap-3 rounded-xl bg-muted/40 px-4 py-2.5">
       <div className="min-w-0">
         <p className="truncate text-sm font-medium">{title}</p>
         <p className="truncate text-xs text-muted-foreground">{meta}</p>

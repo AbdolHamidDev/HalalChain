@@ -51,13 +51,13 @@ export function TechStackSection() {
             return (
               <Card
                 key={tech.name}
-                className="group relative overflow-hidden border-border/50 hover:border-border transition-all duration-300 lg:last:col-start-4"
+                className="group relative overflow-hidden transition-all duration-300 lg:last:col-start-4"
               >
                 <div
                   className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${tech.gradient}`}
                 />
-                <CardContent className="relative p-5 flex flex-col items-center text-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300">
+                <CardContent className="relative p-6 flex flex-col items-center text-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300">
                     <Icon className="size-5" />
                   </div>
                   <div>

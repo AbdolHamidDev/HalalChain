@@ -5,13 +5,32 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
-import { Menu, X, Github } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Menu, X, Github, LayoutDashboard, LogOut } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n/hooks";
+import { useAuth } from "@/components/providers/auth-provider";
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
 
 export function LandingHeader() {
   const { t } = useTranslation();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
 
   const navLinks = [
@@ -70,12 +89,45 @@ export function LandingHeader() {
           </a>
           <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">{t("landing.header.signIn")}</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/register">{t("landing.header.getStarted")}</Link>
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <Avatar className="h-8 w-8 cursor-pointer">
+                      <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
+                      <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-medium leading-none">{user.name}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{user.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="cursor-pointer">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      {t("landing.header.dashboard")}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => logout()} className="cursor-pointer text-destructive focus:text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {t("landing.header.logout")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/login">{t("landing.header.signIn")}</Link>
+                </Button>
+                <Button size="sm" asChild>
+                  <Link href="/register">{t("landing.header.getStarted")}</Link>
+                </Button>
+              </>
+            )}
           </div>
           <button
             className="md:hidden p-2 -mr-2 rounded-lg hover:bg-accent transition-colors"
@@ -106,12 +158,39 @@ export function LandingHeader() {
             </Link>
           ))}
           <div className="pt-2 flex flex-col gap-2">
-            <Button variant="ghost" size="sm" asChild className="w-full justify-center">
-              <Link href="/login">{t("landing.header.signIn")}</Link>
-            </Button>
-            <Button size="sm" asChild className="w-full justify-center">
-              <Link href="/register">{t("landing.header.getStarted")}</Link>
-            </Button>
+            {user ? (
+              <>
+                <div className="flex items-center gap-3 px-3 py-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
+                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium leading-none truncate">{user.name}</p>
+                    <p className="text-xs text-muted-foreground mt-1 truncate">{user.email}</p>
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm" asChild className="w-full justify-center">
+                  <Link href="/dashboard">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    {t("landing.header.dashboard")}
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="sm" className="w-full justify-center text-destructive hover:text-destructive" onClick={() => logout()}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  {t("landing.header.logout")}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild className="w-full justify-center">
+                  <Link href="/login">{t("landing.header.signIn")}</Link>
+                </Button>
+                <Button size="sm" asChild className="w-full justify-center">
+                  <Link href="/register">{t("landing.header.getStarted")}</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

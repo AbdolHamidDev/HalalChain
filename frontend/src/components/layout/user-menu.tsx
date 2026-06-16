@@ -82,21 +82,21 @@ export function UserMenu() {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link href="/settings/profile" className="flex cursor-pointer items-center gap-2">
+          <Link href="/dashboard/settings" className="flex cursor-pointer items-center gap-2">
             <User className="h-4 w-4" />
             <span>{t("userMenu.myProfile")}</span>
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/settings/profile" className="flex cursor-pointer items-center gap-2">
+          <Link href="/dashboard/settings" className="flex cursor-pointer items-center gap-2">
             <Settings className="h-4 w-4" />
             <span>{t("userMenu.accountSettings")}</span>
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/settings/security" className="flex cursor-pointer items-center gap-2">
+          <Link href="/dashboard/settings" className="flex cursor-pointer items-center gap-2">
             <KeyRound className="h-4 w-4" />
             <span>{t("userMenu.changePassword")}</span>
           </Link>

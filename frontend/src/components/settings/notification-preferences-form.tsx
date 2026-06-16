@@ -7,6 +7,7 @@ import { api, type NotificationPreferences } from "@/lib/api";
 import { useTranslation } from "@/i18n/hooks";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 type FormState = {
   certificateAlerts: boolean;
@@ -24,18 +25,22 @@ const DEFAULT_PREFS: FormState = {
 
 function PreferenceSkeleton() {
   return (
-    <div className="rounded-lg border p-6 space-y-6">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="flex items-center justify-between">
-          <div className="space-y-1.5 flex-1">
-            <div className="h-4 w-36 animate-pulse rounded bg-muted" />
-            <div className="h-3 w-56 animate-pulse rounded bg-muted" />
+    <Card>
+      <CardContent className="pt-6 space-y-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="flex items-center justify-between">
+            <div className="space-y-1.5 flex-1">
+              <div className="h-4 w-36 animate-pulse rounded bg-muted" />
+              <div className="h-3 w-56 animate-pulse rounded bg-muted" />
+            </div>
+            <div className="h-5 w-5 animate-pulse rounded-full bg-muted shrink-0" />
           </div>
-          <div className="h-5 w-5 animate-pulse rounded-full bg-muted shrink-0" />
+        ))}
+        <div className="flex justify-end pt-2">
+          <div className="h-9 w-24 animate-pulse rounded bg-muted" />
         </div>
-      ))}
-      <div className="h-9 w-24 animate-pulse rounded bg-muted" />
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -107,68 +112,61 @@ export function NotificationPreferencesForm() {
   const isSaveDisabled = JSON.stringify(formState) === JSON.stringify(savedPrefs) || saving;
 
   if (loading) {
-    return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-semibold">{t("settings.notifications.title")}</h1>
-          <p className="mt-1 text-muted-foreground">{t("settings.notifications.description")}</p>
-        </div>
-        <PreferenceSkeleton />
-      </div>
-    );
+    return <PreferenceSkeleton />;
   }
 
   if (loadError) {
     return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-semibold">{t("settings.notifications.title")}</h1>
-          <p className="mt-1 text-muted-foreground">{t("settings.notifications.description")}</p>
-        </div>
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center space-y-4">
-          <p className="text-sm text-destructive font-medium">{t("settings.errors.loadFailed")}</p>
-          <Button variant="outline" onClick={loadPreferences}>{t("common.retry")}</Button>
-        </div>
-      </div>
+      <Card>
+        <CardContent className="pt-6">
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center space-y-4">
+            <p className="text-sm text-destructive font-medium">{t("settings.errors.loadFailed")}</p>
+            <Button variant="outline" onClick={loadPreferences}>{t("common.retry")}</Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">{t("settings.notifications.title")}</h1>
-        <p className="mt-1 text-muted-foreground">{t("settings.notifications.description")}</p>
-      </div>
-
-      <div className="rounded-lg border p-6 space-y-6">
-        {PREFERENCE_ROWS.map(({ key, labelKey, descriptionKey }) => (
-          <div key={key} className="flex items-start gap-4">
-            <div className="pt-0.5">
-              <Checkbox
-                id={`pref-${key}`}
-                checked={formState[key]}
-                onCheckedChange={(checked) => handleToggle(key, checked === true)}
-                disabled={saving}
-                aria-label={t(labelKey as any)}
-              />
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("settings.notifications.title")}</CardTitle>
+        <CardDescription>{t("settings.notifications.description")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          {PREFERENCE_ROWS.map(({ key, labelKey, descriptionKey }) => (
+            <div key={key} className="flex items-start gap-4">
+              <div className="pt-0.5">
+                <Checkbox
+                  id={`pref-${key}`}
+                  checked={formState[key]}
+                  onCheckedChange={(checked) => handleToggle(key, checked === true)}
+                  disabled={saving}
+                  aria-label={t(labelKey as any)}
+                />
+              </div>
+              <label htmlFor={`pref-${key}`} className="flex flex-col gap-0.5 cursor-pointer select-none">
+                <span className="text-sm font-medium leading-none">{t(labelKey as any)}</span>
+                <span className="text-xs text-muted-foreground">{t(descriptionKey as any)}</span>
+              </label>
             </div>
-            <label htmlFor={`pref-${key}`} className="flex flex-col gap-0.5 cursor-pointer select-none">
-              <span className="text-sm font-medium leading-none">{t(labelKey as any)}</span>
-              <span className="text-xs text-muted-foreground">{t(descriptionKey as any)}</span>
-            </label>
+          ))}
+
+          {saveError && <p className="text-sm text-destructive" role="alert">{saveError}</p>}
+
+          <div className="flex justify-end pt-2">
+            <Button type="button" onClick={handleSave} disabled={isSaveDisabled} aria-busy={saving}>
+              {saving ? (
+                <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />{t("common.saving")}</>
+              ) : (
+                t("common.save")
+              )}
+            </Button>
           </div>
-        ))}
-
-        {saveError && <p className="text-sm text-destructive" role="alert">{saveError}</p>}
-
-        <Button type="button" onClick={handleSave} disabled={isSaveDisabled} aria-busy={saving}>
-          {saving ? (
-            <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />{t("common.saving")}</>
-          ) : (
-            t("common.save")
-          )}
-        </Button>
-      </div>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

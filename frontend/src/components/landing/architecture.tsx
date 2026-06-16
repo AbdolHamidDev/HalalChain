@@ -43,9 +43,9 @@ export function ArchitectureSection() {
               const Icon = item.icon;
               return (
                 <div key={item.labelKey} className="flex flex-col items-center w-full">
-                  <Card className="w-full max-w-sm border-border/40 bg-background/80 backdrop-blur-sm hover:shadow-lg hover:border-border/70 transition-all duration-300">
-                    <CardContent className="p-5 flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center ${item.iconColor}`}>
+                  <Card className="w-full max-w-sm bg-card/60 backdrop-blur-sm transition-all duration-300">
+                    <CardContent className="p-6 flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center ${item.iconColor}`}>
                         <Icon className="size-6" />
                       </div>
                       <div>
@@ -74,9 +74,9 @@ export function ArchitectureSection() {
             {externalServices.map((service) => {
               const Icon = service.icon;
               return (
-                <Card key={service.labelKey} className="border-border/40 bg-background/80 backdrop-blur-sm hover:shadow-md transition-all duration-300">
-                  <CardContent className="p-5 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center text-muted-foreground">
+                <Card key={service.labelKey} className="bg-card/60 backdrop-blur-sm transition-all duration-300">
+                  <CardContent className="p-6 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground">
                       <Icon className="size-5" />
                     </div>
                     <div>

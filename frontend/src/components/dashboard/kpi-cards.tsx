@@ -80,17 +80,17 @@ export function KpiCards({ data }: { data: DashboardStats }) {
         const Icon = card.icon;
         return (
           <Card key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between gap-3 pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground">
+            <CardHeader className="flex flex-row items-center justify-between gap-3 pb-1">
+              <CardTitle className="text-[13px] font-medium text-muted-foreground">
                 {card.title}
               </CardTitle>
-              <div className={`rounded-md p-2 ${card.tone}`}>
+              <div className={`rounded-xl p-2 ${card.tone}`}>
                 <Icon className="h-4 w-4" />
               </div>
             </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-semibold tracking-normal">{card.value}</p>
-              <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+            <CardContent className="pt-1">
+              <p className="text-2xl font-semibold tracking-tight">{card.value}</p>
+              <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
                 <FileClock className="h-3 w-3" />
                 {card.note}
               </p>

@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { ArrowRight, PlayCircle, LayoutDashboard } from "lucide-react";
 import { useTranslation } from "@/i18n/hooks";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export function HeroSection() {
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden">
@@ -56,10 +58,17 @@ export function HeroSection() {
               className="w-full sm:w-auto min-w-[180px] h-12 text-base shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25 transition-all duration-300"
               asChild
             >
-              <Link href="/register">
-                {t("landing.hero.getStarted")}
-                <ArrowRight className="ml-1.5 size-4" />
-              </Link>
+              {user ? (
+                <Link href="/dashboard">
+                  <LayoutDashboard className="mr-1.5 size-4" />
+                  {t("landing.header.dashboard")}
+                </Link>
+              ) : (
+                <Link href="/register">
+                  {t("landing.hero.getStarted")}
+                  <ArrowRight className="ml-1.5 size-4" />
+                </Link>
+              )}
             </Button>
             <Button
               variant="outline"

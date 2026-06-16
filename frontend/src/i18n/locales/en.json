@@ -110,14 +110,22 @@
     "certificates": "Certificates",
     "reports": "Reports",
     "analytics": "Analytics",
-    "userManagement": "User Management"
+    "userManagement": "User Management",
+    "settings": "Settings"
   },
   "sidebar": {
     "brand": "HalalChain",
     "platform": "Compliance Platform",
     "navigation": "Navigation",
     "collapseSidebar": "Collapse sidebar",
-    "expandSidebar": "Expand sidebar"
+    "expandSidebar": "Expand sidebar",
+    "groups": {
+      "overview": "Overview",
+      "supplyChain": "Supply Chain",
+      "operations": "Operations",
+      "insights": "Insights",
+      "administration": "Administration"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -142,7 +150,9 @@
       "techStack": "Tech Stack",
       "signIn": "Sign In",
       "getStarted": "Get Started",
-      "toggleMenu": "Toggle menu"
+      "toggleMenu": "Toggle menu",
+      "dashboard": "Dashboard",
+      "logout": "Logout"
     },
     "hero": {
       "badge": "Supply Chain Compliance & Traceability Platform",
@@ -1170,6 +1180,12 @@
       "security": "Security",
       "notifications": "Notifications",
       "preferences": "Preferences"
+    },
+    "navigation": {
+      "profile": "Profile",
+      "security": "Security",
+      "preferences": "Preferences",
+      "notifications": "Notifications"
     },
     "profile": {
       "title": "Profile Information",

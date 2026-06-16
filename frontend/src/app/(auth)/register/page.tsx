@@ -9,7 +9,7 @@ import { RegisterForm } from "@/components/auth/register-form";
 
 export default function RegisterPage() {
   return (
-    <Card className="border-border/50 shadow-lg">
+    <Card className="shadow-none">
       <CardHeader className="space-y-6 text-center">
         <div className="flex justify-center">
           <Image

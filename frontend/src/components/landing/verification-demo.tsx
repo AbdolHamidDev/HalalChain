@@ -63,9 +63,9 @@ export function VerificationDemoSection() {
           {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <Card key={step.titleKey} className="group border-border/40 bg-background/50 backdrop-blur-sm hover:shadow-lg transition-all duration-500">
-                <CardContent className="p-6 flex gap-5">
-                  <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+              <Card key={step.titleKey} className="group bg-card/60 backdrop-blur-sm transition-all duration-500">
+                <CardContent className="p-8 flex gap-5">
+                  <div className={`flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
                     <Icon className="size-5 text-foreground" />
                   </div>
                   <div className="space-y-2">

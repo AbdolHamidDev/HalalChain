@@ -21,20 +21,22 @@ export function SettingsHeader() {
 
         <Separator orientation="vertical" className="hidden h-4 md:block" />
 
-        <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-          <Settings className="h-4 w-4 text-muted-foreground" />
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t("navigation.dashboard")}
+        </Link>
+
+        <Separator orientation="vertical" className="h-4" />
+
+        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+          <Settings className="h-4 w-4" />
           <span>{t("settings.pageTitle")}</span>
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground md:hidden"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            {t("navigation.dashboard")}
-          </Link>
-
           <LanguageSwitcher />
           <ThemeToggle />
           <UserMenu />

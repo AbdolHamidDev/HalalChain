@@ -93,12 +93,12 @@ export function FeaturesSection() {
             const Icon = feature.icon;
             return (
               <AnimateItem key={feature.titleKey}>
-                <Card className="group relative overflow-hidden border-border/40 hover:border-border/80 transition-all duration-500 hover:shadow-xl bg-background/50 backdrop-blur-sm">
+                <Card className="group relative overflow-hidden transition-all duration-500 bg-card/60 backdrop-blur-sm">
                   <div
                     className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-br ${feature.gradient}`}
                   />
-                  <CardContent className="relative p-6 space-y-4">
-                    <div className={`flex items-center justify-center w-11 h-11 rounded-xl ${feature.accent}/10 group-hover:scale-110 transition-all duration-300`}>
+                  <CardContent className="relative p-8 space-y-4">
+                    <div className={`flex items-center justify-center w-11 h-11 rounded-2xl ${feature.accent}/10 group-hover:scale-110 transition-all duration-300`}>
                       <div className={`w-5 h-5 rounded-full ${feature.accent} opacity-80`} />
                       <Icon className="absolute size-5 text-white" />
                     </div>

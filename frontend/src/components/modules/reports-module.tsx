@@ -1,22 +1,112 @@
 "use client";
 
 import { useState } from "react";
+import { useId } from "react";
 import { useQuery } from "@tanstack/react-query";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { api, type ExportFormat, type ExportModule } from "@/lib/api";
-import { countryFlag } from "@/lib/countryFlag";
 import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
 import { ErrorState, LoadingState } from "@/components/shared/state-blocks";
+
+/* ── Theme-aware palette ──────────────────────────────────────────── */
+const C = {
+  primary: "var(--chart-1)",
+  emerald: "var(--chart-2)",
+  amber: "var(--chart-3)",
+  red: "var(--chart-4)",
+  muted: "var(--chart-5)",
+  violet: "#7c3aed",
+  cyan: "#0891b2",
+} as const;
+
+const AXIS = { fontSize: 12, fill: "var(--muted-foreground)", fontWeight: 400 as const };
+const GRID = { strokeDasharray: "3 3", stroke: "var(--border)", strokeOpacity: 0.45 };
+
+const DONUT_COLORS = [C.primary, C.emerald, C.amber, C.red, C.violet, C.cyan];
+const PO_COLORS = [C.emerald, C.amber, C.primary, C.red, C.violet, C.muted];
+
+type DonutLabelProps = { name?: string | number; percent?: number };
+function renderDonutLabel(props: unknown) {
+  const { name, percent } = props as DonutLabelProps;
+  if (!percent || percent <= 0.06) return null;
+  return `${name ?? ""} ${(percent * 100).toFixed(0)}%`;
+}
+
+/* ── Shared tooltip ───────────────────────────────────────────────── */
+function Tip({
+  active,
+  payload,
+  label,
+  formatter,
+}: {
+  active?: boolean;
+  payload?: Array<{ name: string; value: number | string; color: string }>;
+  label?: string;
+  formatter?: (value: number | string, name: string) => string;
+}) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div
+      className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3"
+      style={{ boxShadow: "0 4px 20px rgba(0,0,0,.08)" }}
+    >
+      {label && (
+        <p className="mb-1.5 text-xs font-medium text-[var(--muted-foreground)]">{label}</p>
+      )}
+      {payload.map((e) => (
+        <div key={e.name} className="flex items-center gap-2 text-sm">
+          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: e.color }} />
+          <span className="text-[var(--muted-foreground)]">{e.name}</span>
+          <span className="ml-auto font-semibold text-[var(--foreground)]">
+            {formatter ? formatter(e.value, e.name) : e.value}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DonutTip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: Array<{ name: string; value: number; payload: { fill: string } }>;
+}) {
+  if (!active || !payload?.length) return null;
+  const e = payload[0];
+  return (
+    <div
+      className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3"
+      style={{ boxShadow: "0 4px 20px rgba(0,0,0,.08)" }}
+    >
+      <div className="flex items-center gap-2 text-sm">
+        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: e.payload.fill }} />
+        <span className="text-[var(--muted-foreground)]">{e.name}</span>
+        <span className="ml-auto font-semibold text-[var(--foreground)]">{e.value}</span>
+      </div>
+    </div>
+  );
+}
 
 export function ReportsModule() {
   const { t } = useTranslation();
@@ -65,6 +155,28 @@ export function ReportsModule() {
     { value: "shipments", label: t("shipments.pageTitle") },
   ];
 
+  /* Prepare chart data */
+  const suppliersByCountryData = Object.entries(s.suppliersByCountry).map(([country, count]) => ({
+    country,
+    count,
+  }));
+
+  const purchaseOrdersData = s.purchaseOrders.map((po) => ({
+    status: po.status,
+    count: po.count,
+  }));
+
+  const shipmentsData = s.shipments.map((sh) => ({
+    status: sh.status,
+    count: sh.count,
+  }));
+
+  const certData = [
+    { status: "Active", count: s.certificates.active },
+    { status: "Expiring Soon", count: s.certificates.expiringSoon },
+    { status: "Other", count: Math.max(0, s.certificates.total - s.certificates.active - s.certificates.expiringSoon) },
+  ].filter((d) => d.count > 0);
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -90,6 +202,7 @@ export function ReportsModule() {
         }
       />
 
+      {/* ── KPI Cards ──────────────────────────────────────────── */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("dashboard.kpis.activeSuppliers")}</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{s.activeSuppliers}</p></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("dashboard.kpis.inventoryValue")}</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">${s.totalInventoryValue.toLocaleString()}</p></CardContent></Card>
@@ -97,25 +210,144 @@ export function ReportsModule() {
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("reports.empty.title")}</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold text-warning">{s.lowStockCount}</p></CardContent></Card>
       </div>
 
+      {/* ── Charts Row 1: Suppliers + Certificates ──────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card><CardHeader><CardTitle>{t("reports.summary.title")}</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {Object.entries(s.suppliersByCountry).map(([country, count]) => (
-              <div key={country} className="flex justify-between text-sm">
-                <span><span aria-hidden="true">{countryFlag(country)} </span>{country}</span>
-                <Badge>{count}</Badge>
-              </div>
-            ))}
+        {/* Suppliers by Country – Horizontal Bar */}
+        <Card>
+          <CardHeader className="pb-0">
+            <CardTitle className="text-[15px]">{t("reports.summary.title")}</CardTitle>
+          </CardHeader>
+          <CardContent className="h-64 pt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <SuppliersBar data={suppliersByCountryData} />
+            </ResponsiveContainer>
           </CardContent>
         </Card>
-        <Card><CardHeader><CardTitle>{t("certificates.pageTitle")}</CardTitle></CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between"><span>{t("common.all")}</span><span>{s.certificates.total}</span></div>
-            <div className="flex justify-between"><span>{t("certificates.status.valid")}</span><span>{s.certificates.active}</span></div>
-            <div className="flex justify-between text-warning"><span>{t("certificates.status.expiringSoon")}</span><span>{s.certificates.expiringSoon}</span></div>
+
+        {/* Certificate Status – Donut */}
+        <Card>
+          <CardHeader className="pb-0">
+            <CardTitle className="text-[15px]">{t("certificates.pageTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="h-64 pt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <StatusDonut data={certData} colors={[C.primary, C.amber, C.muted]} />
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
+
+      {/* ── Charts Row 2: PO Status + Shipment Status ─────────── */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Purchase Orders by Status – Donut */}
+        {purchaseOrdersData.length > 0 && (
+          <Card>
+            <CardHeader className="pb-0">
+              <CardTitle className="text-[15px]">{t("purchaseOrders.pageTitle")}</CardTitle>
+            </CardHeader>
+            <CardContent className="h-64 pt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <StatusDonut data={purchaseOrdersData} colors={PO_COLORS} />
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Shipments by Status – Donut */}
+        {shipmentsData.length > 0 && (
+          <Card>
+            <CardHeader className="pb-0">
+              <CardTitle className="text-[15px]">{t("shipments.pageTitle")}</CardTitle>
+            </CardHeader>
+            <CardContent className="h-64 pt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <StatusDonut data={shipmentsData} />
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Chart Compositions                                                  */
+/* ──────────────────────────────────────────────────────────────────── */
+
+/** Horizontal Bar – Suppliers by Country */
+function SuppliersBar({ data }: { data: { country: string; count: number }[] }) {
+  const id = useId();
+  return (
+    <BarChart data={data} layout="vertical" margin={{ top: 4, right: 8, left: 4, bottom: 0 }}>
+      <defs>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor={C.emerald} stopOpacity={0.65} />
+          <stop offset="100%" stopColor={C.emerald} stopOpacity={1} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid {...GRID} horizontal={false} />
+      <XAxis
+        type="number"
+        allowDecimals={false}
+        axisLine={false}
+        tickLine={false}
+        tick={AXIS}
+      />
+      <YAxis
+        type="category"
+        dataKey="country"
+        width={80}
+        axisLine={false}
+        tickLine={false}
+        tick={({ x, y, payload }) => (
+          <text x={x} y={y} dy={4} textAnchor="end" fontSize={12} fill="var(--muted-foreground)">
+            {payload.value}
+          </text>
+        )}
+      />
+      <Tooltip
+        cursor={{ fill: "var(--muted)", opacity: 0.35 }}
+        content={<Tip />}
+      />
+      <Bar dataKey="count" name="Suppliers" fill={`url(#${id}-g)`} radius={[0, 6, 6, 0]} maxBarSize={28} />
+    </BarChart>
+  );
+}
+
+/** Donut Chart – Generic status distribution */
+function StatusDonut({
+  data,
+  colors = DONUT_COLORS,
+}: {
+  data: { status: string; count: number }[];
+  colors?: string[];
+}) {
+  return (
+    <PieChart>
+      <Pie
+        data={data}
+        dataKey="count"
+        nameKey="status"
+        cx="50%"
+        cy="50%"
+        innerRadius={52}
+        outerRadius={86}
+        paddingAngle={3}
+        label={renderDonutLabel}
+        labelLine={false}
+        strokeWidth={0}
+      >
+        {data.map((_, i) => (
+          <Cell key={i} fill={colors[i % colors.length]} />
+        ))}
+      </Pie>
+      <Tooltip content={<DonutTip />} />
+      <Legend
+        iconType="circle"
+        iconSize={8}
+        wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }}
+      />
+    </PieChart>
   );
 }

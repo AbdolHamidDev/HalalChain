@@ -17,10 +17,10 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n/hooks";
 
 const settingsNavItems = [
-  { labelKey: "settings.navigation.profile", href: "/settings/profile", icon: User },
-  { labelKey: "settings.navigation.security", href: "/settings/security", icon: KeyRound },
-  { labelKey: "settings.navigation.preferences", href: "/settings/preferences", icon: Bell },
-  { labelKey: "settings.navigation.notifications", href: "/settings/notifications", icon: BellRing },
+  { labelKey: "settings.navigation.profile", href: "/dashboard/settings", icon: User },
+  { labelKey: "settings.navigation.security", href: "/dashboard/settings", icon: KeyRound },
+  { labelKey: "settings.navigation.preferences", href: "/dashboard/settings", icon: Bell },
+  { labelKey: "settings.navigation.notifications", href: "/dashboard/settings", icon: BellRing },
 ];
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {

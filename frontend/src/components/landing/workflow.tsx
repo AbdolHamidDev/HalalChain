@@ -81,8 +81,8 @@ export function WorkflowSection() {
                 </div>
 
                 {/* Content */}
-                <Card className="w-full border-border/40 bg-background/80 backdrop-blur-sm hover:shadow-md transition-all duration-300">
-                  <CardContent className="p-4 text-center space-y-2">
+                <Card className="w-full bg-card/60 backdrop-blur-sm transition-all duration-300">
+                  <CardContent className="p-5 text-center space-y-2">
                     <h3 className="font-display text-sm font-semibold tracking-tight">
                       {t(step.labelKey as TranslationKey)}
                     </h3>
@@ -98,8 +98,8 @@ export function WorkflowSection() {
 
         {/* Explanation card */}
         <div className="mt-16 max-w-3xl mx-auto">
-          <Card className="border-border/40 bg-background/80 backdrop-blur-sm">
-            <CardContent className="p-6 md:p-8 space-y-4">
+          <Card className="bg-card/60 backdrop-blur-sm">
+            <CardContent className="p-8 md:p-10 space-y-4">
               <h3 className="font-display text-subhead">
                 {t("landing.workflow.explanation.title")}
               </h3>

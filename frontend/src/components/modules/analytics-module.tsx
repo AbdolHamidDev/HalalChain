@@ -1,21 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
   Cell,
-  Line,
-  LineChart,
+  Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  Legend,
 } from "recharts";
 import { CalendarDays, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { api } from "@/lib/api";
@@ -34,38 +34,134 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+/* ── Helpers ──────────────────────────────────────────────────────── */
+
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   maximumFractionDigits: 0,
 });
 
-const PIE_COLORS = ["#0d6e4f", "#0284c7", "#d97706", "#dc2626", "#7c3aed", "#0891b2"];
+/* ── Theme-aware color palette ────────────────────────────────────── */
+const C = {
+  primary: "var(--chart-1)",
+  emerald: "var(--chart-2)",
+  amber: "var(--chart-3)",
+  red: "var(--chart-4)",
+  muted: "var(--chart-5)",
+  violet: "#7c3aed",
+  cyan: "#0891b2",
+} as const;
 
-type PieSliceLabelProps = {
-  name?: string | number;
-  percent?: number;
-};
+const DONUT_COLORS = [C.primary, C.emerald, C.amber, C.red, C.violet, C.cyan];
 
-function renderPieLabel(props: unknown) {
-  const { name, percent } = props as PieSliceLabelProps;
-  if (!percent || percent <= 0.05) {
-    return "";
-  }
+const AXIS = { fontSize: 12, fill: "var(--muted-foreground)", fontWeight: 400 as const };
+const GRID = { strokeDasharray: "3 3", stroke: "var(--border)", strokeOpacity: 0.45 };
 
-  return `${name ?? ""} ${(percent * 100).toFixed(0)}%`;
-}
-
-function RateBadge({ value, invert = false }: { value: number; invert?: boolean }) {
-  const good = invert ? value <= 10 : value >= 75;
-  const warn = invert ? value <= 25 : value >= 50;
+/* ── Shared tooltip ───────────────────────────────────────────────── */
+function Tip({
+  active,
+  payload,
+  label,
+  formatter,
+}: {
+  active?: boolean;
+  payload?: Array<{ name: string; value: number | string; color: string }>;
+  label?: string;
+  formatter?: (value: number | string, name: string) => string;
+}) {
+  if (!active || !payload?.length) return null;
   return (
-    <Badge variant={good ? "success" : warn ? "warning" : "danger"}>
-      {value.toFixed(1)}%
-    </Badge>
+    <div
+      className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3"
+      style={{ boxShadow: "0 4px 20px rgba(0,0,0,.08)" }}
+    >
+      {label && (
+        <p className="mb-1.5 text-xs font-medium text-[var(--muted-foreground)]">{label}</p>
+      )}
+      {payload.map((e) => (
+        <div key={e.name} className="flex items-center gap-2 text-sm">
+          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: e.color }} />
+          <span className="text-[var(--muted-foreground)]">{e.name}</span>
+          <span className="ml-auto font-semibold text-[var(--foreground)]">
+            {formatter ? formatter(e.value, e.name) : e.value}
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }
 
+/* ── Donut tooltip ────────────────────────────────────────────────── */
+function DonutTip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: Array<{ name: string; value: number; payload: { fill: string } }>;
+}) {
+  if (!active || !payload?.length) return null;
+  const e = payload[0];
+  return (
+    <div
+      className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3"
+      style={{ boxShadow: "0 4px 20px rgba(0,0,0,.08)" }}
+    >
+      <div className="flex items-center gap-2 text-sm">
+        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: e.payload.fill }} />
+        <span className="text-[var(--muted-foreground)]">{e.name}</span>
+        <span className="ml-auto font-semibold text-[var(--foreground)]">{e.value}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── Pie → Donut label ────────────────────────────────────────────── */
+type PieSliceLabelProps = { name?: string | number; percent?: number };
+function renderDonutLabel(props: unknown) {
+  const { name, percent } = props as PieSliceLabelProps;
+  if (!percent || percent <= 0.06) return null;
+  return `${name ?? ""} ${(percent * 100).toFixed(0)}%`;
+}
+
+/* ── Rate badge ───────────────────────────────────────────────────── */
+function RateBadge({ value, invert = false }: { value: number; invert?: boolean }) {
+  const good = invert ? value <= 10 : value >= 75;
+  const warn = invert ? value <= 25 : value >= 50;
+  return <Badge variant={good ? "success" : warn ? "warning" : "danger"}>{value.toFixed(1)}%</Badge>;
+}
+
+/* ── Section / Kpi helpers ────────────────────────────────────────── */
+function SectionHeading({ title }: { title: string }) {
+  return <h2 className="text-lg font-semibold tracking-tight">{title}</h2>;
+}
+
+function KpiCard({
+  title,
+  value,
+  note,
+  icon,
+}: {
+  title: string;
+  value: React.ReactNode;
+  note: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+        <CardTitle className="text-xs font-medium text-muted-foreground">{title}</CardTitle>
+        <span className="text-muted-foreground">{icon}</span>
+      </CardHeader>
+      <CardContent className="space-y-1">
+        <div>{value}</div>
+        <p className="text-xs text-muted-foreground">{note}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ── ChartCard wrapper ────────────────────────────────────────────── */
 function ChartCard({
   title,
   children,
@@ -77,40 +173,238 @@ function ChartCard({
 }) {
   return (
     <Card className={className}>
-      <CardHeader>
-        <CardTitle className="text-base">{title}</CardTitle>
+      <CardHeader className="pb-0">
+        <CardTitle className="text-[15px]">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          {children}
-        </ResponsiveContainer>
+      <CardContent className="h-64 pt-4">
+        <ResponsiveContainer width="100%" height="100%">{children}</ResponsiveContainer>
       </CardContent>
     </Card>
   );
 }
 
-function SectionHeading({ title }: { title: string }) {
-  return (
-    <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-  );
-}
-
+/* ── Skeleton ─────────────────────────────────────────────────────── */
 function AnalyticsSkeleton() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-28 animate-pulse rounded-lg border bg-muted/30" />
+          <div key={i} className="h-28 animate-pulse rounded-3xl bg-muted/30" />
         ))}
       </div>
       <div className="grid gap-4 xl:grid-cols-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-72 animate-pulse rounded-lg border bg-muted/30" />
+          <div key={i} className="h-72 animate-pulse rounded-3xl bg-muted/30" />
         ))}
       </div>
     </div>
   );
 }
+
+/* ════════════════════════════════════════════════════════════════════ */
+/* Individual chart compositions                                       */
+/* ════════════════════════════════════════════════════════════════════ */
+
+/** Area Chart – Inventory Value Trend */
+function InventoryValueArea({ data }: { data: { month: string; value: number }[] }) {
+  const id = useId();
+  return (
+    <AreaChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+      <defs>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={C.primary} stopOpacity={0.28} />
+          <stop offset="95%" stopColor={C.primary} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid {...GRID} vertical={false} />
+      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={AXIS} tickMargin={10} />
+      <YAxis
+        axisLine={false}
+        tickLine={false}
+        tick={AXIS}
+        tickFormatter={(v) => `$${(Number(v) / 1000).toFixed(0)}k`}
+      />
+      <Tooltip
+        content={<Tip formatter={(v) => money.format(Number(v))} />}
+      />
+      <Area
+        type="monotone"
+        dataKey="value"
+        name="Value"
+        stroke={C.primary}
+        strokeWidth={2.2}
+        fill={`url(#${id}-g)`}
+        dot={false}
+        activeDot={{ r: 5, strokeWidth: 2, fill: "var(--card)", stroke: C.primary }}
+      />
+    </AreaChart>
+  );
+}
+
+/** Stacked Bar Chart – Inbound / Outbound */
+function InboundOutboundStacked({
+  data,
+}: {
+  data: { month: string; inbound: number; outbound: number }[];
+}) {
+  const id = useId();
+  return (
+    <BarChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+      <defs>
+        <linearGradient id={`${id}-in`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={C.emerald} stopOpacity={1} />
+          <stop offset="100%" stopColor={C.emerald} stopOpacity={0.65} />
+        </linearGradient>
+        <linearGradient id={`${id}-out`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={C.red} stopOpacity={1} />
+          <stop offset="100%" stopColor={C.red} stopOpacity={0.65} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid {...GRID} vertical={false} />
+      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={AXIS} tickMargin={10} />
+      <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={AXIS} />
+      <Tooltip
+        cursor={{ fill: "var(--muted)", opacity: 0.35 }}
+        content={<Tip />}
+      />
+      <Legend
+        iconType="circle"
+        iconSize={8}
+        wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }}
+      />
+      <Bar dataKey="inbound" name="Inbound" stackId="a" fill={`url(#${id}-in)`} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="outbound" name="Outbound" stackId="a" fill={`url(#${id}-out)`} radius={[6, 6, 0, 0]} />
+    </BarChart>
+  );
+}
+
+/** Horizontal Bar Chart – Inventory by Warehouse */
+function WarehouseBar({ data }: { data: { warehouseName: string; totalValue: number }[] }) {
+  const id = useId();
+  return (
+    <BarChart data={data} layout="vertical" margin={{ top: 4, right: 8, left: 4, bottom: 0 }}>
+      <defs>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor={C.emerald} stopOpacity={0.65} />
+          <stop offset="100%" stopColor={C.emerald} stopOpacity={1} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid {...GRID} horizontal={false} />
+      <XAxis
+        type="number"
+        axisLine={false}
+        tickLine={false}
+        tick={AXIS}
+        tickFormatter={(v) => `$${(Number(v) / 1000).toFixed(0)}k`}
+      />
+      <YAxis
+        type="category"
+        dataKey="warehouseName"
+        width={110}
+        axisLine={false}
+        tickLine={false}
+        tick={AXIS}
+      />
+      <Tooltip
+        content={<Tip formatter={(v) => money.format(Number(v))} />}
+      />
+      <Bar dataKey="totalValue" name="Value" fill={`url(#${id}-g)`} radius={[0, 6, 6, 0]} maxBarSize={28} />
+    </BarChart>
+  );
+}
+
+/** Bar Chart – Orders per month */
+function OrdersBar({ data }: { data: { month: string; orders: number }[] }) {
+  const id = useId();
+  return (
+    <BarChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+      <defs>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={C.emerald} stopOpacity={1} />
+          <stop offset="100%" stopColor={C.emerald} stopOpacity={0.65} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid {...GRID} vertical={false} />
+      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={AXIS} tickMargin={10} />
+      <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={AXIS} />
+      <Tooltip
+        cursor={{ fill: "var(--muted)", opacity: 0.35 }}
+        content={<Tip />}
+      />
+      <Bar dataKey="orders" name="Orders" fill={`url(#${id}-g)`} radius={[6, 6, 0, 0]} maxBarSize={48} />
+    </BarChart>
+  );
+}
+
+/** Donut Chart – Status distribution */
+function StatusDonut({
+  data,
+  colors = DONUT_COLORS,
+}: {
+  data: { status: string; count: number }[];
+  colors?: string[];
+}) {
+  return (
+    <PieChart>
+      <Pie
+        data={data}
+        dataKey="count"
+        nameKey="status"
+        cx="50%"
+        cy="50%"
+        innerRadius={52}
+        outerRadius={86}
+        paddingAngle={3}
+        label={renderDonutLabel}
+        labelLine={false}
+        strokeWidth={0}
+      >
+        {data.map((_, i) => (
+          <Cell key={i} fill={colors[i % colors.length]} />
+        ))}
+      </Pie>
+      <Tooltip content={<DonutTip />} />
+      <Legend
+        iconType="circle"
+        iconSize={8}
+        wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }}
+      />
+    </PieChart>
+  );
+}
+
+/** Area Chart – Shipment Volume Trend */
+function ShipmentVolumeArea({ data }: { data: { month: string; shipments: number }[] }) {
+  const id = useId();
+  return (
+    <AreaChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+      <defs>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={C.amber} stopOpacity={0.28} />
+          <stop offset="95%" stopColor={C.amber} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid {...GRID} vertical={false} />
+      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={AXIS} tickMargin={10} />
+      <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={AXIS} />
+      <Tooltip content={<Tip />} />
+      <Area
+        type="monotone"
+        dataKey="shipments"
+        name="Shipments"
+        stroke={C.amber}
+        strokeWidth={2.2}
+        fill={`url(#${id}-g)`}
+        dot={false}
+        activeDot={{ r: 5, strokeWidth: 2, fill: "var(--card)", stroke: C.amber }}
+      />
+    </AreaChart>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════ */
+/* Main Module                                                         */
+/* ════════════════════════════════════════════════════════════════════ */
 
 export function AnalyticsModule() {
   const { t } = useTranslation();
@@ -189,6 +483,7 @@ export function AnalyticsModule() {
       {!isLoading && !isError && inv && po && ship && cert && (
         <div className="space-y-10">
 
+          {/* ── Purchase Orders ─────────────────────────────────── */}
           <section className="space-y-4">
             <SectionHeading title={t("analytics.purchaseOrders.title")} />
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -232,38 +527,16 @@ export function AnalyticsModule() {
 
             <div className="grid gap-4 xl:grid-cols-2">
               <ChartCard title={t("analytics.purchaseOrders.ordersPerMonth")}>
-                <BarChart data={po.ordersPerMonth}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" tickMargin={8} tick={{ fontSize: 11 }} />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Bar dataKey="orders" fill="#0d6e4f" radius={[4, 4, 0, 0]} />
-                </BarChart>
+                <OrdersBar data={po.ordersPerMonth} />
               </ChartCard>
 
               <ChartCard title={t("analytics.purchaseOrders.statusDistribution")}>
-                <PieChart>
-                  <Pie
-                    data={po.statusBreakdown}
-                    dataKey="count"
-                    nameKey="status"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={90}
-                    label={renderPieLabel}
-                    labelLine={false}
-                  >
-                    {po.statusBreakdown.map((_, index) => (
-                      <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value, name) => [value, name]} />
-                  <Legend />
-                </PieChart>
+                <StatusDonut data={po.statusBreakdown} />
               </ChartCard>
             </div>
           </section>
 
+          {/* ── Shipments ───────────────────────────────────────── */}
           <section className="space-y-4">
             <SectionHeading title={t("analytics.shipments.title")} />
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -297,78 +570,45 @@ export function AnalyticsModule() {
 
             <div className="grid gap-4 xl:grid-cols-2">
               <ChartCard title={t("analytics.shipments.volumeTrend")}>
-                <LineChart data={ship.shipmentVolumeTrend}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" tickMargin={8} tick={{ fontSize: 11 }} />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="shipments" stroke="#0284c7" strokeWidth={2} dot={{ fill: "#0284c7" }} />
-                </LineChart>
+                <ShipmentVolumeArea data={ship.shipmentVolumeTrend} />
               </ChartCard>
 
               <ChartCard title={t("analytics.shipments.shipmentStatusDistribution")}>
-                <PieChart>
-                  <Pie data={ship.statusBreakdown} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={90} label={renderPieLabel} labelLine={false}>
-                    {ship.statusBreakdown.map((_, index) => (
-                      <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
+                <StatusDonut data={ship.statusBreakdown} />
               </ChartCard>
             </div>
           </section>
 
+          {/* ── Inventory ───────────────────────────────────────── */}
           <section className="space-y-4">
             <SectionHeading title={t("analytics.inventory.title")} />
 
             <div className="grid gap-4 xl:grid-cols-2">
               <ChartCard title={t("analytics.inventory.valueTrend")}>
-                <LineChart data={inv.inventoryValueTrend}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" tickMargin={8} tick={{ fontSize: 11 }} />
-                  <YAxis tickFormatter={(v) => `$${(v as number / 1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(v) => money.format(v as number)} />
-                  <Line type="monotone" dataKey="value" stroke="#0d6e4f" strokeWidth={2} dot={{ fill: "#0d6e4f" }} />
-                </LineChart>
+                <InventoryValueArea data={inv.inventoryValueTrend} />
               </ChartCard>
 
               <ChartCard title={t("analytics.inventory.inboundOutbound")}>
-                <BarChart
+                <InboundOutboundStacked
                   data={inv.inboundTrend.map((row, i) => ({
                     month: row.month,
                     inbound: row.value,
                     outbound: inv.outboundTrend[i]?.value ?? 0,
                   }))}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" tickMargin={8} tick={{ fontSize: 11 }} />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="inbound" fill="#0d6e4f" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="outbound" fill="#dc2626" radius={[4, 4, 0, 0]} />
-                </BarChart>
+                />
               </ChartCard>
             </div>
 
             <div className="grid gap-4 xl:grid-cols-2">
               <ChartCard title={t("analytics.inventory.byWarehouse")}>
-                <BarChart data={inv.inventoryByWarehouse} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis type="number" tickFormatter={(v) => `$${(v as number / 1000).toFixed(0)}k`} />
-                  <YAxis type="category" dataKey="warehouseName" width={110} tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={(v) => money.format(v as number)} />
-                  <Bar dataKey="totalValue" fill="#0284c7" radius={[0, 4, 4, 0]} />
-                </BarChart>
+                <WarehouseBar data={inv.inventoryByWarehouse} />
               </ChartCard>
 
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">{t("analytics.inventory.topStocked")}</CardTitle>
+                <CardHeader className="pb-0">
+                  <CardTitle className="text-[15px]">{t("analytics.inventory.topStocked")}</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-4">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -396,10 +636,10 @@ export function AnalyticsModule() {
 
             <div className="grid gap-4 xl:grid-cols-2">
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">{t("analytics.inventory.fastMoving")}</CardTitle>
+                <CardHeader className="pb-0">
+                  <CardTitle className="text-[15px]">{t("analytics.inventory.fastMoving")}</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-4">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -431,10 +671,10 @@ export function AnalyticsModule() {
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">{t("analytics.inventory.slowMoving")}</CardTitle>
+                <CardHeader className="pb-0">
+                  <CardTitle className="text-[15px]">{t("analytics.inventory.slowMoving")}</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-4">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -459,6 +699,7 @@ export function AnalyticsModule() {
             </div>
           </section>
 
+          {/* ── Certificates ────────────────────────────────────── */}
           <section className="space-y-4">
             <SectionHeading title={t("analytics.certificates.title")} />
             <div className="grid gap-4 sm:grid-cols-3">
@@ -482,70 +723,58 @@ export function AnalyticsModule() {
               />
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">{t("analytics.certificates.supplierScore")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t("suppliers.pageTitle")}</TableHead>
-                      <TableHead className="text-right">{t("analytics.certificates.score")}</TableHead>
-                      <TableHead className="text-right">{t("analytics.certificates.activeCerts")}</TableHead>
-                      <TableHead className="text-right">{t("analytics.certificates.totalCerts")}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {cert.supplierComplianceScore.length === 0 ? (
+            <div className="grid gap-4 xl:grid-cols-2">
+              <ChartCard title="Certificate Status">
+                <StatusDonut
+                  data={[
+                    { status: "Active", count: cert.activeCertificates },
+                    { status: "Expiring", count: cert.expiringCertificates },
+                    { status: "Expired", count: cert.expiredCertificates },
+                  ]}
+                  colors={[C.primary, C.amber, C.red]}
+                />
+              </ChartCard>
+
+              <Card>
+                <CardHeader className="pb-0">
+                  <CardTitle className="text-[15px]">{t("analytics.certificates.supplierScore")}</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center text-sm text-muted-foreground py-6">
-                          {t("analytics.certificates.noSupplierData")}
-                        </TableCell>
+                        <TableHead>{t("suppliers.pageTitle")}</TableHead>
+                        <TableHead className="text-right">{t("analytics.certificates.score")}</TableHead>
+                        <TableHead className="text-right">{t("analytics.certificates.activeCerts")}</TableHead>
+                        <TableHead className="text-right">{t("analytics.certificates.totalCerts")}</TableHead>
                       </TableRow>
-                    ) : (
-                      cert.supplierComplianceScore.map((row) => (
-                        <TableRow key={row.supplierId}>
-                          <TableCell className="font-medium">{row.supplierName}</TableCell>
-                          <TableCell className="text-right"><RateBadge value={row.score} /></TableCell>
-                          <TableCell className="text-right tabular-nums">{row.activeCertificates}</TableCell>
-                          <TableCell className="text-right tabular-nums">{row.totalCertificates}</TableCell>
+                    </TableHeader>
+                    <TableBody>
+                      {cert.supplierComplianceScore.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center text-sm text-muted-foreground py-6">
+                            {t("analytics.certificates.noSupplierData")}
+                          </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                      ) : (
+                        cert.supplierComplianceScore.map((row) => (
+                          <TableRow key={row.supplierId}>
+                            <TableCell className="font-medium">{row.supplierName}</TableCell>
+                            <TableCell className="text-right"><RateBadge value={row.score} /></TableCell>
+                            <TableCell className="text-right tabular-nums">{row.activeCertificates}</TableCell>
+                            <TableCell className="text-right tabular-nums">{row.totalCertificates}</TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
           </section>
 
         </div>
       )}
     </div>
-  );
-}
-
-function KpiCard({
-  title,
-  value,
-  note,
-  icon,
-}: {
-  title: string;
-  value: React.ReactNode;
-  note: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-        <CardTitle className="text-xs font-medium text-muted-foreground">{title}</CardTitle>
-        <span className="text-muted-foreground">{icon}</span>
-      </CardHeader>
-      <CardContent className="space-y-1">
-        <div>{value}</div>
-        <p className="text-xs text-muted-foreground">{note}</p>
-      </CardContent>
-    </Card>
   );
 }

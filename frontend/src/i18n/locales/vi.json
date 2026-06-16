@@ -110,14 +110,22 @@
     "certificates": "Chứng chỉ",
     "reports": "Báo cáo",
     "analytics": "Phân tích",
-    "userManagement": "Quản lý người dùng"
+    "userManagement": "Quản lý người dùng",
+    "settings": "Cài đặt"
   },
   "sidebar": {
     "brand": "HalalChain",
     "platform": "Nền tảng Tuân thủ",
     "navigation": "Điều hướng",
     "collapseSidebar": "Thu gọn sidebar",
-    "expandSidebar": "Mở rộng sidebar"
+    "expandSidebar": "Mở rộng sidebar",
+    "groups": {
+      "overview": "Tổng quan",
+      "supplyChain": "Chuỗi cung ứng",
+      "operations": "Vận hành",
+      "insights": "Phân tích",
+      "administration": "Quản trị"
+    }
   },
   "notifications": {
     "title": "Thông báo",
@@ -142,7 +150,9 @@
       "techStack": "Công nghệ",
       "signIn": "Đăng nhập",
       "getStarted": "Bắt đầu",
-      "toggleMenu": "Chuyển menu"
+      "toggleMenu": "Chuyển menu",
+      "dashboard": "Dashboard",
+      "logout": "Đăng xuất"
     },
     "hero": {
       "badge": "Nền tảng Tuân thủ & Truy xuất Chuỗi Cung ứng",
@@ -1173,6 +1183,12 @@
       "security": "Bảo mật",
       "notifications": "Thông báo",
       "preferences": "Tùy chọn"
+    },
+    "navigation": {
+      "profile": "Hồ sơ",
+      "security": "Bảo mật",
+      "preferences": "Tùy chọn",
+      "notifications": "Thông báo"
     },
     "profile": {
       "title": "Thông tin hồ sơ",
