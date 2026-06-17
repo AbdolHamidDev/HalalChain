@@ -13,31 +13,28 @@ import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Shimmer } from "@/components/shared/shimmer";
 
-function SkeletonLine({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse bg-muted rounded ${className}`} />;
-}
-
-function ProfileSkeleton({ t }: { t: I18nContextValue["t"] }) {
+function ProfileSkeleton() {
   return (
     <div className="space-y-6">
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
-            <SkeletonLine className="h-20 w-20 rounded-full" />
+            <Shimmer className="h-20 w-20 rounded-full" />
             <div className="space-y-2">
-              <SkeletonLine className="h-9 w-28" />
-              <SkeletonLine className="h-9 w-24" />
+              <Shimmer className="h-9 w-28" />
+              <Shimmer className="h-9 w-24" />
             </div>
           </div>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="pt-6 space-y-4">
-          <div className="space-y-2"><SkeletonLine className="h-4 w-24" /><SkeletonLine className="h-[38px] w-full" /></div>
-          <div className="space-y-2"><SkeletonLine className="h-4 w-16" /><SkeletonLine className="h-5 w-48" /></div>
-          <div className="space-y-2"><SkeletonLine className="h-4 w-12" /><SkeletonLine className="h-6 w-20 rounded-full" /></div>
-          <SkeletonLine className="h-[38px] w-32" />
+          <div className="space-y-2"><Shimmer className="h-4 w-24" /><Shimmer className="h-[38px] w-full" /></div>
+          <div className="space-y-2"><Shimmer className="h-4 w-16" /><Shimmer className="h-5 w-48" /></div>
+          <div className="space-y-2"><Shimmer className="h-4 w-12" /><Shimmer className="h-6 w-20 rounded-full" /></div>
+          <Shimmer className="h-[38px] w-32" />
         </CardContent>
       </Card>
     </div>
@@ -121,7 +118,7 @@ export function ProfileSection() {
 
   const isSaveDisabled = isSubmitting || currentName === savedName || !profile;
 
-  if (loading) return <ProfileSkeleton t={t} />;
+  if (loading) return <ProfileSkeleton />;
 
   if (error) {
     return (

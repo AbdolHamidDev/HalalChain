@@ -36,6 +36,7 @@ import { UserDetailDrawer } from "@/components/modules/user-detail-drawer";
 import { InviteUserDialog } from "@/components/modules/invite-user-dialog";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { useDebounce } from "@/lib/useDebounce";
+import { Shimmer } from "@/components/shared/shimmer";
 
 function getInitials(name: string) {
   return name
@@ -54,17 +55,6 @@ function roleBadgeVariant(role: UserRole): BadgeProps["variant"] {
   }
 }
 
-function SkeletonRow() {
-  return (
-    <TableRow>
-      {[...Array(6)].map((_, i) => (
-        <TableCell key={i}>
-          <div className="h-4 animate-pulse rounded bg-muted" />
-        </TableCell>
-      ))}
-    </TableRow>
-  );
-}
 
 function StatCard({ label, value, color }: { label: string; value: number; color?: "emerald" | "red" | "amber" }) {
   const colorMap = { emerald: "text-emerald-500", red: "text-red-500", amber: "text-amber-500" };
@@ -217,7 +207,15 @@ export default function UsersPage() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                Array.from({ length: PAGE_LIMIT }).map((_, i) => <SkeletonRow key={i} />)
+                Array.from({ length: PAGE_LIMIT }).map((_, i) => (
+                  <TableRow key={i}>
+                    {[...Array(6)].map((_, j) => (
+                      <TableCell key={j}>
+                        <Shimmer className="h-4 w-full" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
               ) : users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">

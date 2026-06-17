@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Copy, Check, Loader2, UserPlus, Trash2, Clock } from "lucide-react";
+import { Copy, Check, UserPlus, Trash2, Clock } from "lucide-react";
 import { api, type Invitation, type UserRole } from "@/lib/api";
 import { useTranslation } from "@/i18n/hooks";
 import {
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Shimmer } from "@/components/shared/shimmer";
 
 interface InviteUserDialogProps {
   open: boolean;
@@ -113,7 +114,7 @@ export function InviteUserDialog({ open, onClose }: InviteUserDialogProps) {
           </div>
           <div className="flex justify-end">
             <Button onClick={handleSend} disabled={sending} className="gap-1.5">
-              {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+              {sending ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <UserPlus className="h-4 w-4" />}
               {t("users.sendInvite")}
             </Button>
           </div>
@@ -135,7 +136,7 @@ export function InviteUserDialog({ open, onClose }: InviteUserDialogProps) {
             <Separator className="my-4" />
             <div className="space-y-2">
               <p className="text-sm font-semibold">{t("users.invitations")}</p>
-              {loadingInvites ? <div className="h-8 animate-pulse rounded bg-muted" /> : (
+              {loadingInvites ? <Shimmer className="h-8 w-full rounded" /> : (
                 <ul className="space-y-2">
                   {invitations.map((inv) => (
                     <li key={inv.id} className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2">
@@ -150,7 +151,7 @@ export function InviteUserDialog({ open, onClose }: InviteUserDialogProps) {
                         </div>
                       </div>
                       <Button size="sm" variant="ghost" onClick={() => handleRevoke(inv.id)} disabled={revoking === inv.id} className="shrink-0 text-muted-foreground hover:text-destructive" aria-label={t("users.revoke")}>
-                        {revoking === inv.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                        {revoking === inv.id ? <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <Trash2 className="h-3.5 w-3.5" />}
                       </Button>
                     </li>
                   ))}

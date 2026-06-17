@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { PlayCircle, Maximize2, Monitor } from "lucide-react";
 import { useTranslation } from "@/i18n/hooks";
+import { Shimmer } from "@/components/shared/shimmer";
 
 export function DemoShowcaseSection() {
   const { t } = useTranslation();
@@ -76,12 +77,7 @@ export function DemoShowcaseSection() {
                 {/* Loading shimmer */}
                 {!isLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-12 h-12 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
-                      <span className="text-xs text-muted-foreground/50">
-                        {t("landing.demoShowcase.loading")}
-                      </span>
-                    </div>
+                    <Shimmer className="w-12 h-12 rounded-full" />
                   </div>
                 )}
 
@@ -108,7 +104,7 @@ export function DemoShowcaseSection() {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span className="text-[11px] text-muted-foreground/50">
                     {t("landing.demoShowcase.liveLabel")}
                   </span>

@@ -8,6 +8,7 @@ import { useTranslation } from "@/i18n/hooks";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Shimmer } from "@/components/shared/shimmer";
 
 type FormState = {
   certificateAlerts: boolean;
@@ -30,14 +31,14 @@ function PreferenceSkeleton() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="flex items-center justify-between">
             <div className="space-y-1.5 flex-1">
-              <div className="h-4 w-36 animate-pulse rounded bg-muted" />
-              <div className="h-3 w-56 animate-pulse rounded bg-muted" />
+              <Shimmer className="h-4 w-36" />
+              <Shimmer className="h-3 w-56" />
             </div>
-            <div className="h-5 w-5 animate-pulse rounded-full bg-muted shrink-0" />
+            <Shimmer className="h-5 w-5 rounded-full shrink-0" />
           </div>
         ))}
         <div className="flex justify-end pt-2">
-          <div className="h-9 w-24 animate-pulse rounded bg-muted" />
+          <Shimmer className="h-9 w-24" />
         </div>
       </CardContent>
     </Card>

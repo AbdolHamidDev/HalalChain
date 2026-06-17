@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useActivityStream } from "@/lib/useActivityStream";
 import { useState, useEffect } from "react";
+import { Shimmer } from "@/components/shared/shimmer";
 
 interface ActivityItem {
   id: string;
@@ -48,7 +49,7 @@ export function ActivityFeed() {
     return (
       <div className="space-y-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-4 w-full animate-pulse rounded bg-muted" />
+          <Shimmer key={i} className="h-4 w-full" />
         ))}
       </div>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import {
   AlertCircle,
   Loader2,
@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/hooks";
-import { useMemo } from "react";
+import { Shimmer } from "@/components/shared/shimmer";
 
 // ─── Loading ─────────────────────────────────────────────────────────────────
 
@@ -55,7 +55,7 @@ export function TableSkeleton({ columns = 5, rows = 5 }: TableSkeletonProps) {
           <tr className="border-b">
             {Array.from({ length: columns }).map((_, i) => (
               <th key={i} className="h-11 px-4">
-                <div className="h-3 w-20 animate-pulse rounded bg-muted" />
+                <Shimmer className="h-3 w-20" />
               </th>
             ))}
           </tr>
@@ -65,8 +65,8 @@ export function TableSkeleton({ columns = 5, rows = 5 }: TableSkeletonProps) {
             <tr key={row} className="border-b">
               {Array.from({ length: columns }).map((_, col) => (
                 <td key={col} className="px-4 py-3">
-                  <div
-                    className="h-3 animate-pulse rounded bg-muted"
+                  <Shimmer
+                    className="h-3"
                     style={{ width: `${60 + ((row * 3 + col * 7) % 40)}%` }}
                   />
                 </td>

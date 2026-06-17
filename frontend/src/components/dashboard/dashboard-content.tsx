@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState, ErrorState } from "@/components/shared/state-blocks";
+import { Shimmer } from "@/components/shared/shimmer";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -206,12 +207,24 @@ function DashboardSkeleton() {
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="h-32 animate-pulse rounded-3xl bg-muted/30" />
+          <div key={index} className="h-32 rounded-3xl border bg-card p-5">
+            <div className="flex items-center justify-between">
+              <Shimmer className="h-4 w-24" />
+              <Shimmer className="h-8 w-8 rounded-xl" />
+            </div>
+            <div className="mt-4 space-y-2">
+              <Shimmer className="h-7 w-20" />
+              <Shimmer className="h-3 w-32" />
+            </div>
+          </div>
         ))}
       </div>
       <div className="grid gap-4 xl:grid-cols-2">
         {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="h-80 animate-pulse rounded-3xl bg-muted/30" />
+          <div key={index} className="h-80 rounded-3xl border bg-card p-5">
+            <Shimmer className="mb-4 h-4 w-28" />
+            <Shimmer className="h-56 w-full" />
+          </div>
         ))}
       </div>
     </div>

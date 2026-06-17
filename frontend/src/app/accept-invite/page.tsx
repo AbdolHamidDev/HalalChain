@@ -2,11 +2,12 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { api, type UserRole } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import { useTranslation } from "@/i18n/hooks";
+import { Shimmer } from "@/components/shared/shimmer";
 
 function AcceptInviteForm() {
   const { t } = useTranslation();
@@ -92,7 +93,7 @@ function AcceptInviteForm() {
   if (validating) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <Shimmer className="h-6 w-6 rounded-full" />
       </div>
     );
   }
@@ -191,7 +192,7 @@ function AcceptInviteForm() {
 
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             ) : (
               t("acceptInvite.submit")
             )}
@@ -207,7 +208,7 @@ export default function AcceptInvitePage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <Shimmer className="h-6 w-6 rounded-full" />
         </div>
       }
     >

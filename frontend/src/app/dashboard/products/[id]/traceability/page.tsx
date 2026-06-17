@@ -8,6 +8,7 @@ import {
 } from "@/components/traceability/traceability-timeline";
 import { AlertCircle, ArrowLeft, PackageSearch } from "lucide-react";
 import Link from "next/link";
+import { Shimmer } from "@/components/shared/shimmer";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,8 +57,8 @@ function TraceabilitySkeleton() {
     <div className="space-y-6" aria-busy="true" aria-label="Loading traceability data">
       {/* Header skeleton */}
       <div className="space-y-2">
-        <div className="h-7 w-48 animate-pulse rounded bg-muted" />
-        <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+        <Shimmer className="h-7 w-48" />
+        <Shimmer className="h-4 w-32" />
       </div>
 
       {/* Timeline skeleton rows */}
@@ -67,11 +68,11 @@ function TraceabilitySkeleton() {
             {i < 4 && (
               <span className="absolute left-5 top-10 bottom-0 w-px bg-border" aria-hidden="true" />
             )}
-            <div className="relative z-10 h-10 w-10 shrink-0 animate-pulse rounded-full bg-muted" />
+            <Shimmer className="relative z-10 h-10 w-10 shrink-0 rounded-full" />
             <div className="flex-1 pb-8 space-y-2">
-              <div className="h-4 w-40 animate-pulse rounded bg-muted" />
-              <div className="h-3 w-56 animate-pulse rounded bg-muted" />
-              <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+              <Shimmer className="h-4 w-40" />
+              <Shimmer className="h-3 w-56" />
+              <Shimmer className="h-3 w-24" />
             </div>
           </li>
         ))}
