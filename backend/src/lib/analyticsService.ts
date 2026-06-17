@@ -86,12 +86,12 @@ export async function getInventoryAnalytics(
       ORDER BY month_start ASC
     `,
     prisma.$queryRaw<InventoryValueRow[]>`
-      SELECT date_trunc('month', updated_at) AS month_start,
+      SELECT date_trunc('month', i.updated_at) AS month_start,
              SUM(i.quantity * p.unit_price)::numeric AS total_value
       FROM inventory i
       JOIN products p ON p.id = i.product_id
       WHERE i.updated_at >= ${range.from} AND i.updated_at <= ${range.to}
-      GROUP BY date_trunc('month', updated_at)
+      GROUP BY date_trunc('month', i.updated_at)
       ORDER BY month_start ASC
     `,
     prisma.inventory.count({

@@ -27,6 +27,10 @@ import profileRoutes from "./routes/profile";
 import adminUserRoutes from "./routes/admin-users";
 import invitationRoutes from "./routes/invitations";
 import { notificationsRouter } from "./routes/settings";
+import batchLotRoutes from "./routes/batch-lots";
+import warehouseZoneRoutes from "./routes/warehouse-zones";
+import supplierContactRoutes from "./routes/supplier-contacts";
+import tagRoutes from "./routes/tags";
 
 // Ensure the avatar upload directory exists before the app starts handling requests
 fs.mkdirSync(path.join(process.cwd(), "uploads", "avatars"), { recursive: true });
@@ -113,6 +117,10 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/invitations", invitationRoutes);
 app.use("/api/settings/notifications", notificationsRouter);
+app.use("/api/batch-lots", batchLotRoutes);
+app.use("/api/warehouse-zones", warehouseZoneRoutes);
+app.use("/api/supplier-contacts", supplierContactRoutes);
+app.use("/api/tags", tagRoutes);
 app.use("/uploads/avatars", express.static(path.join(process.cwd(), "uploads", "avatars")));
 
 app.use(

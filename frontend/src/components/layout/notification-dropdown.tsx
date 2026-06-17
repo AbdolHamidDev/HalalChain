@@ -28,15 +28,21 @@ const typeVariant: Record<
 > = {
   LOW_STOCK: "warning",
   CERTIFICATE_EXPIRING: "danger",
+  CERTIFICATE_EXPIRED: "danger",
   SHIPMENT_DELAYED: "info",
   SYSTEM: "default",
+  COMPLIANCE_ISSUE: "danger",
+  BATCH_EXPIRING: "warning",
 };
 
 const typeKeys: Record<Notification["type"], string> = {
   LOW_STOCK: "notifications.types.lowStock",
   CERTIFICATE_EXPIRING: "notifications.types.certificateExpiring",
+  CERTIFICATE_EXPIRED: "notifications.types.certificateExpired",
   SHIPMENT_DELAYED: "notifications.types.shipmentDelayed",
   SYSTEM: "notifications.types.system",
+  COMPLIANCE_ISSUE: "notifications.types.complianceIssue",
+  BATCH_EXPIRING: "notifications.types.batchExpiring",
 };
 
 async function markAllRead(): Promise<{ updated: number }> {
@@ -64,6 +70,12 @@ export function NotificationDropdown({
 
   const recent = notifications.slice(0, 10);
 
+  // Guard: ensure t() never receives undefined to prevent split() crash
+  function safeT(key: string | undefined): string {
+    if (!key) return "";
+    return t(key as any);
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -71,41 +83,33 @@ export function NotificationDropdown({
           variant="ghost"
           size="icon"
           className="relative"
-          aria-label={t("notifications.title")}
+          aria-label={`${unreadCount} unread notifications`}
         >
-          <Bell className="h-4 w-4" />
+          <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] max-w-80 sm:w-80">
-        <div className="flex items-center justify-between px-2 py-1.5">
-          <DropdownMenuLabel className="px-0 py-0">
-            {t("notifications.title")}
-            {unreadCount > 0 && (
-              <span className="ml-1.5 text-xs font-normal text-muted-foreground">
-                ({t("notifications.unread", { values: { count: unreadCount } })})
-              </span>
-            )}
-          </DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-80">
+        <DropdownMenuLabel className="flex items-center justify-between">
+          <span>{t("notifications.title")}</span>
           {unreadCount > 0 && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                markAll();
-              }}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-auto px-2 py-1 text-xs"
+              onClick={() => markAll()}
               disabled={isPending}
-              className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
             >
-              <CheckCheck className="h-3 w-3" />
-              {t("notifications.markAllRead")}
-            </button>
+              <CheckCheck className="mr-1 h-3 w-3" />
+              {t("common.markAllRead")}
+            </Button>
           )}
-        </div>
+        </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
@@ -133,7 +137,7 @@ export function NotificationDropdown({
                   variant={typeVariant[notification.type]}
                   className="shrink-0 text-[10px]"
                 >
-                  {t(typeKeys[notification.type] as any)}
+                  {safeT(typeKeys[notification.type])}
                 </Badge>
               </div>
 
@@ -148,10 +152,21 @@ export function NotificationDropdown({
               </span>
 
               {!notification.isRead && (
-                <span className="absolute right-2 top-3 h-1.5 w-1.5 rounded-full bg-primary" />
+                <span className="absolute bottom-2 right-2 h-2 w-2 rounded-full bg-blue-500" />
               )}
             </DropdownMenuItem>
           ))
+        )}
+
+        {notifications.length > 10 && (
+          <>
+            <DropdownMenuSeparator />
+            <div className="px-2 py-1.5 text-center">
+              <Button variant="ghost" size="sm" className="h-auto text-xs">
+                {t("notifications.viewAll")}
+              </Button>
+            </div>
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

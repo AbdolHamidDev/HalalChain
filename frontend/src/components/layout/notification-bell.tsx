@@ -9,7 +9,7 @@ export interface Notification {
   userId: string | null;
   title: string;
   message: string;
-  type: "LOW_STOCK" | "CERTIFICATE_EXPIRING" | "SHIPMENT_DELAYED" | "SYSTEM";
+  type: "LOW_STOCK" | "CERTIFICATE_EXPIRING" | "CERTIFICATE_EXPIRED" | "SHIPMENT_DELAYED" | "SYSTEM" | "COMPLIANCE_ISSUE" | "BATCH_EXPIRING";
   isRead: boolean;
   createdAt: string;
 }
