@@ -164,7 +164,7 @@ export default function DemoPage() {
 
           {/* Certificate summary */}
           {demoData.certificates.length > 0 && (
-            <div className="mt-4 rounded-lg border bg-card p-4">
+            <div className="mt-4 rounded-lg bg-card p-4">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 Halal Certificates
               </h2>
@@ -191,7 +191,7 @@ export default function DemoPage() {
 
           {/* Shipments summary */}
           {demoData.shipments.length > 0 && (
-            <div className="mt-4 rounded-lg border bg-card p-4">
+            <div className="mt-4 rounded-lg bg-card p-4">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 Shipments
               </h2>
@@ -217,7 +217,7 @@ export default function DemoPage() {
         </section>
 
         {/* QR Code Info */}
-        <section className="mt-12 rounded-xl border bg-gradient-to-br from-primary/5 to-transparent p-6">
+        <section className="mt-12 rounded-xl bg-gradient-to-br from-primary/5 to-transparent p-6">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
               <Scan className="size-6" />

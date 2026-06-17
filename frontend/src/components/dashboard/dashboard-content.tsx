@@ -96,11 +96,9 @@ export function DashboardContent() {
   if (user?.role === "STAFF") {
     return (
       <div className="space-y-6">
-        <div className="rounded-xl border bg-gradient-to-br from-primary/5 to-primary/10 p-6">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">{getGreeting()}, {user?.name}</h1>
-            <p className="text-muted-foreground">{t("dashboard.staffGreeting")}</p>
-          </div>
+        <div className="animate-in slide-in-from-left duration-500 flex items-center gap-2">
+          <span className="text-2xl">👋</span>
+          <p className="text-lg font-semibold">{getGreeting()}, {user?.name}</p>
         </div>
         <PageHeader title={t("dashboard.warehouseOpsTitle")} description={t("dashboard.warehouseOpsDescription")} />
         <Card>
@@ -127,23 +125,9 @@ export function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border bg-gradient-to-br from-primary/5 to-primary/10 p-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">{getGreeting()}, {user?.name}</h1>
-          <p className="text-muted-foreground">{t("dashboard.greetingDescription")}</p>
-        </div>
-        {quickViewButtons.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-3">
-            {quickViewButtons.map((btn) => (
-              <Button key={btn.href} asChild variant="secondary" size="sm" className="shadow-sm">
-                <Link href={btn.href}>
-                  <btn.icon className="mr-2 h-4 w-4" />
-                  {btn.label}
-                </Link>
-              </Button>
-            ))}
-          </div>
-        )}
+      <div className="animate-in slide-in-from-left duration-500 flex items-center gap-2">
+        <span className="text-2xl">👋</span>
+        <p className="text-lg font-semibold">{getGreeting()}, {user?.name}</p>
       </div>
       <PageHeader
         title={t("dashboard.pageTitle")}
@@ -207,7 +191,7 @@ function DashboardSkeleton() {
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="h-32 rounded-3xl border bg-card p-5">
+          <div key={index} className="h-32 rounded-3xl bg-card p-5">
             <div className="flex items-center justify-between">
               <Shimmer className="h-4 w-24" />
               <Shimmer className="h-8 w-8 rounded-xl" />
@@ -221,7 +205,7 @@ function DashboardSkeleton() {
       </div>
       <div className="grid gap-4 xl:grid-cols-2">
         {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="h-80 rounded-3xl border bg-card p-5">
+          <div key={index} className="h-80 rounded-3xl bg-card p-5">
             <Shimmer className="mb-4 h-4 w-28" />
             <Shimmer className="h-56 w-full" />
           </div>

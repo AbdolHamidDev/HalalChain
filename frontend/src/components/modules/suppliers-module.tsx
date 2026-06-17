@@ -11,7 +11,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { dialog } from "@/lib/dialog";
 import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import {
@@ -154,7 +154,7 @@ export function SuppliersModule() {
         <>
           <div className="grid gap-3 sm:hidden">
             {suppliers.map((s) => (
-              <div key={s.id} className="rounded-xl border bg-card p-4 space-y-3">
+              <div key={s.id} className="rounded-xl bg-card p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-medium truncate">{s.name}</p>
@@ -284,12 +284,23 @@ export function SuppliersModule() {
         />
       )}
 
-      <Dialog
+      <Sheet
         open={open}
         onClose={() => setOpen(false)}
         title={editing ? t("suppliers.editSupplier") : t("suppliers.newSupplier")}
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button type="submit" form="supplier-form" disabled={saveMutation.isPending}>
+              {saveMutation.isPending ? t("common.saving") : editing ? t("suppliers.saveChanges") : t("suppliers.addSupplier")}
+            </Button>
+          </>
+        }
       >
         <form
+          id="supplier-form"
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
@@ -353,16 +364,8 @@ export function SuppliersModule() {
           {error && (
             <InputError role="alert">{error}</InputError>
           )}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              {t("common.cancel")}
-            </Button>
-            <Button type="submit" disabled={saveMutation.isPending}>
-              {saveMutation.isPending ? t("common.saving") : editing ? t("suppliers.saveChanges") : t("suppliers.addSupplier")}
-            </Button>
-          </div>
         </form>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

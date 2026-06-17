@@ -9,7 +9,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import {
   Select,
@@ -280,7 +280,7 @@ export function InventoryModule() {
               const low = row.quantity <= row.reorderLevel;
               const value = row.quantity * Number(row.product.unitPrice);
               return (
-                <div key={row.id} className="rounded-xl border bg-card p-4 space-y-2">
+                <div key={row.id} className="rounded-xl bg-card p-4 space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="font-medium truncate">{row.product.name}</p>
@@ -366,7 +366,7 @@ export function InventoryModule() {
           <>
             <div className="grid gap-3 sm:hidden">
               {movements.map((m) => (
-                <div key={m.id} className="rounded-xl border bg-card p-4 space-y-2">
+                <div key={m.id} className="rounded-xl bg-card p-4 space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-medium truncate">{m.product.name}</p>
                     <Badge
@@ -422,12 +422,27 @@ export function InventoryModule() {
         )}
       </div>
 
-      <Dialog
+      <Sheet
         open={dialogType !== null}
         onClose={() => setDialogType(null)}
         title={dialogType === "inbound" ? t("inventory.recordInbound") : t("inventory.recordOutbound")}
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => setDialogType(null)}>
+              {t("common.cancel")}
+            </Button>
+            <Button type="submit" form="inventory-move-form" disabled={moveMutation.isPending}>
+              {moveMutation.isPending
+                ? t("inventory.recording")
+                : dialogType === "inbound"
+                  ? t("inventory.confirmInbound")
+                  : t("inventory.confirmOutbound")}
+            </Button>
+          </>
+        }
       >
         <form
+          id="inventory-move-form"
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
@@ -501,20 +516,8 @@ export function InventoryModule() {
           {error && (
             <InputError role="alert">{error}</InputError>
           )}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setDialogType(null)}>
-              {t("common.cancel")}
-            </Button>
-            <Button type="submit" disabled={moveMutation.isPending}>
-              {moveMutation.isPending
-                ? t("inventory.recording")
-                : dialogType === "inbound"
-                  ? t("inventory.confirmInbound")
-                  : t("inventory.confirmOutbound")}
-            </Button>
-          </div>
         </form>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

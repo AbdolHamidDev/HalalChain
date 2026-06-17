@@ -9,7 +9,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { dialog } from "@/lib/dialog";
 import { Input, InputWrapper, InputLabel, InputError, InputHint } from "@/components/ui/input";
 import {
@@ -165,7 +165,7 @@ export function PurchaseOrdersModule() {
               const next = NEXT_STATUS[po.status];
               const isAdvancing = pendingStatusId === po.id && statusMutation.isPending;
               return (
-                <div key={po.id} className="rounded-xl border bg-card p-4 space-y-3">
+                <div key={po.id} className="rounded-xl bg-card p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="font-mono text-xs text-muted-foreground">{po.poNumber}</p>
@@ -310,8 +310,24 @@ export function PurchaseOrdersModule() {
         />
       )}
 
-      <Dialog open={open} onClose={() => setOpen(false)} title={t("purchaseOrders.createPO")}>
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }}>
+      <Sheet
+        open={open}
+        onClose={() => setOpen(false)}
+        title={t("purchaseOrders.createPO")}
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
+            <Button type="submit" form="po-create-form" disabled={createMutation.isPending}>
+              {createMutation.isPending ? t("purchaseOrders.creating") : t("purchaseOrders.createPO")}
+            </Button>
+          </>
+        }
+      >
+        <form
+          id="po-create-form"
+          className="space-y-4"
+          onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }}
+        >
           <div className="space-y-2">
             <InputLabel htmlFor="po-supplier">
               {t("purchaseOrders.table.supplier")} <span className="text-destructive" aria-hidden="true">*</span>
@@ -418,14 +434,8 @@ export function PurchaseOrdersModule() {
           )}
 
           {error && <InputError role="alert">{error}</InputError>}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
-            <Button type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending ? t("purchaseOrders.creating") : t("purchaseOrders.createPO")}
-            </Button>
-          </div>
         </form>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

@@ -59,7 +59,7 @@ function roleBadgeVariant(role: UserRole): BadgeProps["variant"] {
 function StatCard({ label, value, color }: { label: string; value: number; color?: "emerald" | "red" | "amber" }) {
   const colorMap = { emerald: "text-emerald-500", red: "text-red-500", amber: "text-amber-500" };
   return (
-    <div className="rounded-xl border border-border bg-card px-4 py-3">
+    <div className="rounded-xl bg-card px-4 py-3">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className={`mt-1 text-2xl font-semibold tabular-nums ${color ? colorMap[color] : ""}`}>{value}</p>
     </div>

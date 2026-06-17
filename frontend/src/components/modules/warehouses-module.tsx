@@ -9,7 +9,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { dialog } from "@/lib/dialog";
 import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import {
@@ -118,7 +118,7 @@ export function WarehousesModule() {
         <>
           <div className="grid gap-3 sm:hidden">
             {warehouses.map((w) => (
-              <div key={w.id} className="rounded-xl border bg-card p-4 space-y-3">
+              <div key={w.id} className="rounded-xl bg-card p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <WarehouseIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -233,12 +233,23 @@ export function WarehousesModule() {
         />
       )}
 
-      <Dialog
+      <Sheet
         open={open}
         onClose={() => setOpen(false)}
         title={editing ? t("warehouses.editWarehouse") : t("warehouses.newWarehouse")}
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button type="submit" form="warehouse-form" disabled={saveMutation.isPending}>
+              {saveMutation.isPending ? t("common.saving") : editing ? t("warehouses.saveChanges") : t("warehouses.addWarehouse")}
+            </Button>
+          </>
+        }
       >
         <form
+          id="warehouse-form"
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
@@ -270,16 +281,8 @@ export function WarehousesModule() {
             />
           </InputWrapper>
           {formError && <InputError role="alert">{formError}</InputError>}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              {t("common.cancel")}
-            </Button>
-            <Button type="submit" disabled={saveMutation.isPending}>
-              {saveMutation.isPending ? t("common.saving") : editing ? t("warehouses.saveChanges") : t("warehouses.addWarehouse")}
-            </Button>
-          </div>
         </form>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

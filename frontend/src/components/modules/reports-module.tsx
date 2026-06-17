@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { Download, Loader2 } from "lucide-react";
+import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { api, type ExportFormat, type ExportModule } from "@/lib/api";
 import { useTranslation } from "@/i18n/hooks";
@@ -19,7 +19,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ErrorState, LoadingState } from "@/components/shared/state-blocks";
+import { ErrorState } from "@/components/shared/state-blocks";
+import { Shimmer } from "@/components/shared/shimmer";
 import { WorldMap } from "@/components/shared/world-map";
 
 /* ── Theme-aware palette ──────────────────────────────────────────── */
@@ -66,6 +67,80 @@ function DonutTip({
   );
 }
 
+function ReportsSkeleton({ t }: { t: (key: string) => string }) {
+  return (
+    <div className="space-y-8">
+      <PageHeader
+        title={t("reports.pageTitle")}
+        description={t("reports.pageDescription")}
+        action={
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <Shimmer className="h-9 w-full sm:w-44" />
+            <Shimmer className="h-9 w-full sm:w-36" />
+            <Shimmer className="h-9 w-full sm:w-36" />
+            <Shimmer className="h-9 w-full sm:w-36" />
+            <Shimmer className="h-9 w-24 shrink-0" />
+          </div>
+        }
+      />
+
+      {/* KPI Cards skeleton */}
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i}>
+            <CardHeader className="pb-2">
+              <Shimmer className="h-4 w-32" />
+            </CardHeader>
+            <CardContent>
+              <Shimmer className="h-8 w-24" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Charts Row 1 skeleton */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-0">
+            <Shimmer className="h-5 w-32" />
+          </CardHeader>
+          <CardContent className="h-72 pt-4">
+            <Shimmer className="h-full w-full" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-0">
+            <Shimmer className="h-5 w-32" />
+          </CardHeader>
+          <CardContent className="h-64 pt-4">
+            <Shimmer className="h-full w-full" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Row 2 skeleton */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-0">
+            <Shimmer className="h-5 w-32" />
+          </CardHeader>
+          <CardContent className="h-64 pt-4">
+            <Shimmer className="h-full w-full" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-0">
+            <Shimmer className="h-5 w-32" />
+          </CardHeader>
+          <CardContent className="h-64 pt-4">
+            <Shimmer className="h-full w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 export function ReportsModule() {
   const { t } = useTranslation();
   const { data, isLoading, isError } = useQuery({
@@ -99,7 +174,7 @@ export function ReportsModule() {
     }
   }
 
-  if (isLoading) return <LoadingState />;
+  if (isLoading) return <ReportsSkeleton t={t} />;
   if (isError || !data) return <ErrorState message={t("reports.errors.loadFailed")} />;
 
   const s = data.summary;
@@ -153,7 +228,7 @@ export function ReportsModule() {
             <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-full sm:w-36" placeholder={t("common.from")} />
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-full sm:w-36" placeholder={t("common.to")} />
             <Button variant="outline" onClick={downloadReport} disabled={isExporting} className="shrink-0">
-              {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              {isExporting ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <Download className="h-4 w-4" />}
               {isExporting ? t("common.saving") : t("reports.export")}
             </Button>
           </div>

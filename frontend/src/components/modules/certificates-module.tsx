@@ -498,7 +498,7 @@ export function CertificatesModule() {
               const st = certStatusProps(c);
               const timePct = certTimeUsed(c.issueDate, c.expiryDate);
               return (
-                <div key={c.id} className="rounded-xl border bg-card p-4 space-y-3">
+                <div key={c.id} className="rounded-xl bg-card p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="font-mono text-xs text-muted-foreground">{c.certificateNumber}</p>

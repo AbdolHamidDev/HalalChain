@@ -296,7 +296,7 @@ export function ProductsModule() {
           {/* Mobile card view */}
           <div className="grid gap-3 sm:hidden">
             {products.map((p) => (
-              <div key={p.id} className="rounded-xl border bg-card p-4 space-y-3">
+              <div key={p.id} className="rounded-xl bg-card p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-medium truncate">{p.name}</p>

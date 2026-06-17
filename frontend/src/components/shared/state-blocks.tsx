@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import {
   AlertCircle,
-  Loader2,
   PackageOpen,
   Users,
   ShieldCheck,
@@ -28,10 +27,7 @@ export function LoadingState() {
       aria-live="polite"
       aria-label={t("common.loading")}
     >
-      <div className="flex flex-col items-center gap-2 text-muted-foreground">
-        <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
-        <p className="text-sm">{t("common.loading")}</p>
-      </div>
+      <Shimmer className="h-12 w-12 rounded-full" />
     </div>
   );
 }

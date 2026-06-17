@@ -19,7 +19,7 @@ import { useDialogStore } from "@/lib/dialog-store";
 // ---------------------------------------------------------------------------
 
 const CONTENT_CLS = cn(
-  "max-w-md rounded-2xl p-6",
+  "sm:w-full sm:max-w-md rounded-2xl p-6",
   "border border-border bg-background",
   "shadow-2xl shadow-black/20",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",

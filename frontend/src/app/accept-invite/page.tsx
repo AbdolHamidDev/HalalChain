@@ -101,7 +101,7 @@ function AcceptInviteForm() {
   if (tokenError) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 text-center space-y-3">
+        <div className="w-full max-w-sm rounded-2xl bg-card p-8 text-center space-y-3">
           <p className="text-2xl">🔒</p>
           <h1 className="text-lg font-semibold">{t("errors.notFound")}</h1>
           <p className="text-sm text-muted-foreground">{tokenError}</p>
@@ -116,7 +116,7 @@ function AcceptInviteForm() {
   if (success) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 text-center space-y-3">
+        <div className="w-full max-w-sm rounded-2xl bg-card p-8 text-center space-y-3">
           <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-500" />
           <h1 className="text-lg font-semibold">{t("acceptInvite.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("acceptInvite.description")}</p>
@@ -142,7 +142,7 @@ function AcceptInviteForm() {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl border border-border bg-card p-6"
+          className="space-y-4 rounded-2xl bg-card p-6"
         >
           <InputWrapper error={!!nameError}>
             <InputLabel htmlFor="accept-name">{t("auth.name")}</InputLabel>

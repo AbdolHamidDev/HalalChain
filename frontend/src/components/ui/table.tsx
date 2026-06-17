@@ -25,7 +25,7 @@ const Table = React.forwardRef<
     ref
   ) => {
     return (
-      <div className="relative w-full overflow-auto rounded-xl border bg-card">
+      <div className="relative w-full overflow-auto rounded-xl bg-card">
         <table
           ref={ref}
           data-density={density}

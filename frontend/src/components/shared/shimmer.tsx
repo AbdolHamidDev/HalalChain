@@ -30,7 +30,7 @@ export function Shimmer({
  */
 export function ShimmerCard() {
   return (
-    <div className="rounded-3xl border bg-card p-5">
+    <div className="rounded-3xl bg-card p-5">
       <div className="flex items-center justify-between">
         <Shimmer className="h-4 w-24" />
         <Shimmer className="h-8 w-8 rounded-xl" />
@@ -48,7 +48,7 @@ export function ShimmerCard() {
  */
 export function ShimmerChart() {
   return (
-    <div className="rounded-xl border bg-card p-5">
+    <div className="rounded-xl bg-card p-5">
       <Shimmer className="mb-4 h-4 w-28" />
       <Shimmer className="h-56 w-full" />
     </div>

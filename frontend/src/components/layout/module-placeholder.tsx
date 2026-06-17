@@ -12,8 +12,8 @@ export function ModulePlaceholder({
   features,
 }: ModulePlaceholderProps) {
   return (
-    <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-white">
-      <div className="border-b border-[var(--color-border)] px-6 py-5">
+    <div className="mt-8 rounded-xl bg-card">
+      <div className="border-b border-border px-6 py-5">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-secondary)]">
             <Icon className="h-5 w-5 text-[var(--color-primary)]" />

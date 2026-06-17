@@ -47,8 +47,8 @@ const DialogContent = React.forwardRef<
         "fixed z-50",
         /* Mobile: full-screen with safe areas */
         "inset-0 m-0 w-full h-full rounded-none border-0 p-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(1.5rem+env(safe-area-inset-bottom))] overflow-y-auto",
-        /* Desktop: centered card */
-        "sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-1.5rem)] sm:max-w-md sm:h-auto sm:max-h-[85vh]",
+        /* Desktop: centered card, auto-height, no scroll */
+        "sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-md sm:h-auto sm:overflow-y-visible",
         "sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:border sm:border-border/70 sm:p-6",
         "sm:shadow-[0_12px_40px_rgba(0,0,0,0.12)]",
 

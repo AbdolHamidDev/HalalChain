@@ -9,7 +9,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { useTranslation } from "@/i18n/hooks";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import {
   Select,
@@ -166,7 +166,7 @@ export function ShipmentsModule() {
         <>
           <div className="grid gap-3 sm:hidden">
             {shipments.map((s) => (
-              <div key={s.id} className="rounded-xl border bg-card p-4 space-y-3">
+              <div key={s.id} className="rounded-xl bg-card p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-mono text-xs text-muted-foreground">{s.trackingNumber}</p>
@@ -260,12 +260,21 @@ export function ShipmentsModule() {
         />
       )}
 
-      <Dialog
+      <Sheet
         open={editing !== null}
         onClose={() => setEditing(null)}
         title={t("shipments.updateShipment")}
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => setEditing(null)}>{t("common.cancel")}</Button>
+            <Button type="submit" form="shipment-edit-form" disabled={updateMutation.isPending}>
+              {updateMutation.isPending ? t("common.saving") : t("shipments.saveChanges")}
+            </Button>
+          </>
+        }
       >
         <form
+          id="shipment-edit-form"
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
@@ -301,21 +310,26 @@ export function ShipmentsModule() {
             </Select>
           </div>
           {editError && <InputError role="alert">{editError}</InputError>}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setEditing(null)}>{t("common.cancel")}</Button>
-            <Button type="submit" disabled={updateMutation.isPending}>
-              {updateMutation.isPending ? t("common.saving") : t("shipments.saveChanges")}
-            </Button>
-          </div>
         </form>
-      </Dialog>
+      </Sheet>
 
-      <Dialog
+      <Sheet
         open={creating}
         onClose={() => setCreating(false)}
         title={t("shipments.newShipment")}
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => setCreating(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button type="submit" form="shipment-create-form" disabled={createMutation.isPending}>
+              {createMutation.isPending ? t("shipments.creating") : t("shipments.createShipment")}
+            </Button>
+          </>
+        }
       >
         <form
+          id="shipment-create-form"
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
@@ -392,16 +406,8 @@ export function ShipmentsModule() {
             />
           </InputWrapper>
           {createError && <InputError role="alert">{createError}</InputError>}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setCreating(false)}>
-              {t("common.cancel")}
-            </Button>
-            <Button type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending ? t("shipments.creating") : t("shipments.createShipment")}
-            </Button>
-          </div>
         </form>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }
