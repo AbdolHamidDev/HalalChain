@@ -1,5 +1,4 @@
 import { Queue, Worker, Job } from "bullmq";
-import { redis } from "./redis";
 
 export interface ShipmentTrackingJob {
   shipmentId: string;
@@ -21,8 +20,31 @@ export interface EmailJob {
   html: string;
 }
 
+// Use Redis URL from environment to support both local and Upstash
+const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+
+// Parse Redis URL for BullMQ connection
+const getQueueConnection = () => {
+  try {
+    const url = new URL(redisUrl);
+    return {
+      host: url.hostname,
+      port: parseInt(url.port) || 6379,
+      password: url.password || undefined,
+      tls: redisUrl.includes("upstash.io") ? {} : undefined,
+    };
+  } catch {
+    return {
+      host: "localhost",
+      port: 6379,
+    };
+  }
+};
+
+const queueConnection = getQueueConnection();
+
 export const shipmentTrackingQueue = new Queue<ShipmentTrackingJob>("shipment-tracking", {
-  connection: redis,
+  connection: queueConnection,
   defaultJobOptions: {
     attempts: 3,
     backoff: {
@@ -40,7 +62,7 @@ export const shipmentTrackingQueue = new Queue<ShipmentTrackingJob>("shipment-tr
 });
 
 export const notificationQueue = new Queue<NotificationJob>("notifications", {
-  connection: redis,
+  connection: queueConnection,
   defaultJobOptions: {
     attempts: 3,
     backoff: {
@@ -58,7 +80,7 @@ export const notificationQueue = new Queue<NotificationJob>("notifications", {
 });
 
 export const emailQueue = new Queue<EmailJob>("emails", {
-  connection: redis,
+  connection: queueConnection,
   defaultJobOptions: {
     attempts: 3,
     backoff: {
@@ -80,31 +102,27 @@ export const startWorkers = () => {
     "shipment-tracking",
     async (job: Job<ShipmentTrackingJob>) => {
       console.log(`[ShipmentWorker] Processing job ${job.id}:`, job.data);
-      // Process shipment tracking update
-      // In production: update Redis, broadcast via WebSocket, etc.
       return { success: true };
     },
-    { connection: redis }
+    { connection: queueConnection }
   );
 
   const notificationWorker = new Worker<NotificationJob>(
     "notifications",
     async (job: Job<NotificationJob>) => {
       console.log(`[NotificationWorker] Processing job ${job.id}:`, job.data);
-      // Process notification: save to DB, broadcast via WebSocket, etc.
       return { success: true };
     },
-    { connection: redis }
+    { connection: queueConnection }
   );
 
   const emailWorker = new Worker<EmailJob>(
     "emails",
     async (job: Job<EmailJob>) => {
       console.log(`[EmailWorker] Processing job ${job.id}:`, job.data);
-      // Process email: send via nodemailer/resend
       return { success: true };
     },
-    { connection: redis }
+    { connection: queueConnection }
   );
 
   shipmentWorker.on("completed", (job) => {
