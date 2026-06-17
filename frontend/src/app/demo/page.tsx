@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "Interactive demo showing how HalalChain's traceability engine works with real seed data.",
 };
 
-// Pre-seeded product data (matches backend/prisma/seed.ts)
+// Pre-seeded product data (matches backend/prisma/seed.ts — ref date 2026-06-18)
 const demoData = {
   product: {
     id: "00000000-0000-4000-8000-000000000001",
@@ -22,14 +22,14 @@ const demoData = {
   },
   certificates: [
     {
-      certificateNumber: "JAKIM-2024-00123",
+      certificateNumber: "JAKIM-2026-00891",
       issuedBy: "JAKIM",
-      expiryDate: "2026-01-14",
+      expiryDate: "2027-11-01",
     },
   ],
   shipments: [
-    { trackingNumber: "MY-HAL-784521", status: "IN_TRANSIT" },
     { trackingNumber: "MY-HAL-603217", status: "DELIVERED" },
+    { trackingNumber: "MY-HAL-921045", status: "IN_TRANSIT" },
   ],
   timeline: [
     {
@@ -41,51 +41,58 @@ const demoData = {
     },
     {
       type: "CERTIFICATE" as const,
-      date: "2024-01-15T00:00:00.000Z",
-      title: "Certificate: JAKIM-2024-00123",
-      description: "Issued by JAKIM · Expires 2026-01-14",
+      date: "2026-02-01T00:00:00.000Z",
+      title: "Certificate: JAKIM-2026-00891 (Renewal)",
+      description: "Issued by JAKIM · Expires 2027-11-01 · Valid",
       metadata: {},
     },
     {
       type: "PRODUCT" as const,
       date: "2024-08-01T00:00:00.000Z",
       title: "Product: Organic Coconut Milk",
-      description: "SKU: HAL-COCO-001",
+      description: "SKU: HAL-COCO-001 · Beverages · 12.50 $/carton",
+      metadata: {},
+    },
+    {
+      type: "INVENTORY" as const,
+      date: "2025-05-30T00:00:00.000Z",
+      title: "Inventory INBOUND: +800 units",
+      description: "PO-2025-0001 · HCM Logistics Hub",
       metadata: {},
     },
     {
       type: "SHIPMENT" as const,
-      date: "2025-02-10T00:00:00.000Z",
-      title: "Shipment: MY-HAL-603217",
-      description: "Port Klang, Malaysia → Hai Phong Port, Vietnam · DELIVERED",
+      date: "2025-06-01T00:00:00.000Z",
+      title: "Shipment: MY-HAL-784521 departed",
+      description: "Port Klang, Malaysia → Cat Lai Port, HCMC",
       metadata: {},
     },
     {
       type: "INVENTORY" as const,
-      date: "2025-03-15T00:00:00.000Z",
-      title: "Inventory INBOUND: 200 units",
-      description: "Warehouse: HCM Logistics Hub",
+      date: "2025-10-22T00:00:00.000Z",
+      title: "Inventory OUTBOUND: -200 units",
+      description: "Retail distribution · Mega Market chain",
       metadata: {},
     },
     {
       type: "INVENTORY" as const,
-      date: "2025-04-20T00:00:00.000Z",
-      title: "Inventory OUTBOUND: 80 units",
-      description: "Warehouse: HCM Logistics Hub",
+      date: "2025-12-11T00:00:00.000Z",
+      title: "Inventory OUTBOUND: -100 units",
+      description: "Online order fulfillment · Lazada",
+      metadata: {},
+    },
+    {
+      type: "INVENTORY" as const,
+      date: "2025-12-20T00:00:00.000Z",
+      title: "Inventory INBOUND: +50 units (Transfer)",
+      description: "Internal transfer to Northern Distribution Center, Hanoi",
       metadata: {},
     },
     {
       type: "SHIPMENT" as const,
-      date: "2025-04-12T00:00:00.000Z",
-      title: "Shipment: MY-HAL-784521",
-      description: "Port Klang, Malaysia → Cat Lai Port, Ho Chi Minh City · IN_TRANSIT",
-      metadata: {},
-    },
-    {
-      type: "INVENTORY" as const,
-      date: "2025-05-01T00:00:00.000Z",
-      title: "Inventory INBOUND: 300 units",
-      description: "Warehouse: HCM Logistics Hub",
+      date: "2026-06-11T00:00:00.000Z",
+      title: "Shipment: MY-HAL-921045 departed",
+      description: "Port Klang, Malaysia → Cat Lai Port, HCMC · ETA 2026-06-23",
       metadata: {},
     },
   ] satisfies TimelineEvent[],
