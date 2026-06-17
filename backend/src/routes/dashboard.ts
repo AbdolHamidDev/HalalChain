@@ -11,6 +11,7 @@ import {
   getShipmentAnalytics,
 } from "../lib/analyticsService";
 import { getComplianceScore } from "../lib/automation/engine";
+import { addActivityClient } from "../lib/activityStream";
 
 const router = Router();
 
@@ -236,6 +237,17 @@ router.get(
     }));
 
     res.json({ activities });
+  }
+);
+
+router.get(
+  "/activity/stream",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MANAGER),
+  async (req: AuthRequest, res: Response) => {
+    const cleanup = addActivityClient(res);
+    req.on("close", cleanup);
+    req.on("error", cleanup);
   }
 );
 

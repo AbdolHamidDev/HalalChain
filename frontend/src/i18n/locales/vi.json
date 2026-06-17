@@ -451,6 +451,18 @@
   "dashboard": {
     "pageTitle": "Bảng điều khiển",
     "pageDescription": "Giám sát tồn kho, mua hàng, vận chuyển và tuân thủ chứng nhận halal",
+    "greeting": {
+      "morning": "Chào buổi sáng",
+      "afternoon": "Chào buổi chiều",
+      "evening": "Chào buổi tối"
+    },
+    "greetingDescription": "Đây là những gì đang diễn ra trên chuỗi cung ứng của bạn hôm nay.",
+    "staffGreeting": "Sẵn sàng xử lý các hoạt động kho.",
+    "quickView": {
+      "userManagement": "Quản lý người dùng",
+      "reports": "Báo cáo",
+      "analytics": "Phân tích"
+    },
     "warehouseOpsTitle": "Vận hành kho",
     "warehouseOpsDescription": "Truy cập nhanh vào các giao dịch nhập/xuất kho",
     "warehouseOpsCardTitle": "Vận hành kho",

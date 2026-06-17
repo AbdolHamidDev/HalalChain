@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { publishActivityEvent } from "./activityStream";
 
 type TxClient = Omit<
   PrismaClient,
@@ -16,7 +17,7 @@ export async function logAudit(
     newData?: Record<string, unknown> | null;
   }
 ): Promise<void> {
-  await tx.auditLog.create({
+  const log = await tx.auditLog.create({
     data: {
       userId: params.userId,
       action: params.action,
@@ -31,5 +32,16 @@ export async function logAudit(
           ? (params.newData as Prisma.InputJsonValue)
           : Prisma.JsonNull,
     },
+    include: { user: { select: { name: true } } },
+  });
+
+  // Publish real-time activity event
+  publishActivityEvent({
+    id: log.id,
+    userName: log.user?.name ?? "System",
+    action: log.action,
+    entityType: log.entityType,
+    entityId: log.entityId,
+    createdAt: log.createdAt,
   });
 }

@@ -453,6 +453,18 @@
   "dashboard": {
     "pageTitle": "Operations Dashboard",
     "pageDescription": "Monitor inventory, procurement, shipments, and halal certification compliance",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "greetingDescription": "Here's what's happening across your supply chain today.",
+    "staffGreeting": "Ready to process warehouse operations.",
+    "quickView": {
+      "userManagement": "User Management",
+      "reports": "Reports",
+      "analytics": "Analytics"
+    },
     "warehouseOpsTitle": "Warehouse Operations",
     "warehouseOpsDescription": "Quick access to inbound and outbound stock movements",
     "warehouseOpsCardTitle": "Warehouse Operations",

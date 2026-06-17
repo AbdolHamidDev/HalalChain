@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Warehouse, ChevronDown } from "lucide-react";
+import { ArrowRight, CalendarDays, Warehouse, ChevronDown, Users, BarChart3, FileText } from "lucide-react";
 import { DashboardCharts } from "@/components/dashboard/charts";
 import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
@@ -57,6 +57,25 @@ export function DashboardContent() {
   const canViewActivity = user?.role === "ADMIN" || user?.role === "MANAGER";
   const params = useMemo(() => ({ from, to }), [from, to]);
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return t("dashboard.greeting.morning");
+    if (hour < 18) return t("dashboard.greeting.afternoon");
+    return t("dashboard.greeting.evening");
+  };
+
+  const quickViewButtons = user?.role === "ADMIN"
+    ? [
+        { href: "/dashboard/users", label: t("dashboard.quickView.userManagement"), icon: Users },
+        { href: "/dashboard/reports", label: t("dashboard.quickView.reports"), icon: FileText },
+      ]
+    : user?.role === "MANAGER"
+    ? [
+        { href: "/dashboard/reports", label: t("dashboard.quickView.reports"), icon: FileText },
+        { href: "/dashboard/analytics", label: t("dashboard.quickView.analytics"), icon: BarChart3 },
+      ]
+    : [];
+
   function handlePresetChange(preset: DatePreset) {
     setDatePreset(preset);
     if (preset !== "custom") {
@@ -76,6 +95,12 @@ export function DashboardContent() {
   if (user?.role === "STAFF") {
     return (
       <div className="space-y-6">
+        <div className="rounded-xl border bg-gradient-to-br from-primary/5 to-primary/10 p-6">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold tracking-tight">{getGreeting()}, {user?.name}</h1>
+            <p className="text-muted-foreground">{t("dashboard.staffGreeting")}</p>
+          </div>
+        </div>
         <PageHeader title={t("dashboard.warehouseOpsTitle")} description={t("dashboard.warehouseOpsDescription")} />
         <Card>
           <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
@@ -101,6 +126,24 @@ export function DashboardContent() {
 
   return (
     <div className="space-y-6">
+      <div className="rounded-xl border bg-gradient-to-br from-primary/5 to-primary/10 p-6">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">{getGreeting()}, {user?.name}</h1>
+          <p className="text-muted-foreground">{t("dashboard.greetingDescription")}</p>
+        </div>
+        {quickViewButtons.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-3">
+            {quickViewButtons.map((btn) => (
+              <Button key={btn.href} asChild variant="secondary" size="sm" className="shadow-sm">
+                <Link href={btn.href}>
+                  <btn.icon className="mr-2 h-4 w-4" />
+                  {btn.label}
+                </Link>
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
       <PageHeader
         title={t("dashboard.pageTitle")}
         description={t("dashboard.pageDescription")}
