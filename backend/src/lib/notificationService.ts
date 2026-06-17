@@ -44,20 +44,25 @@ export async function notifyLowStock(
   if (existingToday) return;
 
   const userIds = await getManagerAndAdminUserIds(tx);
+  if (userIds.length === 0) return;
+
   const message = `Product ${params.productName} (SKU: ${params.sku}) in ${params.warehouseName} is below reorder level. Current: ${params.quantity}, Reorder level: ${params.reorderLevel}.`;
 
-  const notifications = await Promise.all(
-    userIds.map((userId) =>
-      tx.notification.create({
-        data: {
-          userId,
-          title: "Low Stock Alert",
-          message,
-          type: NotificationType.LOW_STOCK,
-        },
-      })
-    )
-  );
+  const { count } = await tx.notification.createMany({
+    data: userIds.map((userId) => ({
+      userId,
+      title: "Low Stock Alert",
+      message,
+      type: NotificationType.LOW_STOCK,
+    })),
+  });
+
+  const notifications = Array.from({ length: count }, (_, i) => ({
+    userId: userIds[i],
+    title: "Low Stock Alert",
+    message,
+    type: NotificationType.LOW_STOCK,
+  })) as any[];
 
   setImmediate(() => publishCreatedNotifications(notifications));
 
@@ -76,20 +81,25 @@ export async function notifyShipmentDelayed(
   params: { trackingNumber: string; poNumber: string }
 ): Promise<void> {
   const userIds = await getManagerAndAdminUserIds(tx);
+  if (userIds.length === 0) return;
+
   const message = `Shipment ${params.trackingNumber} for PO ${params.poNumber} has been marked as DELAYED.`;
 
-  const notifications = await Promise.all(
-    userIds.map((userId) =>
-      tx.notification.create({
-        data: {
-          userId,
-          title: "Shipment Delayed",
-          message,
-          type: NotificationType.SHIPMENT_DELAYED,
-        },
-      })
-    )
-  );
+  const { count } = await tx.notification.createMany({
+    data: userIds.map((userId) => ({
+      userId,
+      title: "Shipment Delayed",
+      message,
+      type: NotificationType.SHIPMENT_DELAYED,
+    })),
+  });
+
+  const notifications = Array.from({ length: count }, (_, i) => ({
+    userId: userIds[i],
+    title: "Shipment Delayed",
+    message,
+    type: NotificationType.SHIPMENT_DELAYED,
+  })) as any[];
 
   setImmediate(() => publishCreatedNotifications(notifications));
 
@@ -117,23 +127,28 @@ export async function notifyCertificateExpiring(
   if (existingToday) return;
 
   const userIds = await getManagerAndAdminUserIds(tx);
+  if (userIds.length === 0) return;
+
   const dateStr = isNaN(params.expiryDate.getTime())
     ? "unknown"
     : params.expiryDate.toISOString().split("T")[0];
   const message = `Certificate ${params.certificateNumber} for ${params.supplierName} expires on ${dateStr}.`;
 
-  const notifications = await Promise.all(
-    userIds.map((userId) =>
-      tx.notification.create({
-        data: {
-          userId,
-          title: "Certificate Expiring Soon",
-          message,
-          type: NotificationType.CERTIFICATE_EXPIRING,
-        },
-      })
-    )
-  );
+  const { count } = await tx.notification.createMany({
+    data: userIds.map((userId) => ({
+      userId,
+      title: "Certificate Expiring Soon",
+      message,
+      type: NotificationType.CERTIFICATE_EXPIRING,
+    })),
+  });
+
+  const notifications = Array.from({ length: count }, (_, i) => ({
+    userId: userIds[i],
+    title: "Certificate Expiring Soon",
+    message,
+    type: NotificationType.CERTIFICATE_EXPIRING,
+  })) as any[];
 
   setImmediate(() => publishCreatedNotifications(notifications));
 
@@ -162,23 +177,28 @@ export async function notifyCertificateExpired(
   if (existingToday) return;
 
   const userIds = await getManagerAndAdminUserIds(tx);
+  if (userIds.length === 0) return;
+
   const dateStr = isNaN(params.expiryDate.getTime())
     ? "unknown"
     : params.expiryDate.toISOString().split("T")[0];
   const message = `Certificate ${params.certificateNumber} for ${params.supplierName} expired on ${dateStr}. Immediate renewal required.`;
 
-  const notifications = await Promise.all(
-    userIds.map((userId) =>
-      tx.notification.create({
-        data: {
-          userId,
-          title: "Certificate Expired — Compliance Issue",
-          message,
-          type: NotificationType.CERTIFICATE_EXPIRED,
-        },
-      })
-    )
-  );
+  const { count } = await tx.notification.createMany({
+    data: userIds.map((userId) => ({
+      userId,
+      title: "Certificate Expired — Compliance Issue",
+      message,
+      type: NotificationType.CERTIFICATE_EXPIRED,
+    })),
+  });
+
+  const notifications = Array.from({ length: count }, (_, i) => ({
+    userId: userIds[i],
+    title: "Certificate Expired — Compliance Issue",
+    message,
+    type: NotificationType.CERTIFICATE_EXPIRED,
+  })) as any[];
 
   setImmediate(() => publishCreatedNotifications(notifications));
 

@@ -8,7 +8,7 @@ function makeTxClient(overrides: Record<string, unknown> = {}) {
   return {
     notification: {
       findFirst: vi.fn(),
-      create: vi.fn(),
+      createMany: vi.fn(),
     },
     user: {
       findMany: vi.fn(),
@@ -27,7 +27,7 @@ describe("notifyLowStock", () => {
       { id: "user-admin-1" },
       { id: "user-manager-1" },
     ]);
-    (tx.notification.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "notif-1" });
+    (tx.notification.createMany as ReturnType<typeof vi.fn>).mockResolvedValue({ count: 2 });
 
     await notifyLowStock(tx, {
       inventoryId: "inv-001",
@@ -38,8 +38,8 @@ describe("notifyLowStock", () => {
       reorderLevel: 10,
     });
 
-    expect(tx.notification.create).toHaveBeenCalledTimes(2);
-    const firstCallData = (tx.notification.create as ReturnType<typeof vi.fn>).mock.calls[0][0].data;
+    expect(tx.notification.createMany).toHaveBeenCalledTimes(1);
+    const firstCallData = (tx.notification.createMany as ReturnType<typeof vi.fn>).mock.calls[0][0].data[0];
     expect(firstCallData.type).toBe(NotificationType.LOW_STOCK);
     // The message does NOT contain the inventoryId — that's only used in duplicate detection
     expect(firstCallData.message).toContain("Product A");
@@ -69,7 +69,7 @@ describe("notifyLowStock", () => {
       reorderLevel: 10,
     });
 
-    expect(tx.notification.create).not.toHaveBeenCalled();
+    expect(tx.notification.createMany).not.toHaveBeenCalled();
   });
 
   it("duplicate check queries for LOW_STOCK type and inventoryId in message", async () => {
@@ -78,7 +78,7 @@ describe("notifyLowStock", () => {
     const tx = makeTxClient();
     (tx.notification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     (tx.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-    (tx.notification.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "n1" });
+    (tx.notification.createMany as ReturnType<typeof vi.fn>).mockResolvedValue({ count: 0 });
 
     await notifyLowStock(tx, {
       inventoryId: "test-inv-id-abc",
@@ -105,7 +105,7 @@ describe("notifyLowStock", () => {
       { id: "uid-2" },
       { id: "uid-3" },
     ]);
-    (tx.notification.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "n1" });
+    (tx.notification.createMany as ReturnType<typeof vi.fn>).mockResolvedValue({ count: 3 });
 
     await notifyLowStock(tx, {
       inventoryId: "inv-xyz",
@@ -116,10 +116,9 @@ describe("notifyLowStock", () => {
       reorderLevel: 5,
     });
 
-    expect(tx.notification.create).toHaveBeenCalledTimes(3);
-    const userIds = (tx.notification.create as ReturnType<typeof vi.fn>).mock.calls.map(
-      (call: any[]) => (call[0] as { data: { userId: string } }).data.userId
-    );
+    expect(tx.notification.createMany).toHaveBeenCalledTimes(1);
+    const callData = (tx.notification.createMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    const userIds = callData.data.map((d: { userId: string }) => d.userId);
     expect(userIds).toContain("uid-1");
     expect(userIds).toContain("uid-2");
     expect(userIds).toContain("uid-3");
@@ -131,7 +130,7 @@ describe("notifyLowStock", () => {
     const tx = makeTxClient();
     (tx.notification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     (tx.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-    (tx.notification.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "n1" });
+    (tx.notification.createMany as ReturnType<typeof vi.fn>).mockResolvedValue({ count: 0 });
 
     await notifyLowStock(tx, {
       inventoryId: "inv-empty",
@@ -142,7 +141,7 @@ describe("notifyLowStock", () => {
       reorderLevel: 1,
     });
 
-    expect(tx.notification.create).not.toHaveBeenCalled();
+    expect(tx.notification.createMany).not.toHaveBeenCalled();
   });
 });
 
@@ -157,7 +156,7 @@ describe("notifyCertificateExpiring", () => {
     (tx.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
       { id: "admin-1" },
     ]);
-    (tx.notification.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "n1" });
+    (tx.notification.createMany as ReturnType<typeof vi.fn>).mockResolvedValue({ count: 1 });
 
     const expiryDate = new Date("2025-07-15");
     await notifyCertificateExpiring(tx, {
@@ -166,8 +165,8 @@ describe("notifyCertificateExpiring", () => {
       expiryDate,
     });
 
-    expect(tx.notification.create).toHaveBeenCalledTimes(1);
-    const callData = (tx.notification.create as ReturnType<typeof vi.fn>).mock.calls[0][0].data;
+    expect(tx.notification.createMany).toHaveBeenCalledTimes(1);
+    const callData = (tx.notification.createMany as ReturnType<typeof vi.fn>).mock.calls[0][0].data[0];
     expect(callData.type).toBe(NotificationType.CERTIFICATE_EXPIRING);
     expect(callData.message).toContain("CERT-2025-001");
     expect(callData.message).toContain("Supplier ABC");
@@ -193,7 +192,7 @@ describe("notifyCertificateExpiring", () => {
       expiryDate: new Date("2025-07-15"),
     });
 
-    expect(tx.notification.create).not.toHaveBeenCalled();
+    expect(tx.notification.createMany).not.toHaveBeenCalled();
   });
 
   it("duplicate check queries for CERTIFICATE_EXPIRING type and certificateNumber in message", async () => {
@@ -204,7 +203,7 @@ describe("notifyCertificateExpiring", () => {
     const tx = makeTxClient();
     (tx.notification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     (tx.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-    (tx.notification.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "n1" });
+    (tx.notification.createMany as ReturnType<typeof vi.fn>).mockResolvedValue({ count: 0 });
 
     await notifyCertificateExpiring(tx, {
       certificateNumber: "CERT-UNIQUE-XYZ",
@@ -226,7 +225,7 @@ describe("notifyCertificateExpiring", () => {
     const tx = makeTxClient();
     (tx.notification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     (tx.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([{ id: "u1" }]);
-    (tx.notification.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "n1" });
+    (tx.notification.createMany as ReturnType<typeof vi.fn>).mockResolvedValue({ count: 1 });
 
     await notifyCertificateExpiring(tx, {
       certificateNumber: "CERT-123",
@@ -234,7 +233,7 @@ describe("notifyCertificateExpiring", () => {
       expiryDate: new Date("2026-03-01T00:00:00.000Z"),
     });
 
-    const callData = (tx.notification.create as ReturnType<typeof vi.fn>).mock.calls[0][0].data;
+    const callData = (tx.notification.createMany as ReturnType<typeof vi.fn>).mock.calls[0][0].data[0];
     const message: string = callData.message;
     // Should contain the date in YYYY-MM-DD format
     expect(message).toMatch(/\d{4}-\d{2}-\d{2}/);
