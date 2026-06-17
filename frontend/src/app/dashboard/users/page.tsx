@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/table";
 import { UserDetailDrawer } from "@/components/modules/user-detail-drawer";
 import { InviteUserDialog } from "@/components/modules/invite-user-dialog";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { useDebounce } from "@/lib/useDebounce";
 
 function getInitials(name: string) {
@@ -132,6 +133,7 @@ export default function UsersPage() {
 
   return (
     <>
+      <Breadcrumbs />
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>

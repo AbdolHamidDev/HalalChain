@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "@/i18n/hooks";
 import { cn } from "@/lib/utils";
 import { User, Shield, Bell, Palette } from "lucide-react";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ProfileSection } from "@/components/settings/profile-section";
 import { SecuritySection } from "@/components/settings/security-section";
 import { NotificationPreferencesForm } from "@/components/settings/notification-preferences-form";
@@ -24,6 +25,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs />
       {/* Page heading */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">{t("settings.pageTitle")}</h1>
