@@ -6,7 +6,9 @@ import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";
 import fs from "fs";
+import { createServer } from "http";
 import { authRateLimiter } from "./lib/rateLimiter";
+import { setupWebSocketServer } from "./lib/websocket";
 import authRoutes from "./routes/auth";
 import dashboardRoutes from "./routes/dashboard";
 import supplierRoutes from "./routes/suppliers";
@@ -41,6 +43,7 @@ try {
 }
 
 const app = express();
+const httpServer = createServer(app);
 
 // Swagger UI — mounted before CSP middleware so the /api/docs path check in CSP works correctly
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -125,3 +128,7 @@ app.use(
 );
 
 export default app;
+export { httpServer };
+
+// Setup WebSocket server
+export const wsServer = setupWebSocketServer(httpServer);

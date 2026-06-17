@@ -8,6 +8,7 @@ import { AuthRequest, authenticate, authorize } from "../middleware/auth";
 import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
 import { logAudit } from "../lib/auditLog";
 import { notifyShipmentDelayed } from "../lib/notificationService";
+import { addShipmentTrackingJob } from "../lib/queue";
 
 const router = Router();
 
@@ -233,6 +234,14 @@ router.patch(
           });
         }
       }
+
+      // Queue shipment tracking update for real-time processing
+      await addShipmentTrackingJob({
+        shipmentId: updated.id,
+        status: updated.status,
+        location: updated.origin,
+        notes: `Status changed from ${previousStatus} to ${newStatus}`,
+      });
 
       return updated;
     });

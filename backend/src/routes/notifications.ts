@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma";
 import { authenticate, AuthRequest } from "../middleware/auth";
 import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
 import { addNotificationClient, publishNotificationEvent } from "../lib/notificationStream";
+import { addNotificationJob } from "../lib/queue";
 
 const router = Router();
 
