@@ -63,6 +63,8 @@
     "items": "items",
     "item": "item",
     "selected": "selected",
+    "undo": "Undo",
+    "undoUnavailable": "Undo is no longer available",
     "errors": {
       "generic": "Something went wrong. Please try again."
     }
@@ -457,6 +459,7 @@
     "warehouseOpsCardDescription": "Process inbound receipts and outbound dispatch orders",
     "goToInventory": "Go to Inventory",
     "recentActivity": "Recent Activity",
+    "viewAll": "View all",
     "kpis": {
       "totalProducts": "Total Products",
       "activeSuppliers": "Active Suppliers",
@@ -907,9 +910,10 @@
     "createCertificateDescription": "Register a new halal certificate for a supplier",
     "editCertificate": "Edit Certificate",
     "certificateDetails": "Certificate Details",
-    "certificateDeleted": "Certificate deleted successfully",
+    "certificateDeleted": "Certificate deleted",
     "certificateCreated": "Certificate created successfully",
     "certificateUpdated": "Certificate updated successfully",
+    "certificateRestored": "Certificate restored",
     "status": {
       "valid": "Valid",
       "expiringSoon": "Expiring Soon",
@@ -947,6 +951,18 @@
     "deleteDescription": "Are you sure you want to delete this certificate? This action cannot be undone.",
     "certificateDeleteFailed": "Failed to delete certificate",
     "uploadDocument": "Upload Document",
+    "searchPlaceholder": "Search certificates…",
+    "timeRemaining": "remaining",
+    "filter": {
+      "all": "All",
+      "allIssuers": "All Issuers",
+      "active": "Active filters:",
+      "clear": "Clear all",
+      "clearAll": "Clear all filters",
+      "results": "results",
+      "noResults": "No matching certificates",
+      "tryDifferent": "Try different search terms or filters"
+    },
     "common": {
       "editItem": "Edit Certificate",
       "deleteItem": "Delete Certificate"
@@ -969,6 +985,7 @@
       "issueDate": "Issue Date",
       "expiryDate": "Expiry Date",
       "status": "Status",
+      "timeline": "Timeline",
       "actions": "Actions"
     }
   },

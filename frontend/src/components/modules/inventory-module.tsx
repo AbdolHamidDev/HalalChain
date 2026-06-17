@@ -23,6 +23,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/state-blocks";
+import { Pagination } from "@/components/ui/pagination";
 
 type MovementForm = {
   productId: string;
@@ -49,6 +50,10 @@ export function InventoryModule() {
   const [filterBelowReorder, setFilterBelowReorder] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
   const [dialogType, setDialogType] = useState<"inbound" | "outbound" | null>(null);
   const [form, setForm] = useState<MovementForm>(emptyMovement);
   const [error, setError] = useState<string | null>(null);
@@ -59,13 +64,14 @@ export function InventoryModule() {
   ];
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: inventoryQueryKey,
+    queryKey: [...inventoryQueryKey, page, pageSize],
     queryFn: () =>
       api.getInventory({
         warehouseId: filterWarehouseId || undefined,
         productId: filterProductId || undefined,
         belowReorder: filterBelowReorder || undefined,
-        limit: 100,
+        page,
+        limit: pageSize,
       }),
   });
 
@@ -332,6 +338,20 @@ export function InventoryModule() {
             </Table>
           </div>
         </>
+      )}
+
+      {/* ── Pagination ─────────────────────────────────────────────── */}
+      {!isLoading && !isError && data && data.totalPages > 1 && (
+        <Pagination
+          page={data.page}
+          totalPages={data.totalPages}
+          totalItems={data.total}
+          pageSize={pageSize}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
       )}
 
       <div>

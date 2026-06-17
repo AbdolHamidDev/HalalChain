@@ -24,6 +24,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/state-blocks";
+import { Pagination } from "@/components/ui/pagination";
 
 const NEXT_STATUS: Partial<Record<PurchaseOrderStatus, PurchaseOrderStatus>> = {
   DRAFT: "APPROVED",
@@ -52,9 +53,13 @@ export function PurchaseOrdersModule() {
   const [error, setError] = useState<string | null>(null);
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["purchase-orders"],
-    queryFn: () => api.getPurchaseOrders(),
+    queryKey: ["purchase-orders", "paginated", page, pageSize],
+    queryFn: () => api.getPurchaseOrders({ page, limit: pageSize }),
   });
 
   const { data: suppliersData } = useQuery({
@@ -289,6 +294,20 @@ export function PurchaseOrdersModule() {
             </Table>
           </div>
         </>
+      )}
+
+      {/* ── Pagination ─────────────────────────────────────────────── */}
+      {!isLoading && !isError && data && data.totalPages > 1 && (
+        <Pagination
+          page={data.page}
+          totalPages={data.totalPages}
+          totalItems={data.total}
+          pageSize={pageSize}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
       )}
 
       <Dialog open={open} onClose={() => setOpen(false)} title={t("purchaseOrders.createPO")}>

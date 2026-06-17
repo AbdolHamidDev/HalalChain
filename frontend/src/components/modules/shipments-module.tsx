@@ -23,6 +23,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/state-blocks";
+import { Pagination } from "@/components/ui/pagination";
 
 type CreateForm = {
   purchaseOrderId: string;
@@ -55,9 +56,13 @@ export function ShipmentsModule() {
   const [createForm, setCreateForm] = useState<CreateForm>(emptyCreate);
   const [createError, setCreateError] = useState<string | null>(null);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["shipments"],
-    queryFn: () => api.getShipments(),
+    queryKey: ["shipments", "paginated", page, pageSize],
+    queryFn: () => api.getShipments({ page, limit: pageSize }),
   });
 
   const { data: poData } = useQuery({
@@ -239,6 +244,20 @@ export function ShipmentsModule() {
             </Table>
           </div>
         </>
+      )}
+
+      {/* ── Pagination ─────────────────────────────────────────────── */}
+      {!isLoading && !isError && data && data.totalPages > 1 && (
+        <Pagination
+          page={data.page}
+          totalPages={data.totalPages}
+          totalItems={data.total}
+          pageSize={pageSize}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
       )}
 
       <Dialog

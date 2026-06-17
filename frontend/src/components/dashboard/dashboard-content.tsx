@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Warehouse } from "lucide-react";
+import { ArrowRight, CalendarDays, Warehouse, ChevronDown } from "lucide-react";
 import { DashboardCharts } from "@/components/dashboard/charts";
 import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
@@ -17,6 +17,31 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState, ErrorState } from "@/components/shared/state-blocks";
 import { api } from "@/lib/api";
+import { cn } from "@/lib/utils";
+
+// Date presets
+type DatePreset = "30d" | "90d" | "6m" | "1y" | "custom";
+const DATE_PRESETS: { value: DatePreset; label: string }[] = [
+  { value: "30d", label: "30d" },
+  { value: "90d", label: "90d" },
+  { value: "6m", label: "6m" },
+  { value: "1y", label: "1y" },
+  { value: "custom", label: "Custom" },
+];
+
+function getPresetRange(preset: DatePreset): { from: string; to: string } {
+  const now = new Date();
+  const to = now.toISOString().slice(0, 10);
+  const fromDate = new Date();
+  switch (preset) {
+    case "30d": fromDate.setMonth(fromDate.getMonth() - 1); break;
+    case "90d": fromDate.setMonth(fromDate.getMonth() - 3); break;
+    case "6m": fromDate.setMonth(fromDate.getMonth() - 6); break;
+    case "1y": fromDate.setFullYear(fromDate.getFullYear() - 1); break;
+    case "custom": return { from: "", to: "" };
+  }
+  return { from: fromDate.toISOString().slice(0, 10), to };
+}
 
 export function DashboardContent() {
   const { t } = useTranslation();
@@ -27,9 +52,19 @@ export function DashboardContent() {
     return date.toISOString().slice(0, 10);
   });
   const [to, setTo] = useState(() => new Date().toISOString().slice(0, 10));
+  const [datePreset, setDatePreset] = useState<DatePreset>("6m");
 
   const canViewActivity = user?.role === "ADMIN" || user?.role === "MANAGER";
   const params = useMemo(() => ({ from, to }), [from, to]);
+
+  function handlePresetChange(preset: DatePreset) {
+    setDatePreset(preset);
+    if (preset !== "custom") {
+      const range = getPresetRange(preset);
+      setFrom(range.from);
+      setTo(range.to);
+    }
+  }
 
   const stats = useQuery({
     queryKey: ["dashboard-stats", params],
@@ -71,11 +106,31 @@ export function DashboardContent() {
         description={t("dashboard.pageDescription")}
         action={
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-2">
-              <CalendarDays className="h-4 w-4 text-muted-foreground" />
-              <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-full sm:w-36" />
+            {/* Date presets */}
+            <div className="flex items-center gap-1 rounded-lg border bg-card p-0.5">
+              {DATE_PRESETS.map((preset) => (
+                <button
+                  key={preset.value}
+                  onClick={() => handlePresetChange(preset.value)}
+                  className={cn(
+                    "rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    datePreset === preset.value
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                >
+                  {preset.label}
+                </button>
+              ))}
             </div>
-            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-full sm:w-36" />
+            {datePreset === "custom" && (
+              <div className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-full sm:w-36" />
+                <span className="text-muted-foreground">→</span>
+                <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-full sm:w-36" />
+              </div>
+            )}
           </div>
         }
       />
@@ -151,7 +206,7 @@ function OperationalWidgets({ data }: { data: Awaited<ReturnType<typeof api.dash
             ))
         )}
       </WidgetCard>
-      <WidgetCard title={t("dashboard.widgets.lowStockAlerts")}>
+      <WidgetCard title={t("dashboard.widgets.lowStockAlerts")} viewAllHref="/dashboard/inventory" viewAllLabel={t("dashboard.viewAll") ?? "View all"}>
         {lowStockAlerts.length === 0 ? (
           <EmptyState title={t("dashboard.widgets.stockHealthy")} description={t("dashboard.widgets.stockHealthyDesc")} />
         ) : (
@@ -163,7 +218,7 @@ function OperationalWidgets({ data }: { data: Awaited<ReturnType<typeof api.dash
         )}
       </WidgetCard>
 
-      <WidgetCard title={t("dashboard.widgets.expiringCertificates")}>
+      <WidgetCard title={t("dashboard.widgets.expiringCertificates")} viewAllHref="/dashboard/certificates" viewAllLabel={t("dashboard.viewAll") ?? "View all"}>
         {expiringCertificates.length === 0 ? (
           <EmptyState title={t("dashboard.widgets.noExpiries")} description={t("dashboard.widgets.noExpiriesDesc")} />
         ) : (
@@ -175,7 +230,7 @@ function OperationalWidgets({ data }: { data: Awaited<ReturnType<typeof api.dash
         )}
       </WidgetCard>
 
-      <WidgetCard title={t("dashboard.widgets.shipmentDelays")}>
+      <WidgetCard title={t("dashboard.widgets.shipmentDelays")} viewAllHref="/dashboard/shipments" viewAllLabel={t("dashboard.viewAll") ?? "View all"}>
         {shipmentDelays.length === 0 ? (
           <EmptyState title={t("dashboard.widgets.noDelays")} description={t("dashboard.widgets.noDelaysDesc")} />
         ) : (
@@ -190,13 +245,24 @@ function OperationalWidgets({ data }: { data: Awaited<ReturnType<typeof api.dash
   );
 }
 
-function WidgetCard({ title, children }: { title: string; children: React.ReactNode }) {
+function WidgetCard({ title, children, viewAllHref, viewAllLabel }: { title: string; children: React.ReactNode; viewAllHref?: string; viewAllLabel?: string }) {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">{children}</CardContent>
+      {viewAllHref && (
+        <div className="border-t px-4 py-2">
+          <Link
+            href={viewAllHref}
+            className="flex items-center justify-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {viewAllLabel ?? "View all"}
+            <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+      )}
     </Card>
   );
 }

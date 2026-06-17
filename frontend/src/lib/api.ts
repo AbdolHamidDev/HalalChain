@@ -413,10 +413,19 @@ export const api = {
   },
 
   // Suppliers
-  getSuppliers: () =>
-    request<PaginatedResponse<Supplier>>("/api/suppliers").then((r) => ({
+  getSuppliers: (params?: { page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<PaginatedResponse<Supplier>>(`/api/suppliers${qs ? `?${qs}` : ""}`).then((r) => ({
       suppliers: r.data,
-    })),
+      page: r.page,
+      limit: r.limit,
+      total: r.total,
+      totalPages: r.totalPages,
+    }));
+  },
   createSupplier: (data: {
     name: string;
     country: string;
@@ -437,10 +446,19 @@ export const api = {
     request<{ message: string }>(`/api/suppliers/${id}`, { method: "DELETE" }),
 
   // Products
-  getProducts: () =>
-    request<PaginatedResponse<Product>>("/api/products").then((r) => ({
+  getProducts: (params?: { page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<PaginatedResponse<Product>>(`/api/products${qs ? `?${qs}` : ""}`).then((r) => ({
       products: r.data,
-    })),
+      page: r.page,
+      limit: r.limit,
+      total: r.total,
+      totalPages: r.totalPages,
+    }));
+  },
   getProduct: (id: string) =>
     request<{ product: Product; qrCodeUrl: string }>(`/api/products/${id}`),
   createProduct: (data: {
@@ -467,10 +485,19 @@ export const api = {
     request<{ message: string }>(`/api/products/${id}`, { method: "DELETE" }),
 
   // Certificates
-  getCertificates: () =>
-    request<PaginatedResponse<HalalCertificate>>("/api/certificates").then((r) => ({
+  getCertificates: (params?: { page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<PaginatedResponse<HalalCertificate>>(`/api/certificates${qs ? `?${qs}` : ""}`).then((r) => ({
       certificates: r.data,
-    })),
+      page: r.page,
+      limit: r.limit,
+      total: r.total,
+      totalPages: r.totalPages,
+    }));
+  },
   createCertificate: (data: {
     supplierId: string;
     certificateNumber: string;
@@ -563,10 +590,19 @@ export const api = {
     }),
 
   // Purchase Orders
-  getPurchaseOrders: () =>
-    request<PaginatedResponse<PurchaseOrder>>("/api/purchase-orders").then((r) => ({
+  getPurchaseOrders: (params?: { page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<PaginatedResponse<PurchaseOrder>>(`/api/purchase-orders${qs ? `?${qs}` : ""}`).then((r) => ({
       purchaseOrders: r.data,
-    })),
+      page: r.page,
+      limit: r.limit,
+      total: r.total,
+      totalPages: r.totalPages,
+    }));
+  },
   createPurchaseOrder: (data: {
     supplierId: string;
     poNumber?: string;
@@ -587,10 +623,19 @@ export const api = {
     }),
 
   // Shipments
-  getShipments: () =>
-    request<PaginatedResponse<Shipment>>("/api/shipments").then((r) => ({
+  getShipments: (params?: { page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<PaginatedResponse<Shipment>>(`/api/shipments${qs ? `?${qs}` : ""}`).then((r) => ({
       shipments: r.data,
-    })),
+      page: r.page,
+      limit: r.limit,
+      total: r.total,
+      totalPages: r.totalPages,
+    }));
+  },
   createShipment: (data: {
     purchaseOrderId: string;
     trackingNumber: string;

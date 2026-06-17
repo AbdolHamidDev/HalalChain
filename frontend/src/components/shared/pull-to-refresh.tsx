@@ -1,129 +1,154 @@
 "use client";
 
-import { useState, useRef, useCallback, type ReactNode } from "react";
-import { RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { hapticImpact } from "@/lib/haptics";
 
 interface PullToRefreshProps {
-  onRefresh: () => Promise<void>;
+  /** The content to wrap */
   children: ReactNode;
-  className?: string;
-  /** Distance in px to trigger refresh */
+  /** Async function called when user pulls to refresh */
+  onRefresh: () => Promise<void>;
+  /** Threshold in pixels before refresh triggers (default: 80) */
   threshold?: number;
-  disabled?: boolean;
+  /** Minimum pull distance to activate visual feedback */
+  pullDistance?: number;
+  /** Extra class names */
+  className?: string;
 }
 
-const PULL_THRESHOLD = 80;
-const MAX_PULL = 120;
-
+/**
+ * Mobile pull-to-refresh container.
+ * Pull down to trigger refresh. Shows a spinner at the top.
+ * Only activates on touch devices; does nothing on desktop.
+ */
 export function PullToRefresh({
-  onRefresh,
   children,
+  onRefresh,
+  threshold = 80,
+  pullDistance = 10,
   className,
-  threshold = PULL_THRESHOLD,
-  disabled = false,
 }: PullToRefreshProps) {
-  const [pullDistance, setPullDistance] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [state, setState] = useState<"idle" | "pulling" | "ready" | "refreshing">("idle");
+  const [pullProgress, setPullProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const startY = useRef(0);
+  const currentY = useRef(0);
   const isDragging = useRef(false);
 
   const handleTouchStart = useCallback(
-    (e: React.TouchEvent) => {
-      if (disabled || isRefreshing) return;
-      const el = containerRef.current;
-      if (el && el.scrollTop > 0) return;
-
-      startY.current = e.touches[0].clientY;
-      isDragging.current = true;
+    (e: TouchEvent) => {
+      // Only activate if the container is scrolled to the top
+      if (containerRef.current && containerRef.current.scrollTop <= 0) {
+        startY.current = e.touches[0].clientY;
+        currentY.current = e.touches[0].clientY;
+        isDragging.current = true;
+      }
     },
-    [disabled, isRefreshing]
+    []
   );
 
   const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      if (!isDragging.current || disabled || isRefreshing) return;
-      const el = containerRef.current;
-      if (el && el.scrollTop > 0) {
-        isDragging.current = false;
-        setPullDistance(0);
-        return;
-      }
+    (e: TouchEvent) => {
+      if (!isDragging.current) return;
+      currentY.current = e.touches[0].clientY;
+      const diff = currentY.current - startY.current;
 
-      const currentY = e.touches[0].clientY;
-      const diff = currentY - startY.current;
+      if (diff > pullDistance) {
+        const progress = Math.min(diff / threshold, 1);
+        setPullProgress(progress);
 
-      if (diff > 0) {
-        // Apply resistance (rubber band effect)
-        const resistance = 0.5;
-        const distance = Math.min(diff * resistance, MAX_PULL);
-        setPullDistance(distance);
+        if (diff >= threshold) {
+          setState("ready");
+        } else {
+          setState("pulling");
+        }
+
+        // Optional: subtle haptic at 100%
+        if (progress >= 1) {
+          hapticImpact();
+        }
+      } else {
+        setPullProgress(0);
+        setState("idle");
       }
     },
-    [disabled, isRefreshing]
+    [threshold, pullDistance]
   );
 
   const handleTouchEnd = useCallback(async () => {
-    if (!isDragging.current || disabled || isRefreshing) return;
+    if (!isDragging.current) return;
     isDragging.current = false;
 
-    if (pullDistance >= threshold) {
-      setIsRefreshing(true);
-      setPullDistance(40); // Hold at loading position
+    const diff = currentY.current - startY.current;
+    if (diff >= threshold) {
+      setState("refreshing");
+      setPullProgress(0);
       try {
         await onRefresh();
-      } catch {
-        // silently ignore
+      } finally {
+        setState("idle");
       }
-      setIsRefreshing(false);
+    } else {
+      setPullProgress(0);
+      setState("idle");
     }
-    setPullDistance(0);
-  }, [pullDistance, threshold, onRefresh, disabled, isRefreshing]);
+  }, [threshold, onRefresh]);
 
-  const progress = Math.min(pullDistance / threshold, 1);
-  const showIndicator = pullDistance > 0 || isRefreshing;
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    el.addEventListener("touchstart", handleTouchStart, { passive: true });
+    el.addEventListener("touchmove", handleTouchMove, { passive: true });
+    el.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      el.removeEventListener("touchstart", handleTouchStart);
+      el.removeEventListener("touchmove", handleTouchMove);
+      el.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
+
+  const isRefreshing = state === "refreshing";
 
   return (
-    <div
-      ref={containerRef}
-      className={cn("relative overflow-hidden", className)}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
+    <div ref={containerRef} className={cn("relative overflow-y-auto overscroll-contain", className)}>
       {/* Pull indicator */}
       <div
         className={cn(
-          "flex items-center justify-center overflow-hidden transition-all duration-300",
-          showIndicator ? "opacity-100" : "opacity-0"
+          "flex items-center justify-center pointer-events-none transition-all duration-200 ease-out",
+          isRefreshing ? "h-16 opacity-100" : "h-0",
+          state === "pulling" && pullProgress > 0 && !isRefreshing && "h-16 opacity-100"
         )}
-        style={{ height: pullDistance }}
       >
-        <RefreshCw
-          className={cn(
-            "h-5 w-5 text-primary transition-transform",
-            isRefreshing && "ptr-spinner"
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isRefreshing ? (
+            <>
+              <div className="ptr-spinner h-4 w-4 rounded-full border-2 border-muted-foreground border-t-transparent" />
+              <span>Refreshing...</span>
+            </>
+          ) : state === "ready" ? (
+            <span className="font-medium text-primary">Release to refresh</span>
+          ) : (
+            <>
+              <svg
+                className="h-4 w-4 transition-transform"
+                style={{ transform: `rotate(${pullProgress * 180}deg)` }}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M12 5v14M5 12l7-7 7 7" />
+              </svg>
+              <span>Pull to refresh</span>
+            </>
           )}
-          style={
-            !isRefreshing
-              ? { transform: `rotate(${progress * 360}deg)` }
-              : undefined
-          }
-        />
+        </div>
       </div>
 
-      {/* Content */}
-      <div
-        className="transition-transform duration-300"
-        style={{
-          transform: showIndicator
-            ? `translateY(0px)`
-            : undefined,
-        }}
-      >
-        {children}
-      </div>
+      {children}
     </div>
   );
 }

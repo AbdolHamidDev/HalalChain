@@ -484,6 +484,13 @@
     animation: page-in 0.3s ease-out both;
   }
 
+  /* ── Shimmer Loading ────────────────────────────────────────── */
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
   /* ── Pull-to-Refresh ────────────────────────────────────────── */
   @keyframes ptr-spin {
     to {

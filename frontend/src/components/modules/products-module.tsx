@@ -26,6 +26,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { EmptyState, ErrorState, TableSkeleton, LoadingState } from "@/components/shared/state-blocks";
+import { Pagination } from "@/components/ui/pagination";
 
 type FormData = {
   supplierId: string;
@@ -67,9 +68,13 @@ export function ProductsModule() {
   const [formError, setFormError] = useState<string | null>(null);
   const [qrProductId, setQrProductId] = useState<string | null>(null);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["products"],
-    queryFn: () => api.getProducts(),
+    queryKey: ["products", "paginated", page, pageSize],
+    queryFn: () => api.getProducts({ page, limit: pageSize }),
   });
 
   const { data: suppliersData } = useQuery({
@@ -434,6 +439,20 @@ export function ProductsModule() {
             </Table>
           </div>
         </>
+      )}
+
+      {/* ── Pagination ─────────────────────────────────────────────── */}
+      {!isLoading && !isError && data && data.totalPages > 1 && (
+        <Pagination
+          page={data.page}
+          totalPages={data.totalPages}
+          totalItems={data.total}
+          pageSize={pageSize}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
       )}
 
       {/* QR Code Dialog */}

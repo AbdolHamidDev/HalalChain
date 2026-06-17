@@ -26,6 +26,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/state-blocks";
+import { Pagination } from "@/components/ui/pagination";
 
 type FormData = {
   name: string;
@@ -53,9 +54,13 @@ export function SuppliersModule() {
   const [form, setForm] = useState<FormData>(empty);
   const [error, setError] = useState<string | null>(null);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["suppliers"],
-    queryFn: () => api.getSuppliers(),
+    queryKey: ["suppliers", "paginated", page, pageSize],
+    queryFn: () => api.getSuppliers({ page, limit: pageSize }),
   });
 
   const saveMutation = useMutation({
@@ -263,6 +268,20 @@ export function SuppliersModule() {
             </Table>
           </div>
         </>
+      )}
+
+      {/* ── Pagination ─────────────────────────────────────────────── */}
+      {!isLoading && !isError && data && data.totalPages > 1 && (
+        <Pagination
+          page={data.page}
+          totalPages={data.totalPages}
+          totalItems={data.total}
+          pageSize={pageSize}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
       )}
 
       <Dialog
