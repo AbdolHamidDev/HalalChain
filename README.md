@@ -486,6 +486,16 @@ If you find this project helpful, please consider:
 - **Joining** discussions and helping others
 - **Reporting** bugs and suggesting features
 
+## Sponsorships
+
+If you find this project valuable and would like to support its development, consider buying me a coffee:
+
+<a href="https://buymeacoffee.com/hamidabdol" target="_blank">
+  <img src="https://img.shields.io/badge/Buy_Me_A_Coffee-Support-yellow?style=flat-square&logo=buy-me-a-coffee" alt="Buy Me A Coffee" />
+</a>
+
+Your sponsorship helps maintain and improve HalalChain for the community.
+
 ## Acknowledgments
 
 - Built with [Next.js](https://nextjs.org/), [Express](https://expressjs.com/), [Prisma](https://www.prisma.io/), and many other amazing open-source projects
