@@ -6,17 +6,20 @@
 
 ![Build](https://github.com/AbdolHamidDev/HalalChain/actions/workflows/ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![Node.js](https://img.shields.io/badge/Node.js-20%2B-green?style=flat-square&logo=node.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?style=flat-square&logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Ready-blue?style=flat-square&logo=docker)
 
-**Supply Chain Compliance & Traceability Platform** · **Nền tảng Tuân thủ & Truy xuất Chuỗi Cung ứng Halal**
+**Supply Chain Compliance & Traceability Platform**
 
 Automated compliance monitoring, end-to-end traceability, QR verification, real-time alerts, operational intelligence, and scalable background job processing for modern halal supply chains across Southeast Asia.
 
-[English](#english) · [Tiếng Việt](#tiếng-việt)
+[English](#overview) · [Features](#platform-features) · [Architecture](#architecture) · [Quick Start](#quick-start) · [API](#api-overview) · [Contributing](#contributing) · [License](#license)
 
 </div>
 
 <img src="frontend/public/halalchain-hero-banner.png" alt="HalalChain Hero Banner" width="100%" />
-
 
 ### Demo
 
@@ -26,19 +29,17 @@ Automated compliance monitoring, end-to-end traceability, QR verification, real-
 
 ---
 
-## English
+## Overview
 
-### What is HalalChain?
+HalalChain is a **compliance-driven automation platform** that monitors, alerts, and scores supply chain health through four key capabilities:
 
-HalalChain is not just a CRUD management system. It is a **compliance-driven automation platform** that monitors, alerts, and scores your supply chain health through four key capabilities:
-
-#### 🔍 Product Traceability
+### Product Traceability
 Public-facing traceability pages with QR code verification — consumers scan, no login required.
 
-#### ⚖️ Compliance Monitoring
+### Compliance Monitoring
 Automated certificate expiry detection (30-day window), expired certificate escalation with high-severity alerts, compliance issue tracking, and a transparent **Compliance Score (0–100)**.
 
-#### 🤖 Automation Engine
+### Automation Engine
 Four automated rules run daily via cron:
 
 | Rule | Condition | Actions |
@@ -50,7 +51,7 @@ Four automated rules run daily via cron:
 
 All rules include **idempotent deduplication** — no duplicate notifications per entity per day.
 
-#### 📊 Real-time Alerts & Background Processing
+### Real-time Alerts & Background Processing
 - In-app notifications via **Server-Sent Events** (SSE) with 25-second heartbeat
 - **WebSocket (Socket.IO)** for real-time shipment tracking and activity streaming
 - **BullMQ** queue system for reliable background job processing (emails, notifications, tracking events)
@@ -58,7 +59,7 @@ All rules include **idempotent deduplication** — no duplicate notifications pe
 - Fire-and-forget email delivery via **Resend** or **SMTP** with exponential backoff retry (3 attempts)
 - Per-user notification preferences
 
-### Platform Features
+## Platform Features
 
 | Category | Capabilities |
 |----------|-------------|
@@ -68,25 +69,25 @@ All rules include **idempotent deduplication** — no duplicate notifications pe
 | **Real-time** | WebSocket (Socket.IO) for shipment tracking, SSE for notifications, BullMQ queues, Redis caching |
 | **Platform** | RBAC (ADMIN/MANAGER/STAFF), audit logs (CREATE/UPDATE/DELETE/STATUS_CHANGE), email notifications (Resend/SMTP), real-time updates, dashboard analytics (6-month trends), Swagger API docs, **6-language i18n** with RTL support |
 
-### Architecture
+## Architecture
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │  Next.js 15 (Frontend) — React 19, Tailwind CSS 4            │
 │  /dashboard/*  /settings/*  /traceability/*                  │
 └──────────────────────┬───────────────────────────────────────┘
-                        │  rewrites: /api/* → backend
-                        │            /uploads/* → backend
-                        ▼
+                         │  rewrites: /api/* → backend
+                         │            /uploads/* → backend
+                         ▼
 ┌──────────────────────────────────────────────────────────────┐
 │  Express 5 (Backend) — TypeScript, Zod validation            │
 │  /api/docs (Swagger UI)  /api/health                         │
 │  /ws (WebSocket / Socket.IO)                                 │
 └──────────────────────┬───────────────────────────────────────┘
-                        │
-          ┌─────────────┼─────────────┐
-          │             │             │
-          ▼             ▼             ▼
+                         │
+           ┌─────────────┼─────────────┐
+           │             │             │
+           ▼             ▼             ▼
 ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
 │  Redis 7        │ │  BullMQ Queue   │ │  Socket.IO      │
 │  (Upstash)      │ │  (3 queues)     │ │  WebSocket      │
@@ -94,8 +95,8 @@ All rules include **idempotent deduplication** — no duplicate notifications pe
 │  - Pub/Sub      │ │  - notifications│ │  - Real-time    │
 │  - Queue backend│ │  - emails       │ │    events       │
 └─────────────────┘ └─────────────────┘ └─────────────────┘
-                        │
-                        ▼
+                         │
+                         ▼
 ┌──────────────────────────────────────────────────────────────┐
 │  Automation Engine (Daily at 08:00)                          │
 │  ┌──────────────────────────────────────────────────────┐    │
@@ -117,7 +118,7 @@ All rules include **idempotent deduplication** — no duplicate notifications pe
 
 Monorepo managed with **npm workspaces** (`backend/`, `frontend/`).
 
-### Compliance Score
+## Compliance Score
 
 The Compliance Score (0–100) is computed on-the-fly from 5 transparent factors:
 
@@ -131,7 +132,7 @@ The Compliance Score (0–100) is computed on-the-fly from 5 transparent factors
 
 The breakdown is returned with every score so users can see **why** each point was deducted.
 
-### User Roles & Account Management
+## User Roles & Account Management
 
 | Role | Access |
 |------|--------|
@@ -145,24 +146,24 @@ Role-based navigation is enforced on both frontend (`src/lib/navigation.ts`) and
 
 **Invitation flow:** ADMINs invite new users via email — the invitation includes a role selection (ADMIN/MANAGER/STAFF), an expiry date, and an `accept-invite` page flow.
 
-### 🌐 Multilingual Support (i18n)
+## Multilingual Support (i18n)
 
 HalalChain is fully internationalised with 6 locale options:
 
 | Locale | Language | Direction | Flag |
 |--------|----------|-----------|------|
-| `en` | English | LTR | 🇬🇧 |
-| `vi` | Tiếng Việt | LTR | 🇻🇳 |
-| `ms` | Bahasa Melayu | LTR | 🇲🇾 |
-| `id` | Bahasa Indonesia | LTR | 🇮🇩 |
-| `ar` | العربية | **RTL** | 🇸🇦 |
-| `th` | ไทย | LTR | 🇹🇭 |
+| `en` | English | LTR | GB |
+| `vi` | Tiếng Việt | LTR | VN |
+| `ms` | Bahasa Melayu | LTR | MY |
+| `id` | Bahasa Indonesia | LTR | ID |
+| `ar` | العربية | **RTL** | SA |
+| `th` | ไทย | LTR | TH |
 
 Language preference is persisted via cookie (`halalchain_lang`). Includes **RTL layout support** for Arabic. Every UI module (navigation, auth, dashboard, products, suppliers, inventory, warehouses, POs, shipments, certificates, reports, settings, notifications, traceability) has its own namespace for clean translation management.
 
-### Quick Start
+## Quick Start
 
-#### Prerequisites
+### Prerequisites
 
 - Node.js 20+
 - Docker (for PostgreSQL + Redis)
@@ -170,15 +171,28 @@ Language preference is persisted via cookie (`halalchain_lang`). Includes **RTL 
 - Resend API key or SMTP credentials *(optional — required only for email alerts)*
 - Upstash Redis account *(optional — production Redis is configured with Upstash; local Redis via Docker works for development)*
 
-#### Setup
+### Setup
 
 ```bash
+# Clone the repository
+git clone https://github.com/AbdolHamidDev/HalalChain.git
+cd HalalChain
+
+# Install dependencies
 npm install
+
+# Start infrastructure (PostgreSQL + Redis)
 npm run db:up
+
+# Configure environment variables
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
+
+# Run database migrations and seed demo data
 npm run db:migrate
 npm run db:seed
+
+# Start development servers
 npm run dev
 ```
 
@@ -192,7 +206,7 @@ npm run dev
 
 Edit `backend/.env` — at minimum set `JWT_SECRET`. For avatar/certificate uploads, fill in the Cloudinary variables. For email alerts, set either `RESEND_API_KEY` or SMTP variables. For Redis, set `REDIS_URL` (local: `redis://localhost:6379`, or Upstash URL).
 
-#### Demo accounts
+### Demo accounts
 
 | Email | Password | Role |
 |-------|----------|------|
@@ -208,7 +222,7 @@ Seed data creates all automation demo conditions:
 - **3 overdue shipments** → Rule 4 fires
 - **1 supplier without certificates** → Coverage factor affected
 
-### Project Structure
+## Project Structure
 
 ```text
 HalalChain/
@@ -264,7 +278,7 @@ HalalChain/
 └── README.md
 ```
 
-### API Overview
+## API Overview
 
 All protected routes require the `halalchain_token` cookie. Public endpoints live under `/api/public/`.
 
@@ -304,7 +318,7 @@ All protected routes require the `halalchain_token` cookie. Public endpoints liv
 
 Full OpenAPI 3 spec: `backend/src/swagger.yaml` — interactive docs at `/api/docs`.
 
-### Enums & Statuses
+## Enums & Statuses
 
 | Model | Values |
 |-------|--------|
@@ -317,7 +331,7 @@ Full OpenAPI 3 spec: `backend/src/swagger.yaml` — interactive docs at `/api/do
 | **AuditAction** | `CREATE`, `UPDATE`, `DELETE`, `STATUS_CHANGE` |
 | **NotificationType** | `LOW_STOCK`, `CERTIFICATE_EXPIRING`, `CERTIFICATE_EXPIRED`, `SHIPMENT_DELAYED`, `SYSTEM`, `COMPLIANCE_ISSUE` |
 
-### Database Schema
+## Database Schema
 
 ```text
 User ──┬── InventoryMovement
@@ -341,7 +355,7 @@ Warehouse ── WarehouseZone
 BatchLot ─── (product tracking)
 ```
 
-### Technical Highlights
+## Technical Highlights
 
 | Layer | Technology |
 |-------|-----------|
@@ -356,7 +370,7 @@ BatchLot ─── (product tracking)
 | **Queue** | BullMQ with Redis backend — 3 queues: shipment-tracking, notifications, emails |
 | **Deployment** | Docker Compose, npm workspaces, GitHub Actions CI |
 
-### Scripts
+## Scripts
 
 | Command | Description |
 |---------|-------------|
@@ -370,7 +384,7 @@ BatchLot ─── (product tracking)
 | `npm run db:studio` | Open Prisma Studio |
 | `npm run test -w backend` | Run backend tests |
 
-### Testing
+## Testing
 
 Backend tests use **Vitest** with unit tests and property-based tests (`fast-check`) for notification deduplication logic.
 
@@ -378,7 +392,7 @@ Backend tests use **Vitest** with unit tests and property-based tests (`fast-che
 npm run test -w backend
 ```
 
-### Documentation
+## Documentation
 
 | Document | Description |
 |----------|-------------|
@@ -392,7 +406,7 @@ npm run test -w backend
 | `markdown/DESIGN.md` | System design documentation |
 | `markdown/ADMIN_USER_MANAGEMENT.md` | Admin user management guide |
 
-### Deployment (planned)
+## Deployment (planned)
 
 | Layer | Target |
 |-------|--------|
@@ -401,7 +415,7 @@ npm run test -w backend
 
 Set `NODE_ENV=production`, a strong `JWT_SECRET`, and `FRONTEND_URL` to your production frontend origin. Configure `NEXT_PUBLIC_API_URL` on the frontend to point at the deployed API. For Redis, use Upstash or self-hosted Redis.
 
-### Screenshots
+## Screenshots
 
 | Compliance Dashboard | Inventory Management |
 |:--------------------:|:--------------------:|
@@ -413,167 +427,82 @@ Set `NODE_ENV=production`, a strong `JWT_SECRET`, and `FRONTEND_URL` to your pro
 | ![Public Traceability Portal](docs/screenshots/traceability.png) | ![RBAC User Management](docs/screenshots/users.png) |
 | Public timeline — no login required | Role-based access with audit logs and invitation flow |
 
-### Contributing
+## Roadmap
 
-HalalChain is open-source and welcomes contributions from the community! 🎉
+- [x] Core compliance monitoring & automation engine
+- [x] Real-time notifications (SSE + WebSocket)
+- [x] Public traceability with QR verification
+- [x] Multi-language support (6 languages, RTL)
+- [ ] Advanced analytics & predictive insights
+- [ ] Mobile application (React Native)
+- [ ] Third-party ERP/SCM integrations
+- [ ] Blockchain-based certificate verification
+- [ ] AI-powered compliance risk assessment
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines — including branch naming, commit message conventions, development workflow, and PR process.
+## Contributing
 
-Quick links:
-- [Contributing Guide](CONTRIBUTING.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [Security Policy](SECURITY.md)
-- [Bug Report Template](.github/ISSUE_TEMPLATE/bug_report.md)
-- [Feature Request Template](.github/ISSUE_TEMPLATE/feature_request.md)
-- [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md)
+HalalChain is open-source and welcomes contributions from the community.
 
-Whether you're fixing a bug, adding a feature, improving documentation, or just experimenting — feel free to **fork**, **star**, and send a **pull request**.
-We also welcome issues, feature requests, and discussions. Let's build better halal supply chain compliance together.
+We appreciate all contributions — whether it's a bug fix, feature implementation, documentation improvement, or design suggestion.
 
-### License
+### How to Contribute
+
+1. **Fork** the repository
+2. **Clone** your fork: `git clone https://github.com/AbdolHamidDev/HalalChain.git`
+3. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+4. **Commit** your changes: `git commit -m 'feat: add amazing feature'`
+5. **Push** to the branch: `git push origin feature/amazing-feature`
+6. **Open** a Pull Request
+
+### Contribution Guidelines
+
+- Follow the existing code style and conventions
+- Write clear, descriptive commit messages
+- Update documentation for any new features
+- Add tests for new functionality
+- Ensure all tests pass before submitting PR
+
+### Code of Conduct
+
+This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+
+### Community
+
+- **Discussions**: [GitHub Discussions](https://github.com/AbdolHamidDev/HalalChain/discussions) — ask questions, share ideas, and connect with other contributors
+- **Issues**: [GitHub Issues](https://github.com/AbdolHamidDev/HalalChain/issues) — report bugs or request features
+- **Security**: Please report security vulnerabilities to [SECURITY.md](SECURITY.md)
+
+### Recognition
+
+Contributors will be acknowledged in our repository. We value every contribution, no matter how small.
+
+## Support
+
+If you find this project helpful, please consider:
+
+- **Starring** the repository
+- **Forking** the repository
+- **Sharing** with others who might benefit
+- **Joining** discussions and helping others
+- **Reporting** bugs and suggesting features
+
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/), [Express](https://expressjs.com/), [Prisma](https://www.prisma.io/), and many other amazing open-source projects
+- Icons by [Lucide](https://lucide.dev/)
+- UI components by [shadcn/ui](https://ui.shadcn.com/)
+- Real-time infrastructure powered by [Socket.IO](https://socket.io/), [BullMQ](https://docs.bullmq.io/), and [Redis](https://redis.io/)
+
+## License
 
 **MIT** — see [LICENSE](LICENSE) for details. You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software.
 
 ---
 
-## Tiếng Việt
+<div align="center">
 
-### HalalChain là gì?
+**Built for the halal supply chain community**
 
-HalalChain không chỉ là một hệ thống quản lý CRUD. Đây là **nền tảng tự động hóa tuân thủ** giám sát, cảnh báo và chấm điểm sức khỏe chuỗi cung ứng của bạn thông qua bốn khả năng chính:
+[Website](https://halalchain.com) · [Documentation](docs/) · [Demo](docs/demo/) · [Report Bug](https://github.com/AbdolHamidDev/HalalChain/issues) · [Request Feature](https://github.com/AbdolHamidDev/HalalChain/issues)
 
-#### 🔍 Truy xuất nguồn gốc sản phẩm
-Trang truy xuất công khai với mã QR — người tiêu dùng quét mã, không cần đăng nhập.
-
-#### ⚖️ Giám sát tuân thủ
-Phát hiện chứng nhận sắp hết hạn (trong vòng 30 ngày), cảnh báo chứng nhận đã hết hạn với mức ưu tiên CAO, theo dõi vấn đề tuân thủ, và **Điểm Tuân thủ (0–100)** minh bạch.
-
-#### 🤖 Công cụ tự động hóa
-Bốn quy tắc tự động chạy hàng ngày qua cron:
-
-| Quy tắc | Điều kiện | Hành động |
-|---------|-----------|-----------|
-| **Chứng nhận sắp hết hạn** | Hết hạn trong vòng 30 ngày | Thông báo + Cảnh báo + Email |
-| **Chứng nhận đã hết hạn** | Ngày hết hạn đã qua | Cảnh báo mức CAO + Vấn đề tuân thủ + Email |
-| **Tồn kho thấp** | Số lượng ≤ mức đặt hàng lại | Thông báo + Đề xuất bổ sung |
-| **Giao hàng trễ** | Quá hạn + chưa giao | Cảnh báo + Chỉ báo trên dashboard |
-
-Tất cả quy tắc đều có **cơ chế chống trùng lặp** — không có thông báo trùng lặp cho mỗi thực thể mỗi ngày.
-
-#### 📊 Cảnh báo thời gian thực & Xử lý nền
-- Thông báo trong ứng dụng qua **Server-Sent Events** (SSE) với heartbeat 25 giây
-- **WebSocket (Socket.IO)** cho theo dõi lô hàng thời gian thực và luồng hoạt động
-- Hàng đợi **BullMQ** để xử lý công việc nền đáng tin cậy (email, thông báo, sự kiện theo dõi)
-- **Redis** (Upstash quản lý) cho bộ nhớ đệm, pub/sub, và backend hàng đợi
-- Gửi email qua **Resend** hoặc **SMTP** với cơ chế thử lại 3 lần
-
-### Tính năng nền tảng
-
-| Danh mục | Khả năng |
-|----------|----------|
-| **Truy xuất** | Trang truy xuất công khai, xác minh QR, trực quan hóa hành trình sản phẩm |
-| **Giám sát tuân thủ** | Phát hiện chứng nhận hết hạn, cảnh báo chứng nhận quá hạn, theo dõi vấn đề tuân thủ, điểm tuân thủ (0–100) |
-| **Giám sát vận hành** | Phát hiện tồn kho thấp, phát hiện giao hàng trễ, cảnh báo dashboard, thông báo tự động |
-| **Thời gian thực** | WebSocket (Socket.IO) cho theo dõi lô hàng, SSE cho thông báo, hàng đợi BullMQ, bộ nhớ đệm Redis |
-| **Nền tảng** | RBAC (ADMIN/MANAGER/STAFF), audit logs, email, cập nhật thời gian thực, phân tích, Swagger API docs, đa ngôn ngữ (6 ngôn ngữ) với hỗ trợ RTL |
-
-### Kiến trúc
-
-```text
-┌──────────────────────────────────────────────────────────────┐
-│  Next.js 15 (Frontend) — React 19, Tailwind CSS 4            │
-│  /dashboard/*  /settings/*  /traceability/*                  │
-└──────────────────────┬───────────────────────────────────────┘
-                        ▼
-┌──────────────────────────────────────────────────────────────┐
-│  Express 5 (Backend) — TypeScript, Zod                       │
-│  /api/docs  /api/health  /ws (WebSocket)                     │
-└──────────────────────┬───────────────────────────────────────┘
-                        │
-          ┌─────────────┼─────────────┐
-          │             │             │
-          ▼             ▼             ▼
-┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
-│  Redis 7        │ │  BullMQ Queue   │ │  Socket.IO      │
-│  (Upstash)      │ │  (3 hàng đợi)   │ │  WebSocket      │
-└─────────────────┘ └─────────────────┘ └─────────────────┘
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────────┐
-│  Automation Engine (Hàng ngày lúc 08:00)                     │
-│  → 4 quy tắc: Chứng nhận sắp hết hạn / Đã hết hạn          │
-│     Tồn kho thấp / Giao hàng trễ                             │
-│  → Thông báo + Cảnh báo + Email                             │
-└──────────────────────────┬───────────────────────────────────┘
-                            ▼
-┌──────────────────────────────────────────────────────────────┐
-│  PostgreSQL 16 + Prisma ORM                                  │
-└──────────────────────────────────────────────────────────────┘
-```
-
-### Quản lý tài khoản & Vai trò
-
-| Vai trò | Truy cập |
-|---------|----------|
-| **ADMIN** | Toàn bộ nền tảng — tất cả modules, quản lý người dùng, audit logs, hành động phá hủy |
-| **MANAGER** | Dashboard KPI/báo cáo, analytics, nhà cung cấp, sản phẩm, tồn kho, kho hàng, đơn đặt hàng, lô hàng, chứng nhận |
-| **STAFF** | Dashboard đơn giản, thao tác tồn kho (nhập/xuất/điều chỉnh), xem kho |
-
-Trạng thái tài khoản: `ACTIVE` hoặc `SUSPENDED` — tài khoản bị đình chỉ sẽ bị từ chối khi đăng nhập.
-
-Luồng mời: ADMIN mời người dùng mới qua email — lời mời bao gồm chọn vai trò (ADMIN/MANAGER/STAFF), ngày hết hạn, và trang `accept-invite`.
-
-### Đa ngôn ngữ (i18n)
-
-HalalChain hỗ trợ 6 ngôn ngữ:
-
-| Ngôn ngữ | Hướng | Cờ |
-|----------|-------|-----|
-| English | LTR | 🇬🇧 |
-| Tiếng Việt | LTR | 🇻🇳 |
-| Bahasa Melayu | LTR | 🇲🇾 |
-| Bahasa Indonesia | LTR | 🇮🇩 |
-| العربية | **RTL** | 🇸🇦 |
-| ไทย | LTR | 🇹🇭 |
-
-Ngôn ngữ được lưu qua cookie (`halalchain_lang`). Hỗ trợ bố cục RTL cho tiếng Ả Rập.
-
-### Tài khoản demo
-
-| Email | Mật khẩu | Vai trò |
-|-------|----------|---------|
-| admin@halalchain.com | Admin@123 | ADMIN |
-| manager@halalchain.com | Admin@123 | MANAGER |
-| staff@halalchain.com | Admin@123 | STAFF |
-| staff2@halalchain.com | Admin@123 | STAFF |
-
-### Công nghệ
-
-**Frontend:** Next.js 15, React 19, TypeScript, Tailwind CSS 4, shadcn/ui (Dialog, Select, DropdownMenu, Avatar, Checkbox, Tooltip, Collapsible, Label, Slot, Separator), TanStack React Query, Zustand (state), react-hook-form, Zod, Recharts, Framer Motion, Sonner (toast), next-themes (dark/light), Lucide icons, react-simple-maps, tw-animate-css
-
-**Backend:** Express 5, Prisma, PostgreSQL, JWT + Refresh Tokens (rotation, bcrypt-hashed), Zod, Helmet, node-cron, Redis (ioredis + Upstash), BullMQ, Socket.IO, Cloudinary (avatar: 256×256 WebP), Resend/SMTP, multer
-
-**Thời gian thực & Hàng đợi:** WebSocket (Socket.IO), SSE, BullMQ (3 hàng đợi), Redis (Upstash)
-
-**Đa ngôn ngữ:** 6 ngôn ngữ (EN, VI, MS, ID, AR, TH) với hỗ trợ RTL cho tiếng Ả Rập
-
-### Đóng góp
-
-HalalChain là mã nguồn mở và hoan nghênh sự đóng góp từ cộng đồng! 🎉
-
-Xem [CONTRIBUTING.md](CONTRIBUTING.md) để biết hướng dẫn chi tiết — bao gồm quy tắc đặt tên nhánh, quy ước commit message, quy trình phát triển và quy trình PR.
-
-Liên kết nhanh:
-- [Hướng dẫn đóng góp](CONTRIBUTING.md)
-- [Quy tắc ứng xử](CODE_OF_CONDUCT.md)
-- [Chính sách bảo mật](SECURITY.md)
-- [Mẫu báo cáo lỗi](.github/ISSUE_TEMPLATE/bug_report.md)
-- [Mẫu yêu cầu tính năng](.github/ISSUE_TEMPLATE/feature_request.md)
-- [Mẫu Pull Request](.github/PULL_REQUEST_TEMPLATE.md)
-
-Cho dù bạn sửa lỗi, thêm tính năng, cải thiện tài liệu hay chỉ đang thử nghiệm — hãy thoải mái **fork**, **star**, và gửi **pull request**.
-Chúng tôi cũng hoan nghênh các issue, yêu cầu tính năng và thảo luận. Cùng nhau xây dựng hệ thống tuân thủ chuỗi cung ứng Halal tốt hơn.
-
-### Giấy phép
-
-**MIT** — xem [LICENSE](LICENSE) để biết chi tiết. Bạn được tự do sử dụng, sao chép, sửa đổi, hợp nhất, xuất bản, phân phối, cấp phép lại và/hoặc bán các bản sao phần mềm.
+</div>

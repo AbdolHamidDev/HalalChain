@@ -103,3 +103,12 @@ temp/
 *.bak
 *.swp
 *.swo
+
+# =========================
+# Project-specific
+# =========================
+CV_PROJECT_ENTRY.md
+CV_PROJECT_ENTRY_LOGISTICS.md
+PROJECT_CV.md
+files_backend.txt
+backend/cookies.txt
