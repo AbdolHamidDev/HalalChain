@@ -388,7 +388,7 @@ BatchLot ─── (product tracking)
 | **Auth** | JWT access token (HttpOnly cookie), Refresh Token rotation (bcrypt-hashed), token version invalidation, rate limiter (5 req/min on refresh), user suspension support |
 | **Real-time** | Server-Sent Events (SSE) with 25-second heartbeat + WebSocket (Socket.IO) for bidirectional communication |
 | **Queue** | BullMQ with Redis backend — 3 queues: shipment-tracking, notifications, emails |
-| **Deployment** | Docker Compose, npm workspaces, GitHub Actions CI |
+| **Deployment** | Docker (multi-stage), Vercel (frontend), Render (backend), npm workspaces, GitHub Actions CI |
 
 ## Scripts
 
@@ -426,14 +426,92 @@ npm run test -w backend
 | `markdown/DESIGN.md` | System design documentation |
 | `markdown/ADMIN_USER_MANAGEMENT.md` | Admin user management guide |
 
-## Deployment (planned)
+## Deployment
 
-| Layer | Target |
-|-------|--------|
-| Frontend | Vercel |
-| API + DB + Redis | Railway |
+### Frontend (Vercel)
 
-Set `NODE_ENV=production`, a strong `JWT_SECRET`, and `FRONTEND_URL` to your production frontend origin. Configure `NEXT_PUBLIC_API_URL` on the frontend to point at the deployed API. For Redis, use Upstash or self-hosted Redis.
+Deploy the Next.js frontend to Vercel:
+
+1. Push your code to GitHub
+2. Import the repository in [Vercel](https://vercel.com)
+3. Set the **Root Directory** to `frontend`
+4. Add environment variables:
+   - `NEXT_PUBLIC_API_URL` — your deployed backend URL (e.g. `https://your-api.onrender.com`)
+   - `NEXT_PUBLIC_APP_URL` — your frontend URL (e.g. `https://your-app.vercel.app`)
+5. Deploy
+
+Vercel automatically detects Next.js and handles the build. The frontend uses Next.js 15 with App Router and is optimized for Vercel deployment.
+
+### Backend (Render via Docker)
+
+Deploy the Express backend to Render using the provided Dockerfile:
+
+1. Push your code to GitHub
+2. Create a new **Web Service** in [Render](https://render.com)
+3. Connect your repository and set:
+   - **Runtime**: Docker
+   - **Dockerfile Path**: `backend/Dockerfile`
+   - **Instance Type**: Free or paid based on your needs
+4. Add environment variables:
+   - `DATABASE_URL` — your PostgreSQL connection string (Render PostgreSQL or external)
+   - `REDIS_URL` — your Redis URL (Upstash recommended: `https://...`)
+   - `JWT_SECRET` — a strong random secret
+   - `JWT_EXPIRES_IN` — `15m`
+   - `NODE_ENV` — `production`
+   - `FRONTEND_URL` — your Vercel frontend URL (e.g. `https://your-app.vercel.app`)
+   - `PORT` — `4000`
+   - `RESEND_API_KEY` or SMTP variables — for email notifications (optional)
+   - `CLOUDINARY_URL` — for file uploads (optional)
+5. Deploy
+
+The backend Dockerfile uses a multi-stage build (deps → builder → runner) on `node:20-alpine` with a non-root user for security.
+
+### Infrastructure Options
+
+| Service | Options |
+|---------|---------|
+| **Database** | Render PostgreSQL, Supabase, Neon, or self-hosted |
+| **Redis** | Upstash (managed), Render Redis, or self-hosted |
+| **Email** | Resend (primary), SMTP fallback (Gmail, SendGrid, etc.) |
+| **File Storage** | Cloudinary (avatars + certificates) |
+
+### Production Environment Variables
+
+**Backend** (Render):
+```env
+DATABASE_URL=postgresql://user:pass@host:5432/halalchain
+REDIS_URL=rediss://default:password@your-upstash-redis.upstash.io
+JWT_SECRET=your-strong-secret-here
+JWT_EXPIRES_IN=15m
+NODE_ENV=production
+FRONTEND_URL=https://your-app.vercel.app
+PORT=4000
+RESEND_API_KEY=re_xxx  # optional
+CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name  # optional
+```
+
+**Frontend** (Vercel):
+```env
+NEXT_PUBLIC_API_URL=https://your-api.onrender.com
+NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
+```
+
+### Local Docker Compose
+
+For local development, use the included `docker-compose.yml`:
+
+```bash
+npm run db:up      # Start PostgreSQL + Redis
+npm run db:down    # Stop containers
+npm run db:migrate # Run Prisma migrations
+npm run db:seed    # Seed demo data
+```
+
+The compose file includes:
+- PostgreSQL 16 (port 5432)
+- Redis 7 (port 6379)
+- Backend service (port 4000) with health checks
+- Named volumes for data persistence
 
 ## Screenshots
 
