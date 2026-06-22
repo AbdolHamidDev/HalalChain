@@ -99,7 +99,7 @@ router.patch("/configs/:key", authorize(UserRole.ADMIN), async (req: AuthRequest
  * POST /api/admin/system/configs
  * Create a new config - ADMIN only
  */
-router.post("/configs", authorize(UserRole.ADMIN), async (req, res) => {
+router.post("/configs", authorize(UserRole.ADMIN), async (req: AuthRequest, res) => {
   try {
     const validation = createConfigSchema.safeParse(req.body);
 

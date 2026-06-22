@@ -132,8 +132,8 @@ router.post("/queues/:name/purge", authorize(UserRole.ADMIN), async (req, res) =
         return res.status(404).json({ error: "Queue not found" });
     }
 
-    await queue.clean(0, "completed");
-    await queue.clean(0, "failed");
+    await queue.clean(0, 0, "completed");
+    await queue.clean(0, 0, "failed");
 
     res.json({
       message: "Queue purged successfully",

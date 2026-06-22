@@ -7,13 +7,13 @@ import pino from "pino";
 
 export const logger = pino({
   level: process.env.LOG_LEVEL || "info",
-  formatter: (log) => {
-    return {
-      timestamp: new Date().toISOString(),
-      level: log.level,
-      message: log.msg,
-      ...(log.data && { data: log.data }),
-    };
+  formatters: {
+    log: (log) => {
+      return {
+        ...log,
+        timestamp: new Date().toISOString(),
+      };
+    },
   },
 });
 

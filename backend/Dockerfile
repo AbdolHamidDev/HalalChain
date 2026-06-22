@@ -41,6 +41,11 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/swagger.yaml ./
+COPY --from=builder /app/package.json ./
+
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Create uploads directory
 RUN mkdir -p uploads/avatars && chown -R expressjs:nodejs uploads
@@ -50,6 +55,9 @@ USER expressjs
 
 # Expose port
 EXPOSE 4000
+
+# Use entrypoint to run migrations and seed before starting
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Start the application
 CMD ["node", "dist/index.js"]
