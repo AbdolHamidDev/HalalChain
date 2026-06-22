@@ -531,11 +531,60 @@ The compose file includes:
 - [x] Real-time notifications (SSE + WebSocket)
 - [x] Public traceability with QR verification
 - [x] Multi-language support (6 languages, RTL)
+- [x] **v2.0: Maintenance & Operations Upgrade** — [View Details](docs/version2/)
 - [ ] Advanced analytics & predictive insights
 - [ ] Mobile application (React Native)
 - [ ] Third-party ERP/SCM integrations
 - [ ] Blockchain-based certificate verification
 - [ ] AI-powered compliance risk assessment
+
+## Version 2.0 — Maintenance & Operations Upgrade
+
+**Status:** ✅ Backend Complete | 🚀 Ready for Deployment
+
+HalalChain v2.0 transforms the platform into a **production-grade, self-maintaining system** with comprehensive observability, automated maintenance, and operational control.
+
+### Key Features
+
+| Category | Capabilities |
+|----------|-------------|
+| **Observability** | Structured JSON logging (Pino), health checks (PostgreSQL, Redis, BullMQ), system metrics, execution history |
+| **Automation** | Automated daily backups (02:00), weekly data cleanup (Sunday 03:00), database-backed rule scheduling |
+| **Control** | Runtime configuration management, feature flags with rollout %, maintenance mode, queue management |
+| **Resilience** | Graceful shutdown (SIGTERM/SIGINT), dependency health monitoring, audit trail, error tracking |
+
+### What's New
+
+- **25+ new API endpoints** for system administration
+- **6 new database models** (SystemConfig, FeatureFlag, AutomationRule, RuleExecution, SystemEvent, MaintenanceWindow)
+- **4 scheduled cron jobs** for automated maintenance
+- **Automatic Docker migrations** — no manual database setup needed
+- **Production-ready deployment** — Render + Vercel + Neon + Upstash
+
+### Documentation
+
+📚 **Complete v2.0 documentation available in [`docs/version2/`](docs/version2/):**
+
+| Document | Description |
+|----------|-------------|
+| [Implementation Summary](docs/version2/VERSION_2_IMPLEMENTATION_SUMMARY.md) | Complete implementation details, statistics, and architecture |
+| [Testing Guide](docs/version2/VERSION_2_TESTING_GUIDE.md) | Step-by-step testing instructions for all v2.0 features |
+| [Deployment Guide](docs/version2/DEPLOYMENT_GUIDE.md) | Production deployment to Render (backend) + Vercel (frontend) |
+| [Maintenance Upgrade Proposal](docs/version2/VERSION_2_MAINTENANCE_UPGRADE_PROPOSAL.md) | Original proposal and design rationale |
+
+### Quick Deploy
+
+```bash
+# Backend (Render) — auto-runs migrations & seeding
+git push origin main
+
+# Frontend (Vercel)
+cd frontend && vercel --prod
+```
+
+**No manual database setup required** — Docker entrypoint automatically runs migrations and seeds v2.0 data on startup.
+
+---
 
 ## Contributing
 
