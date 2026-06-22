@@ -12,6 +12,7 @@ import {
 } from "../lib/analyticsService";
 import { getComplianceScore } from "../lib/automation/engine";
 import { addActivityClient } from "../lib/activityStream";
+import { getCached, setCached, buildCacheKey } from "../lib/cache";
 
 const router = Router();
 
@@ -31,6 +32,17 @@ router.get(
     if (typeof req.query.to === "string") {
       const to = new Date(req.query.to);
       if (!Number.isNaN(to.getTime())) range.to = to;
+    }
+
+    // Skip cache if custom date range is provided
+    const hasCustomRange = req.query.from || req.query.to;
+    const cacheKey = buildCacheKey("dashboard:stats", range.from.toISOString(), range.to.toISOString());
+
+    if (!hasCustomRange) {
+      const cached = await getCached<Record<string, unknown>>(cacheKey);
+      if (cached) {
+        return res.json(cached);
+      }
     }
 
     // ── KPIs (real queries) ────────────────────────────────────────────────────
@@ -165,7 +177,7 @@ router.get(
       { type: "low_stock_items", count: lowStockCountTotal, severity: lowStockCountTotal > 0 ? "low" : "none" },
     ];
 
-    res.json({
+    const responseData = {
       kpis: {
         totalProducts,
         activeSuppliers: totalSuppliers,
@@ -212,7 +224,14 @@ router.get(
         breakdown: complianceScore.factors,
         issues: complianceIssues,
       },
-    });
+    };
+
+    res.json(responseData);
+
+    // Cache the response for 5 minutes (only for default range)
+    if (!hasCustomRange) {
+      await setCached(cacheKey, responseData, 300);
+    }
   }
 );
 

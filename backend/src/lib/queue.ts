@@ -20,28 +20,16 @@ export interface EmailJob {
   html: string;
 }
 
-// Use Redis URL from environment to support both local and Upstash
+// BullMQ connection options (BullMQ uses its own ioredis instance)
 const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+const isUpstash = redisUrl.includes("upstash.io");
 
-// Parse Redis URL for BullMQ connection
-const getQueueConnection = () => {
-  try {
-    const url = new URL(redisUrl);
-    return {
-      host: url.hostname,
-      port: parseInt(url.port) || 6379,
-      password: url.password || undefined,
-      tls: redisUrl.includes("upstash.io") ? {} : undefined,
-    };
-  } catch {
-    return {
-      host: "localhost",
-      port: 6379,
-    };
-  }
+const queueConnection = {
+  host: isUpstash ? new URL(redisUrl).hostname : "localhost",
+  port: isUpstash ? parseInt(new URL(redisUrl).port) : 6379,
+  password: isUpstash ? new URL(redisUrl).password : undefined,
+  tls: isUpstash ? {} : undefined,
 };
-
-const queueConnection = getQueueConnection();
 
 export const shipmentTrackingQueue = new Queue<ShipmentTrackingJob>("shipment-tracking", {
   connection: queueConnection,
@@ -49,7 +37,7 @@ export const shipmentTrackingQueue = new Queue<ShipmentTrackingJob>("shipment-tr
     attempts: 3,
     backoff: {
       type: "exponential",
-      delay: 1000,
+      delay: 2000,
     },
     removeOnComplete: {
       count: 100,
@@ -67,7 +55,7 @@ export const notificationQueue = new Queue<NotificationJob>("notifications", {
     attempts: 3,
     backoff: {
       type: "exponential",
-      delay: 1000,
+      delay: 2000,
     },
     removeOnComplete: {
       count: 100,
@@ -85,7 +73,7 @@ export const emailQueue = new Queue<EmailJob>("emails", {
     attempts: 3,
     backoff: {
       type: "exponential",
-      delay: 1000,
+      delay: 2000,
     },
     removeOnComplete: {
       count: 100,
