@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -187,16 +188,20 @@ export function AvatarUpload({ name, avatarUrl, onAvatarChange }: AvatarUploadPr
         {/* Avatar image or initials fallback */}
         {preview ? (
           // Local preview before upload (Req 5.2)
-          <img
+          <Image
             src={preview}
             alt="Avatar preview"
+            width={80}
+            height={80}
             className="h-20 w-20 rounded-full object-cover"
           />
         ) : avatarUrl ? (
           // Current server avatar (Req 5.1)
-          <img
+          <Image
             src={avatarUrl}
             alt={`${name}'s avatar`}
+            width={80}
+            height={80}
             className="h-20 w-20 rounded-full object-cover"
           />
         ) : (

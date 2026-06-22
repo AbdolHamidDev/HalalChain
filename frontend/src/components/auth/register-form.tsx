@@ -61,7 +61,7 @@ export function RegisterForm() {
           {...register("name")}
         />
         {errors.name && (
-          <InputError id="name-error" role="alert">{t(errors.name.message as any)}</InputError>
+          <InputError id="name-error" role="alert">{t(errors.name.message!)}</InputError>
         )}
       </InputWrapper>
 
@@ -76,7 +76,7 @@ export function RegisterForm() {
           {...register("email")}
         />
         {errors.email && (
-          <InputError id="email-error" role="alert">{t(errors.email.message as any)}</InputError>
+          <InputError id="email-error" role="alert">{t(errors.email.message!)}</InputError>
         )}
       </InputWrapper>
 
@@ -91,7 +91,7 @@ export function RegisterForm() {
           {...register("password")}
         />
         {errors.password && (
-          <InputError id="password-error" role="alert">{t(errors.password.message as any)}</InputError>
+          <InputError id="password-error" role="alert">{t(errors.password.message!)}</InputError>
         )}
       </InputWrapper>
 
@@ -106,7 +106,7 @@ export function RegisterForm() {
           {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
-          <InputError id="confirm-password-error" role="alert">{t(errors.confirmPassword.message as any)}</InputError>
+          <InputError id="confirm-password-error" role="alert">{t(errors.confirmPassword.message!)}</InputError>
         )}
       </InputWrapper>
 

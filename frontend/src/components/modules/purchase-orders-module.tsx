@@ -11,7 +11,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { dialog } from "@/lib/dialog";
-import { Input, InputWrapper, InputLabel, InputError, InputHint } from "@/components/ui/input";
+import { Input, InputLabel, InputError } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -105,7 +105,7 @@ export function PurchaseOrdersModule() {
       qc.invalidateQueries({ queryKey: ["purchase-orders"] });
       qc.invalidateQueries({ queryKey: ["shipments"] });
       setPendingStatusId(null);
-      const statusLabel = t(`purchaseOrders.status.${status.toLowerCase()}` as any);
+      const statusLabel = t(`purchaseOrders.status.${status.toLowerCase()}`);
       toast.success(t("purchaseOrders.statusUpdated"), {
         description: t("purchaseOrders.statusUpdatedDesc", { values: { status: statusLabel } }),
       });
@@ -256,14 +256,15 @@ export function PurchaseOrdersModule() {
                                 variant="secondary"
                                 disabled={isAdvancing}
                                 onClick={() => statusMutation.mutate({ id: po.id, status: next })}
-                                aria-label={`${t(STATUS_LABEL[next] as any)} ${po.poNumber}`}
+                                aria-label={`${t(STATUS_LABEL[next]!)} ${po.poNumber}`}
                               >
                                 {isAdvancing ? (
                                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                 ) : (
                                   <ChevronRight className="h-3.5 w-3.5" />
                                 )}
-                                {t(STATUS_LABEL[next] as any)}
+                                {t(STATUS_LABEL[next]!)}
+                            {t(STATUS_LABEL[next]!)}
                               </Button>
                             )}
                             {po.status === "DRAFT" && (

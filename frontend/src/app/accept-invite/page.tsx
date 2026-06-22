@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { api, type UserRole } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,6 @@ function AcceptInviteForm() {
 
   const [validating, setValidating] = useState(true);
   const [tokenError, setTokenError] = useState<string | null>(null);
-  const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<UserRole>("STAFF");
 
   const [name, setName] = useState("");
@@ -37,8 +37,7 @@ function AcceptInviteForm() {
 
     api
       .validateInviteToken(token)
-      .then(({ email, role }) => {
-        setInviteEmail(email);
+      .then(({ role }) => {
         setInviteRole(role);
         setValidating(false);
       })
@@ -129,8 +128,7 @@ function AcceptInviteForm() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="HalalChain" className="mx-auto h-10 w-auto mb-4" />
+          <Image src="/logo.png" alt="HalalChain" width={40} height={40} className="mx-auto h-10 w-auto mb-4" />
           <h1 className="text-xl font-semibold">{t("acceptInvite.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {t("acceptInvite.description")}

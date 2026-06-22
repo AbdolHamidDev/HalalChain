@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import Image from "next/image";
 import {
   RefreshCw,
   Search,
@@ -239,7 +240,7 @@ export default function UsersPage() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
                               <p className="truncate text-sm font-medium leading-tight">{u.name}</p>
-                              {u.isVerified && <img src="/verified.png" alt="Verified" className="h-3.5 w-3.5 shrink-0" />}
+                               {u.isVerified && <Image src="/verified.png" alt="Verified" width={14} height={14} className="h-3.5 w-3.5 shrink-0" />}
                               {isSelf && <span className="text-xs text-muted-foreground">(you)</span>}
                             </div>
                             <p className="truncate text-xs text-muted-foreground">

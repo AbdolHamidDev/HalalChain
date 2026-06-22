@@ -54,7 +54,7 @@ export default function SettingsPage() {
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {t(`settings.tabs.${key}` as any)}
+                {t(`settings.tabs.${key}`)}
               </button>
             );
           })}

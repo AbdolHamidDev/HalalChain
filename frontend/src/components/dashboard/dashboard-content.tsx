@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Warehouse, ChevronDown, Users, BarChart3, FileText } from "lucide-react";
+import { ArrowRight, CalendarDays, Warehouse, Users, BarChart3, FileText } from "lucide-react";
 import { DashboardCharts } from "@/components/dashboard/charts";
 import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
@@ -64,18 +64,6 @@ export function DashboardContent() {
     if (hour < 18) return t("dashboard.greeting.afternoon");
     return t("dashboard.greeting.evening");
   };
-
-  const quickViewButtons = user?.role === "ADMIN"
-    ? [
-        { href: "/dashboard/users", label: t("dashboard.quickView.userManagement"), icon: Users },
-        { href: "/dashboard/reports", label: t("dashboard.quickView.reports"), icon: FileText },
-      ]
-    : user?.role === "MANAGER"
-    ? [
-        { href: "/dashboard/reports", label: t("dashboard.quickView.reports"), icon: FileText },
-        { href: "/dashboard/analytics", label: t("dashboard.quickView.analytics"), icon: BarChart3 },
-      ]
-    : [];
 
   function handlePresetChange(preset: DatePreset) {
     setDatePreset(preset);

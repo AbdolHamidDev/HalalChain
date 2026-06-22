@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/components/providers/auth-provider";
 import { getInitials } from "@/lib/utils";
 import { useTranslation } from "@/i18n/hooks";
@@ -56,9 +57,11 @@ export function UserMenu() {
           <div className="flex items-center gap-1">
             <p className="truncate text-sm font-medium">{user.name}</p>
             {user?.isVerified && (
-              <img
+              <Image
                 src="/verified.png"
                 alt="verified"
+                width={14}
+                height={14}
                 className="h-3.5 w-3.5 flex-shrink-0"
               />
             )}

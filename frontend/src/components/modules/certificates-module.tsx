@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState, useCallback, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Plus, Pencil, Trash2, Search, X, Filter, Undo2, ArrowUpDown, Download, Eye, ExternalLink,
+  Plus, Pencil, Trash2, Search, X, Filter, ArrowUpDown, Download, Eye, ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { api, HalalCertificate, CertificateStatus } from "@/lib/api";
@@ -14,7 +14,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { dialog } from "@/lib/dialog";
-import { Input, InputWrapper, InputLabel, InputError, InputHint } from "@/components/ui/input";
+import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -120,8 +120,7 @@ export function CertificatesModule() {
   const [editing, setEditing] = useState<HalalCertificate | null>(null);
   const [form, setForm] = useState<FormData>(empty);
   const [formError, setFormError] = useState<string | null>(null);
-  /** When creating: after save, switch to upload mode using the new cert ID */
-  const [uploadAfterCreate, setUploadAfterCreate] = useState(false);
+  // uploadAfterCreate removed - no longer needed
 
   // View detail dialog
   const [viewingCert, setViewingCert] = useState<HalalCertificate | null>(null);
@@ -160,7 +159,7 @@ export function CertificatesModule() {
   const saveMutation = useMutation({
     mutationFn: async () => {
       const payload = { ...form, fileUrl: form.fileUrl || undefined, supplierId: editing ? editing.supplierId : form.supplierId };
-      if (editing) { const { supplierId: _, ...update } = payload; return api.updateCertificate(editing.id, update); }
+      if (editing) { const { supplierId, ...update } = payload; return api.updateCertificate(editing.id, update); }
       return api.createCertificate(payload);
     },
     onSuccess: (data) => {
@@ -184,7 +183,6 @@ export function CertificatesModule() {
             ...form,
             fileUrl: newCert.fileUrl ?? "",
           });
-          setUploadAfterCreate(true);
         } else {
           setSheetOpen(false);
           setForm(empty);
@@ -558,19 +556,19 @@ export function CertificatesModule() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <SortableHead onClick={() => toggleSort("certificateNumber")} active={sortField === "certificateNumber"} dir={sortDir}>
+                  <SortableHead onClick={() => toggleSort("certificateNumber")} active={sortField === "certificateNumber"}>
                     {t("certificates.table.certificateNumber")}
                   </SortableHead>
-                  <SortableHead onClick={() => toggleSort("issuedBy")} active={sortField === "issuedBy"} dir={sortDir}>
+                  <SortableHead onClick={() => toggleSort("issuedBy")} active={sortField === "issuedBy"}>
                     {t("certificates.table.issuedBy")}
                   </SortableHead>
-                  <SortableHead onClick={() => toggleSort("supplierName")} active={sortField === "supplierName"} dir={sortDir}>
+                  <SortableHead onClick={() => toggleSort("supplierName")} active={sortField === "supplierName"}>
                     {t("certificates.table.supplier")}
                   </SortableHead>
-                  <SortableHead onClick={() => toggleSort("issueDate")} active={sortField === "issueDate"} dir={sortDir}>
+                  <SortableHead onClick={() => toggleSort("issueDate")} active={sortField === "issueDate"}>
                     {t("certificates.table.issueDate")}
                   </SortableHead>
-                  <SortableHead onClick={() => toggleSort("expiryDate")} active={sortField === "expiryDate"} dir={sortDir}>
+                  <SortableHead onClick={() => toggleSort("expiryDate")} active={sortField === "expiryDate"}>
                     {t("certificates.table.expiryDate")}
                   </SortableHead>
                   <TableHead>{t("certificates.table.timeline")}</TableHead>
@@ -775,12 +773,11 @@ function DetailField({ label, value, mono }: { label: string; value: string; mon
 
 /** Sortable column header */
 function SortableHead({
-  children, onClick, active, dir,
+  children, onClick, active,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   active: boolean;
-  dir: SortDir;
 }) {
   return (
     <TableHead>

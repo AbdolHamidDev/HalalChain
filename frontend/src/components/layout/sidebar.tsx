@@ -167,7 +167,7 @@ function SidebarPanel({
 }: SidebarPanelProps) {
   const { t } = useTranslation();
   const pathname = usePathname();
-  const { user, logout, isDemo } = useAuth();
+  const { user, isDemo } = useAuth();
   const groups = user ? getNavGroupsForRole(user.role) : [];
   const [commitCount, setCommitCount] = useState<number | null>(null);
 
@@ -391,9 +391,11 @@ function SidebarPanel({
                       {user.name}
                     </p>
                     {user.isVerified && (
-                      <img
+                      <Image
                         src="/verified.png"
                         alt="verified"
+                        width={12}
+                        height={12}
                         className="h-3 w-3 flex-shrink-0"
                       />
                     )}

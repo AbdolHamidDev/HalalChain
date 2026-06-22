@@ -145,12 +145,12 @@ export function NotificationPreferencesForm() {
                   checked={formState[key]}
                   onCheckedChange={(checked) => handleToggle(key, checked === true)}
                   disabled={saving}
-                  aria-label={t(labelKey as any)}
-                />
-              </div>
-              <label htmlFor={`pref-${key}`} className="flex flex-col gap-0.5 cursor-pointer select-none">
-                <span className="text-sm font-medium leading-none">{t(labelKey as any)}</span>
-                <span className="text-xs text-muted-foreground">{t(descriptionKey as any)}</span>
+                   aria-label={t(labelKey)}
+                 />
+               </div>
+               <label htmlFor={`pref-${key}`} className="flex flex-col gap-0.5 cursor-pointer select-none">
+                 <span className="text-sm font-medium leading-none">{t(labelKey)}</span>
+                 <span className="text-xs text-muted-foreground">{t(descriptionKey)}</span>
               </label>
             </div>
           ))}

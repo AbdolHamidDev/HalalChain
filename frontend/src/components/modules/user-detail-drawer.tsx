@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import {
   Loader2,
   Upload,
-  Trash2,
   KeyRound,
   ShieldCheck,
   ShieldOff,
@@ -19,15 +18,8 @@ import {
 } from "lucide-react";
 import { api, type User, type UserRole, type UserStatus } from "@/lib/api";
 import { getInitials } from "@/lib/utils";
-import {
-  Sheet,
-  SheetRoot,
-  SheetContent,
-  SheetHeader,
-  SheetBody,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+import { Sheet } from "@/components/ui/sheet";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
@@ -180,7 +172,7 @@ export function UserDetailDrawer({ user, currentUserId, open, onClose, onUserUpd
           <p className="truncate text-sm text-muted-foreground">{user.email}</p>
           <div className="mt-1.5 flex items-center gap-2 flex-wrap">
             <Badge variant={roleBadgeVariant(user.role)}>{roleLabels[user.role]}</Badge>
-            {user.isVerified && <div className="flex items-center gap-1"><img src="/verified.png" alt="Verified" className="h-4 w-4" /><span className="text-xs text-emerald-600 font-medium">{t("users.verifiedUser")}</span></div>}
+            {user.isVerified && <div className="flex items-center gap-1"><Image src="/verified.png" alt="Verified" width={16} height={16} className="h-4 w-4" /><span className="text-xs text-emerald-600 font-medium">{t("users.verifiedUser")}</span></div>}
             {isSelf && <span className="text-xs text-muted-foreground">(you)</span>}
           </div>
         </div>

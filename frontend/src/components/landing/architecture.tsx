@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Globe, Server, Database, Mail, Bell, Cloud, Workflow, ArrowRight, Check } from "lucide-react";
+import { Globe, Server, Database, Mail, Bell, Cloud, Workflow } from "lucide-react";
 import { useTranslation } from "@/i18n/hooks";
 import type { TranslationKey } from "@/i18n/types";
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, PlayCircle, LayoutDashboard, Shield } from "lucide-react";
+import { PlayCircle, LayoutDashboard, Shield } from "lucide-react";
 import { useTranslation } from "@/i18n/hooks";
 import { useAuth } from "@/components/providers/auth-provider";
 

@@ -81,7 +81,7 @@ export function ShipmentsModule() {
       qc.invalidateQueries({ queryKey: ["shipments"] });
       toast.success(t("shipments.shipmentUpdated"), {
         description: t("shipments.shipmentUpdatedDesc", {
-          values: { trackingNumber: editTracking, status: t(`shipments.statusOptions.${editStatus.toLowerCase()}` as any) },
+          values: { trackingNumber: editTracking, status: t(`shipments.statusOptions.${editStatus.toLowerCase()}`) },
         }),
       });
       setEditing(null);

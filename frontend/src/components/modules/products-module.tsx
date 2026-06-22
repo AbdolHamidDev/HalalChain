@@ -14,7 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Sheet } from "@/components/ui/sheet";
 import { dialog } from "@/lib/dialog";
-import { Input, InputWrapper, InputLabel, InputError, InputHint } from "@/components/ui/input";
+import { Input, InputWrapper, InputLabel, InputError } from "@/components/ui/input";
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -465,7 +466,7 @@ export function ProductsModule() {
           {isLoadingQr && <LoadingState />}
           {productDetail && (
             <>
-              <img
+              <Image
                 src={productDetail.qrCodeUrl}
                 alt={t("products.common.qrCodeFor", { values: { name: productDetail.product.name }})}
                 width={256}

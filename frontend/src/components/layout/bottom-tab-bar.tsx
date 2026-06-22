@@ -156,7 +156,7 @@ export function BottomTabBar() {
                     active ? "font-semibold" : "font-medium"
                   )}
                 >
-                  {t(tab.translationKey as any)}
+                  {t(tab.translationKey)}
                 </span>
               </button>
             </Link>

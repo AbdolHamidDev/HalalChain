@@ -105,7 +105,7 @@ export default function DemoAdminPage() {
                 <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                 <div className="text-xs text-amber-800 dark:text-amber-200">
                   <p className="font-semibold mb-1">Demo Mode Notice</p>
-                  <p>This is a temporary admin session. No data will be saved to the database. Changes are stored in your browser's local memory only.</p>
+                  <p>This is a temporary admin session. No data will be saved to the database. Changes are stored in your browser&apos;s local memory only.</p>
                 </div>
               </div>
             </div>

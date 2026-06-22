@@ -73,7 +73,7 @@ export function NotificationDropdown({
   // Guard: ensure t() never receives undefined to prevent split() crash
   function safeT(key: string | undefined): string {
     if (!key) return "";
-    return t(key as any);
+    return t(key);
   }
 
   return (

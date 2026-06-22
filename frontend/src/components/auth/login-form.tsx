@@ -55,7 +55,7 @@ export function LoginForm() {
           {...register("email")}
         />
         {errors.email && (
-          <InputError id="email-error" role="alert">{t(errors.email.message as any)}</InputError>
+          <InputError id="email-error" role="alert">{t(errors.email.message!)}</InputError>
         )}
       </InputWrapper>
 
@@ -70,7 +70,7 @@ export function LoginForm() {
           {...register("password")}
         />
         {errors.password && (
-          <InputError id="password-error" role="alert">{t(errors.password.message as any)}</InputError>
+          <InputError id="password-error" role="alert">{t(errors.password.message!)}</InputError>
         )}
       </InputWrapper>
 
