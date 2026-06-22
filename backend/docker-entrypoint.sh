@@ -3,30 +3,20 @@ set -e
 
 echo "🚀 Starting HalalChain v2.0..."
 
-# Wait for database to be ready (max 30 seconds)
-echo "⏳ Waiting for database..."
-for i in $(seq 1 30); do
-  if echo "SELECT 1" | npx prisma db execute --stdin > /dev/null 2>&1; then
-    echo "✅ Database is ready"
-    break
-  fi
-  if [ $i -eq 30 ]; then
-    echo "❌ Database connection timeout"
-    exit 1
-  fi
-  sleep 1
-done
-
-# Run database migrations
+# Run database migrations (will retry if DB not ready)
 echo "🔄 Running database migrations..."
 npx prisma migrate deploy || {
-  echo "⚠️  Migration failed or no pending migrations"
+  echo "⚠️  Migration failed, retrying in 5s..."
+  sleep 5
+  npx prisma migrate deploy || {
+    echo "❌ Migration failed after retry, continuing anyway..."
+  }
 }
 
 # Seed v2.0 data (idempotent - safe to run multiple times)
 echo "🌱 Seeding v2.0 data..."
 npx prisma db seed --seed-file prisma/seed-v2.ts || {
-  echo "⚠️  Seed failed or already seeded"
+  echo "⚠️  Seed failed or already seeded, continuing..."
 }
 
 echo "✅ Initialization complete"
