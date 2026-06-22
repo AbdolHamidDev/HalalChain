@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, PlayCircle, LayoutDashboard } from "lucide-react";
+import { ArrowRight, PlayCircle, LayoutDashboard, Shield } from "lucide-react";
 import { useTranslation } from "@/i18n/hooks";
 import { useAuth } from "@/components/providers/auth-provider";
 
 export function CTASection() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, loginDemo } = useAuth();
 
   return (
     <section className="py-20 md:py-28 relative overflow-hidden">
@@ -37,10 +37,18 @@ export function CTASection() {
               </Button>
             ) : (
               <>
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto min-w-[200px]" 
+                  onClick={() => loginDemo("demo-admin@halalchain.local", "demo-admin-2024")}
+                >
+                  <Shield className="mr-2 size-4" />
+                  Try Demo Admin
+                </Button>
                 <Button size="lg" className="w-full sm:w-auto min-w-[200px]" asChild>
-                  <Link href="/register">
-                    {t("landing.cta.exploreDemo")}
-                    <ArrowRight className="ml-2 size-4" />
+                  <Link href="/demo">
+                    <PlayCircle className="mr-2 size-4" />
+                    QR Code Demo
                   </Link>
                 </Button>
                 <Button
@@ -50,7 +58,6 @@ export function CTASection() {
                   asChild
                 >
                   <Link href="/login">
-                    <PlayCircle className="mr-2 size-4" />
                     {t("landing.cta.signIn")}
                   </Link>
                 </Button>

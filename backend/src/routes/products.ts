@@ -5,6 +5,7 @@ import { prisma } from "../lib/prisma";
 import { parseBody, sendNotFound, sendValidationError } from "../lib/validate";
 import { paramId } from "../lib/params";
 import { AuthRequest, authenticate, authorize } from "../middleware/auth";
+import { blockDemoWrites } from "../middleware/demo-mode";
 import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
 import { logAudit } from "../lib/auditLog";
 import { buildTraceabilityTimeline } from "../lib/traceabilityEngine";
@@ -100,6 +101,7 @@ router.post(
   "/",
   authenticate,
   authorize(UserRole.ADMIN),
+  blockDemoWrites,
   async (req: AuthRequest, res: Response) => {
     const parsed = parseBody(createSchema, req.body);
     if (!parsed.success) {
@@ -140,6 +142,7 @@ router.patch(
   "/:id",
   authenticate,
   authorize(UserRole.ADMIN),
+  blockDemoWrites,
   async (req: AuthRequest, res: Response) => {
     const parsed = parseBody(updateSchema, req.body);
     if (!parsed.success) {
@@ -185,6 +188,7 @@ router.delete(
   "/:id",
   authenticate,
   authorize(UserRole.ADMIN),
+  blockDemoWrites,
   async (req: AuthRequest, res: Response) => {
     const existing = await prisma.product.findUnique({
       where: { id: paramId(req.params.id) },

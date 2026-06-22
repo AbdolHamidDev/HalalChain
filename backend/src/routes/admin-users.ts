@@ -5,6 +5,7 @@ import multer from "multer";
 import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma";
 import { authenticate, authorize, AuthRequest } from "../middleware/auth";
+import { blockDemoWrites } from "../middleware/demo-mode";
 import { buildUserResponse } from "../lib/userResponse";
 import { validateName } from "../lib/validateName";
 import { validatePassword } from "../lib/passwordValidator";
@@ -110,7 +111,7 @@ const patchUserSchema = z.object({
   name: z.string(),
 });
 
-router.patch("/:id", async (req: AuthRequest, res: Response): Promise<void> => {
+router.patch("/:id", blockDemoWrites, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const adminId = req.user!.sub;
     const targetId = req.params.id as string;
@@ -164,7 +165,7 @@ router.patch("/:id", async (req: AuthRequest, res: Response): Promise<void> => {
 });
 
 // POST /api/admin/users/:id/avatar — upload avatar for a target user (admin only)
-router.post("/:id/avatar", (req: AuthRequest, res: Response): void => {
+router.post("/:id/avatar", blockDemoWrites, (req: AuthRequest, res: Response): void => {
   avatarUpload.single("avatar")(req as Request, res, async (err) => {
     if (err) {
       if (err instanceof multer.MulterError) {
@@ -236,7 +237,7 @@ const verifyUserSchema = z.object({
   isVerified: z.boolean(),
 });
 
-router.patch("/:id/verify", async (req: AuthRequest, res: Response): Promise<void> => {
+router.patch("/:id/verify", blockDemoWrites, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const adminId = req.user!.sub;
     const targetId = req.params.id as string;
@@ -284,7 +285,7 @@ const resetPasswordSchema = z.object({
   newPassword: z.string(),
 });
 
-router.post("/:id/reset-password", async (req: AuthRequest, res: Response): Promise<void> => {
+router.post("/:id/reset-password", blockDemoWrites, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const adminId = req.user!.sub;
     const targetId = req.params.id as string;
@@ -350,7 +351,7 @@ const updateStatusSchema = z.object({
   status: z.nativeEnum(UserStatus),
 });
 
-router.patch("/:id/status", async (req: AuthRequest, res: Response): Promise<void> => {
+router.patch("/:id/status", blockDemoWrites, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const adminId = req.user!.sub;
     const targetId = req.params.id as string;

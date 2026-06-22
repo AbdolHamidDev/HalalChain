@@ -240,6 +240,23 @@ router.post("/logout", async (req, res: Response) => {
 });
 
 router.get("/me", authenticate, async (req: AuthRequest, res: Response) => {
+  // Demo tokens bypass DB lookup - return user info from JWT payload
+  if (req.user!.isDemo) {
+    res.json({
+      user: {
+        id: req.user!.sub,
+        name: req.user!.name,
+        email: req.user!.email,
+        role: req.user!.role,
+        createdAt: new Date().toISOString(),
+        avatarUrl: null,
+        isVerified: true,
+        status: "ACTIVE",
+      },
+    });
+    return;
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: req.user!.sub },
     select: {

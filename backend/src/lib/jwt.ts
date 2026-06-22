@@ -9,6 +9,8 @@ export interface JwtPayload {
   name: string;
   /** Incremented on suspend/password-reset to invalidate existing tokens */
   tv: number;
+  /** Marks this as a demo token that bypasses DB validation */
+  isDemo?: boolean;
 }
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret-change-me";

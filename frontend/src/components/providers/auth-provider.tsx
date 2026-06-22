@@ -13,7 +13,9 @@ import { api, User } from "@/lib/api";
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
+  isDemo: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginDemo: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -45,6 +47,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(loggedIn);
   }, []);
 
+  const loginDemo = useCallback(async (email: string, password: string) => {
+    const res = await fetch("/api/demo-admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || "Demo login failed");
+    }
+    if (data.isDemo) {
+      localStorage.setItem("halalchain_demo_admin", "true");
+      localStorage.setItem("halalchain_demo_user", JSON.stringify(data.user));
+    }
+    setUser(data.user);
+  }, []);
+
   const register = useCallback(
     async (name: string, email: string, password: string) => {
       const { user: registered } = await api.register({ name, email, password });
@@ -54,13 +74,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    await api.logout();
+    const isDemo = localStorage.getItem("halalchain_demo_admin") === "true";
+    if (isDemo) {
+      await fetch("/api/demo-admin/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      localStorage.removeItem("halalchain_demo_admin");
+      localStorage.removeItem("halalchain_demo_user");
+    } else {
+      await api.logout();
+    }
     setUser(null);
   }, []);
 
+  const [isDemo, setIsDemo] = useState(false);
+
+  useEffect(() => {
+    const demoFlag = localStorage.getItem("halalchain_demo_admin") === "true";
+    setIsDemo(demoFlag);
+  }, []);
+
   const value = useMemo(
-    () => ({ user, loading, login, register, logout, refresh }),
-    [user, loading, login, register, logout, refresh]
+    () => ({ user, loading, isDemo, login, register, logout, refresh, loginDemo }),
+    [user, loading, isDemo, login, register, logout, refresh, loginDemo]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

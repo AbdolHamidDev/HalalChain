@@ -4,6 +4,7 @@ import { InventoryMovementType, Prisma, UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { parseBody, sendNotFound, sendValidationError } from "../lib/validate";
 import { AuthRequest, authenticate, authorize } from "../middleware/auth";
+import { blockDemoWrites } from "../middleware/demo-mode";
 import { parsePaginationParams, buildPaginatedResponse } from "../lib/paginate";
 import { logAudit } from "../lib/auditLog";
 import { notifyLowStock } from "../lib/notificationService";
@@ -271,6 +272,7 @@ router.post(
   "/inbound",
   authenticate,
   authorize(UserRole.ADMIN, UserRole.STAFF),
+  blockDemoWrites,
   async (req: AuthRequest, res: Response) => {
     const parsed = parseBody(movementSchema, req.body);
     if (!parsed.success) {
@@ -299,6 +301,7 @@ router.post(
   "/outbound",
   authenticate,
   authorize(UserRole.ADMIN, UserRole.STAFF),
+  blockDemoWrites,
   async (req: AuthRequest, res: Response) => {
     const parsed = parseBody(movementSchema, req.body);
     if (!parsed.success) {

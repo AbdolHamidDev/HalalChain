@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeftOpen, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -19,6 +19,7 @@ import {
 } from "@/components/layout/notification-bell";
 import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 import { UserMenu } from "@/components/layout/user-menu";
+import { useAuth } from "@/components/providers/auth-provider";
 
 function useBreadcrumb() {
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ export function DashboardHeader() {
   const pageTitle = useBreadcrumb();
   const { toggle } = useMobileNav();
   const { collapsed, toggle: toggleSidebar } = useSidebar();
+  const { isDemo } = useAuth();
   useNotificationStream();
 
   const { data } = useQuery({
@@ -85,6 +87,12 @@ export function DashboardHeader() {
             orientation="vertical"
             className="hidden h-4 sm:block bg-sidebar-border"
           />
+          {isDemo && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-200 dark:text-amber-300">
+              <Shield className="h-3 w-3" />
+              Demo
+            </span>
+          )}
           <span className="truncate font-medium text-sidebar-accent-foreground">
             {pageTitle}
           </span>

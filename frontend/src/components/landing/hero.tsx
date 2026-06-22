@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, PlayCircle, LayoutDashboard } from "lucide-react";
+import { ArrowRight, PlayCircle, LayoutDashboard, Shield } from "lucide-react";
 import { useTranslation } from "@/i18n/hooks";
 import { useAuth } from "@/components/providers/auth-provider";
 
 export function HeroSection() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, loginDemo } = useAuth();
 
   return (
     <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden">
@@ -80,6 +80,23 @@ export function HeroSection() {
                 <PlayCircle className="mr-1.5 size-4" />
                 {t("landing.hero.viewDemo")}
               </Link>
+            </Button>
+            <Button
+              size="lg"
+              className="w-full sm:w-auto min-w-[180px] h-12 text-base bg-amber-500 hover:bg-amber-600 text-white"
+              onClick={async () => {
+                try {
+                  await loginDemo("demo-admin@halalchain.local", "demo-admin-2024");
+                  window.location.href = "/dashboard";
+                } catch (err) {
+                  console.error("Demo login failed:", err);
+                  // Fallback: redirect to demo-admin page for manual login
+                  window.location.href = "/demo-admin";
+                }
+              }}
+            >
+              <Shield className="mr-1.5 size-4" />
+              Try Demo Admin
             </Button>
           </div>
         </div>

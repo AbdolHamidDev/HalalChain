@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { authenticate, authorize, AuthRequest } from "../middleware/auth";
+import { blockDemoWrites } from "../middleware/demo-mode";
 import { AUTH_COOKIE_NAME, signAccessToken, ACCESS_COOKIE_OPTIONS } from "../lib/jwt";
 import { buildUserResponse } from "../lib/userResponse";
 import { validatePassword } from "../lib/passwordValidator";
@@ -29,6 +30,7 @@ router.post(
   "/",
   authenticate,
   authorize(UserRole.ADMIN),
+  blockDemoWrites,
   async (req: AuthRequest, res: Response): Promise<void> => {
     const parsed = createInviteSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -128,6 +130,7 @@ router.delete(
   "/:id",
   authenticate,
   authorize(UserRole.ADMIN),
+  blockDemoWrites,
   async (req: AuthRequest, res: Response): Promise<void> => {
     const id = req.params.id as string;
     const adminId = req.user!.sub;

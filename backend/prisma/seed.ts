@@ -11,6 +11,14 @@ import {
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
+// Declare process for TypeScript compatibility in seed script
+declare const process: {
+  env: {
+    SEED_PASSWORD?: string;
+  };
+  exit(code: number): never;
+};
+
 const prisma = new PrismaClient();
 
 const NOW = new Date("2026-06-18");
@@ -28,7 +36,18 @@ function daysAgo(days: number): Date {
 }
 
 async function main() {
-  const passwordHash = await bcrypt.hash("Admin@123", 12);
+  // Require SEED_PASSWORD environment variable
+  const seedPassword = process.env.SEED_PASSWORD;
+  
+  if (!seedPassword) {
+    throw new Error(
+      "SEED_PASSWORD environment variable is required. " +
+      "Set it in backend/.env or pass it when running: " +
+      "SEED_PASSWORD=your-secure-password npm run db:seed"
+    );
+  }
+  
+  const passwordHash = await bcrypt.hash(seedPassword, 12);
 
   console.log("🌱 Seeding HalalChain showcase database...\n");
 

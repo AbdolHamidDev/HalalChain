@@ -8,6 +8,7 @@ import {
   X,
   Globe,
   Settings,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getNavGroupsForRole, type NavItem } from "@/lib/navigation";
@@ -166,7 +167,7 @@ function SidebarPanel({
 }: SidebarPanelProps) {
   const { t } = useTranslation();
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, logout, isDemo } = useAuth();
   const groups = user ? getNavGroupsForRole(user.role) : [];
   const [commitCount, setCommitCount] = useState<number | null>(null);
 
@@ -406,6 +407,12 @@ function SidebarPanel({
                     >
                       {getRoleLabel(user.role)}
                     </span>
+                    {isDemo && (
+                      <span className="inline-flex items-center gap-0.5 rounded-md bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-200 dark:text-amber-300">
+                        <Shield className="h-2.5 w-2.5" />
+                        Demo
+                      </span>
+                    )}
                   </div>
                 </div>
                 <Link

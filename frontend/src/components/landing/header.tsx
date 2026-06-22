@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, X, Github, LayoutDashboard, LogOut } from "lucide-react";
+import { Menu, X, Github, LayoutDashboard, LogOut, Shield } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n/hooks";
@@ -31,13 +31,13 @@ function getInitials(name: string): string {
 
 export function LandingHeader() {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, loginDemo } = useAuth();
   const [open, setOpen] = useState(false);
 
   const navLinks = [
     { label: t("landing.header.features"), href: "#features" },
     { label: t("landing.header.compliance"), href: "#compliance" },
-    { label: t("landing.header.automation"), href: "#compliance" },
+    { label: t("landing.header.automation"), href: "#automation" },
     { label: t("landing.header.workflow"), href: "#workflow" },
     { label: t("landing.header.architecture"), href: "#architecture" },
     { label: t("landing.header.techStack"), href: "#tech-stack" },
@@ -122,6 +122,10 @@ export function LandingHeader() {
               </DropdownMenu>
             ) : (
               <>
+                <Button variant="ghost" size="sm" onClick={() => loginDemo("demo-admin@halalchain.local", "demo-admin-2024")}>
+                  <Shield className="mr-2 h-4 w-4" />
+                  Demo Admin
+                </Button>
                 <Button variant="ghost" size="sm" asChild>
                   <Link href="/login">{t("landing.header.signIn")}</Link>
                 </Button>
@@ -183,16 +187,20 @@ export function LandingHeader() {
                   {t("landing.header.logout")}
                 </Button>
               </>
-            ) : (
-              <>
-                <Button variant="ghost" size="sm" asChild className="w-full justify-center">
-                  <Link href="/login">{t("landing.header.signIn")}</Link>
-                </Button>
-                <Button size="sm" asChild className="w-full justify-center">
-                  <Link href="/register">{t("landing.header.getStarted")}</Link>
-                </Button>
-              </>
-            )}
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" className="w-full justify-center" onClick={() => loginDemo("demo-admin@halalchain.local", "demo-admin-2024")}>
+                    <Shield className="mr-2 h-4 w-4" />
+                    Demo Admin
+                  </Button>
+                  <Button variant="ghost" size="sm" asChild className="w-full justify-center">
+                    <Link href="/login">{t("landing.header.signIn")}</Link>
+                  </Button>
+                  <Button size="sm" asChild className="w-full justify-center">
+                    <Link href="/register">{t("landing.header.getStarted")}</Link>
+                  </Button>
+                </>
+              )}
           </div>
         </div>
       </div>

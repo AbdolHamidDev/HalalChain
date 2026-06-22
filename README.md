@@ -206,14 +206,34 @@ npm run dev
 
 Edit `backend/.env` — at minimum set `JWT_SECRET`. For avatar/certificate uploads, fill in the Cloudinary variables. For email alerts, set either `RESEND_API_KEY` or SMTP variables. For Redis, set `REDIS_URL` (local: `redis://localhost:6379`, or Upstash URL).
 
-### Demo accounts
+### Demo Admin (No Account Required)
 
-| Email | Password | Role |
-|-------|----------|------|
-| admin@halalchain.com | Admin@123 | ADMIN |
-| manager@halalchain.com | Admin@123 | MANAGER |
-| staff@halalchain.com | Admin@123 | STAFF |
-| staff2@halalchain.com | Admin@123 | STAFF |
+Try the admin panel instantly without creating an account:
+
+1. Visit the landing page
+2. Click **"Try Demo Admin"** button
+3. Instantly access the full admin dashboard
+
+**Demo Credentials** (pre-filled on demo login page):
+- Email: `demo-admin@halalchain.local`
+- Password: `demo-admin-2024`
+
+**Note:** Demo mode is a temporary session. All changes are stored locally in your browser and are not saved to the database. When you try to add/edit/delete data, you'll see a friendly reminder that this is demo mode.
+
+### Seed Data Accounts
+
+After running `npm run db:seed`, these accounts are created:
+
+| Email | Role | Purpose |
+|-------|------|---------|
+| admin@halalchain.com | ADMIN | Full platform access |
+| manager@halalchain.com | MANAGER | Operations management |
+| staff@halalchain.com | STAFF | Inventory operations |
+| staff2@halalchain.com | STAFF | Warehouse staff |
+
+**Default seed password:** Set via `SEED_PASSWORD` environment variable in `backend/.env` (falls back to a secure default if not set).
+
+**Important:** After seeding, immediately change the default password for all accounts in production environments.
 
 Seed data creates all automation demo conditions:
 - **3 expired certificates** → Rule 2 fires → Compliance Score affected

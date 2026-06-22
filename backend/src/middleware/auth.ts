@@ -27,6 +27,14 @@ export function authenticate(
     return;
   }
 
+  // Demo tokens bypass DB validation — they are not stored in the database
+  // and are intended for temporary admin interaction only.
+  if (payload.isDemo) {
+    req.user = payload;
+    next();
+    return;
+  }
+
   // Validate tokenVersion and account status against DB (prevents use of
   // tokens issued before a suspend or password reset).
   prisma.user

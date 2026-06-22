@@ -7,6 +7,7 @@ import { MobileNavProvider } from "@/components/layout/mobile-nav-provider";
 import { PageTransition } from "@/components/shared/page-transition";
 import { Sidebar } from "@/components/layout/sidebar";
 import { SidebarProvider } from "@/components/layout/sidebar-provider";
+import { DemoAlertDialog } from "@/components/shared/demo-alert-dialog";
 
 export default function DashboardLayout({
   children,
@@ -34,6 +35,7 @@ export default function DashboardLayout({
           <DashboardClient />
         </SidebarProvider>
       </MobileNavProvider>
+      <DemoAlertDialog />
     </AuthGuard>
   );
 }
