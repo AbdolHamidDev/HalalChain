@@ -34,6 +34,9 @@ import supplierContactRoutes from "./routes/supplier-contacts";
 import tagRoutes from "./routes/tags";
 import systemHealthRoutes from "./routes/system-health";
 import backupRoutes from "./routes/backups";
+import systemConfigRoutes from "./routes/system-config";
+import featureFlagRoutes from "./routes/feature-flags";
+import automationRuleRoutes from "./routes/automation-rules";
 
 // Ensure the avatar upload directory exists before the app starts handling requests
 fs.mkdirSync(path.join(process.cwd(), "uploads", "avatars"), { recursive: true });
@@ -127,6 +130,9 @@ app.use("/api/supplier-contacts", supplierContactRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/admin/system", systemHealthRoutes);
 app.use("/api/admin/system", backupRoutes);
+app.use("/api/admin/system", systemConfigRoutes);
+app.use("/api/admin", featureFlagRoutes);
+app.use("/api/admin", automationRuleRoutes);
 app.use("/uploads/avatars", express.static(path.join(process.cwd(), "uploads", "avatars")));
 
 app.use(

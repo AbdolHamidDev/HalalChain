@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { evaluateAllRules } from "./automation/engine";
 import { createDatabaseBackup, cleanupOldBackups } from "./backup";
 import { runAllCleanupTasks } from "./cleanup";
+import { prisma } from "./prisma";
 import { logger } from "./logger";
 
 /**
@@ -25,7 +26,9 @@ export function startScheduler(): void {
     logger.info({ event: "scheduler_automation_started" });
     console.log("[AutomationScheduler] Starting daily rule evaluation...");
     try {
+      const startTime = Date.now();
       const results = await evaluateAllRules();
+      const duration = Date.now() - startTime;
       const triggered = results.filter((r) => r.triggered);
       const totalActions = triggered.reduce((sum, r) => sum + r.actions.length, 0);
 
@@ -34,6 +37,7 @@ export function startScheduler(): void {
         triggered: triggered.length,
         total: results.length,
         actions: totalActions,
+        duration,
       });
 
       console.log(
@@ -41,6 +45,34 @@ export function startScheduler(): void {
         `${triggered.length}/${results.length} rules triggered, ` +
         `${totalActions} actions executed.`
       );
+
+      // Update all enabled rules with last run info
+      const rules = await prisma.automationRule.findMany({
+        where: { isEnabled: true },
+      });
+
+      for (const rule of rules) {
+        const ruleResult = results.find((r) => r.ruleName === rule.name);
+        const wasTriggered = ruleResult?.triggered ?? false;
+        const actionsCount = ruleResult?.actions.length ?? 0;
+
+        await prisma.ruleExecution.create({
+          data: {
+            ruleId: rule.id,
+            triggered: wasTriggered,
+            actionsExecuted: actionsCount,
+            duration,
+          },
+        });
+
+        await prisma.automationRule.update({
+          where: { id: rule.id },
+          data: {
+            lastRunAt: new Date(),
+            lastRunStatus: "success",
+          },
+        });
+      }
 
       for (const result of triggered) {
         console.log(
@@ -50,6 +82,25 @@ export function startScheduler(): void {
     } catch (err) {
       logger.error({ event: "scheduler_automation_failed", error: err });
       console.error("[AutomationScheduler] Failed:", err);
+
+      // Update all enabled rules as failed
+      try {
+        const rules = await prisma.automationRule.findMany({
+          where: { isEnabled: true },
+        });
+
+        for (const rule of rules) {
+          await prisma.automationRule.update({
+            where: { id: rule.id },
+            data: {
+              lastRunAt: new Date(),
+              lastRunStatus: "failed",
+            },
+          });
+        }
+      } catch (updateErr) {
+        logger.error({ event: "scheduler_automation_status_update_failed", error: updateErr });
+      }
     }
   });
 
