@@ -657,3 +657,88 @@ enum BatchLotStatus {
   EXPIRED
   CONSUMED
 }
+
+// ─────────────────────────────────────────────
+// V2.0 — SYSTEM CONFIGURATION & OPERATIONS
+// ─────────────────────────────────────────────
+
+model SystemConfig {
+  key          String   @id @map("key")
+  value        String
+  category     String   // "automation", "email", "notifications", "system"
+  description  String?
+  isSecret     Boolean  @default(false) @map("is_secret")
+  updatedBy    String?  @map("updated_by") @db.Uuid
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@map("system_configs")
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique
+  enabled     Boolean  @default(false)
+  description String?
+  rollout     Int?     @default(100)
+  updatedBy   String?  @map("updated_by") @db.Uuid
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("feature_flags")
+}
+
+model AutomationRule {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  type          String   // "CERTIFICATE_EXPIRING", "CERTIFICATE_EXPIRED", "LOW_INVENTORY", "SHIPMENT_DELAY"
+  cronSchedule  String   @map("cron_schedule") @default("0 8 * * *")
+  isEnabled     Boolean  @default(true) @map("is_enabled")
+  lastRunAt     DateTime? @map("last_run_at")
+  lastRunStatus String?  @map("last_run_status") // "success", "failed"
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  executions    RuleExecution[]
+
+  @@map("automation_rules")
+}
+
+model RuleExecution {
+  id              String   @id @default(uuid()) @db.Uuid
+  ruleId          String   @map("rule_id") @db.Uuid
+  triggered       Boolean
+  actionsExecuted Int      @default(0) @map("actions_executed")
+  duration        Int      // milliseconds
+  error           String?
+  executedAt      DateTime @default(now()) @map("executed_at")
+
+  rule            AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@index([ruleId])
+  @@index([executedAt])
+  @@map("rule_executions")
+}
+
+model SystemEvent {
+  id          String      @id @default(uuid()) @db.Uuid
+  type        String      // "backup_completed", "rule_executed", "config_changed"
+  severity    String      // "info", "warning", "error"
+  message     String
+  metadata    Json?
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  @@index([type])
+  @@index([createdAt])
+  @@map("system_events")
+}
+
+model MaintenanceWindow {
+  id          String   @id @default(uuid()) @db.Uuid
+  startAt     DateTime @map("start_at")
+  endAt       DateTime @map("end_at")
+  message     String?
+  createdBy   String   @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("maintenance_windows")
+}
