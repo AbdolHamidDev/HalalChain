@@ -31,6 +31,37 @@ services:
       timeout: 5s
       retries: 5
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: halalchain-backend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: "postgresql://halalchain:halalchain_dev@postgres:5432/halalchain?schema=public"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "change-me-to-a-long-random-secret-in-production"
+      JWT_EXPIRES_IN: "15m"
+      NODE_ENV: production
+      FRONTEND_URL: "http://localhost:3000"
+      PORT: "4000"
+    volumes:
+      - halalchain_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:4000/api/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })\""]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
 volumes:
   halalchain_pgdata:
   halalchain_redisdata:
+  halalchain_uploads:
