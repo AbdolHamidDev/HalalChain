@@ -520,5 +520,5 @@ If deployment fails:
 
 ---
 
-**Last Updated**: 2025-01-15  
+**Last Updated**: 2026-06-23  
 **Version**: 2.0.0
