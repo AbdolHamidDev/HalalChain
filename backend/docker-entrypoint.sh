@@ -6,7 +6,7 @@ echo "🚀 Starting HalalChain v2.0..."
 # Wait for database to be ready (max 30 seconds)
 echo "⏳ Waiting for database..."
 for i in $(seq 1 30); do
-  if npx prisma db execute --stdin <<< "SELECT 1" > /dev/null 2>&1; then
+  if echo "SELECT 1" | npx prisma db execute --stdin > /dev/null 2>&1; then
     echo "✅ Database is ready"
     break
   fi
