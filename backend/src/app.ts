@@ -37,6 +37,9 @@ import backupRoutes from "./routes/backups";
 import systemConfigRoutes from "./routes/system-config";
 import featureFlagRoutes from "./routes/feature-flags";
 import automationRuleRoutes from "./routes/automation-rules";
+import systemEventsRoutes from "./routes/system-events";
+import queueRoutes from "./routes/queues";
+import maintenanceRoutes from "./routes/maintenance";
 
 // Ensure the avatar upload directory exists before the app starts handling requests
 fs.mkdirSync(path.join(process.cwd(), "uploads", "avatars"), { recursive: true });
@@ -131,8 +134,11 @@ app.use("/api/tags", tagRoutes);
 app.use("/api/admin/system", systemHealthRoutes);
 app.use("/api/admin/system", backupRoutes);
 app.use("/api/admin/system", systemConfigRoutes);
+app.use("/api/admin/system", systemEventsRoutes);
 app.use("/api/admin", featureFlagRoutes);
 app.use("/api/admin", automationRuleRoutes);
+app.use("/api/admin", queueRoutes);
+app.use("/api/admin", maintenanceRoutes);
 app.use("/uploads/avatars", express.static(path.join(process.cwd(), "uploads", "avatars")));
 
 app.use(
