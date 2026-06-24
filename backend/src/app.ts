@@ -106,6 +106,17 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+app.get("/", (_req, res) => {
+  res.status(200).send("OK");
+});
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+  });
+});
+
 app.use("/api/auth/login", authRateLimiter);
 app.use("/api/auth/register", authRateLimiter);
 app.use("/api/auth", authRoutes);
